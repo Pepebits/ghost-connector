@@ -4,6 +4,7 @@ import type { ImagePlan } from '../types.js';
 import { pixabayLimiter } from '../util/limiter.js';
 import { withRetry } from '../util/retry.js';
 import { acquireFirst, bestFirst, creditLink, HttpStatusError, QuotaExhaustedError, type ImageCandidate, type ImageOption, type StockSource } from './provider.js';
+import { safeFetch } from '../util/safeFetch.js';
 
 function remainingFrom(res: Response): number | null {
   const header = res.headers.get('x-ratelimit-remaining');
@@ -91,7 +92,7 @@ export class PixabayProvider implements StockSource {
   async download(option: ImageOption): Promise<ImageCandidate> {
     const res = await pixabayLimiter(() =>
       withRetry(async () => {
-        const r = await fetch(option.downloadUrl);
+        const r = await safeFetch(option.downloadUrl, { timeoutMs: 30_000 });
         if (!r.ok) throw new HttpStatusError(`Pixabay: could not download the image (${r.status})`, r.status);
         return { buffer: Buffer.from(await r.arrayBuffer()), type: r.headers.get('content-type') ?? 'image/jpeg' };
       }),

@@ -4,6 +4,7 @@ import type { ImagePlan } from '../types.js';
 import { unsplashLimiter } from '../util/limiter.js';
 import { withRetry } from '../util/retry.js';
 import { acquireFirst, bestFirst, creditLink, HttpStatusError, QuotaExhaustedError, type ImageCandidate, type ImageOption, type StockSource } from './provider.js';
+import { safeFetch } from '../util/safeFetch.js';
 
 export { QuotaExhaustedError };
 
@@ -93,7 +94,7 @@ export class UnsplashProvider implements StockSource {
     if (option.trackUrl && key) await this.triggerDownload(option.trackUrl, key);
     const buffer = await unsplashLimiter(() =>
       withRetry(async () => {
-        const res = await fetch(option.downloadUrl);
+        const res = await safeFetch(option.downloadUrl, { timeoutMs: 30_000 });
         if (!res.ok) throw new HttpStatusError(`Unsplash: could not download the image (${res.status})`, res.status);
         return Buffer.from(await res.arrayBuffer());
       }),
@@ -102,6 +103,8 @@ export class UnsplashProvider implements StockSource {
   }
 
   private async triggerDownload(downloadLocation: string, key: string): Promise<void> {
+    // The key only ever goes to Unsplash's API (the URL may come from a saved or imported plan).
+    if (new URL(downloadLocation).host !== 'api.unsplash.com') return;
     await unsplashLimiter(() =>
       withRetry(async () => {
         const res = await fetch(downloadLocation, { headers: { Authorization: `Client-ID ${key}` } });

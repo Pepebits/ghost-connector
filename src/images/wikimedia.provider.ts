@@ -4,6 +4,7 @@ import type { ImagePlan } from '../types.js';
 import { wikimediaLimiter } from '../util/limiter.js';
 import { withRetry } from '../util/retry.js';
 import { acquireFirst, bestFirst, creditLink, HttpStatusError, QuotaExhaustedError, type ImageCandidate, type ImageOption, type StockSource } from './provider.js';
+import { safeFetch } from '../util/safeFetch.js';
 
 /** Wikimedia asks every client to identify itself (https://meta.wikimedia.org/wiki/User-Agent_policy). */
 export const WIKIMEDIA_USER_AGENT = 'ghost-connector/0.1 (self-hosted Ghost editing tool)';
@@ -153,7 +154,7 @@ export class WikimediaProvider implements StockSource {
   async download(option: ImageOption): Promise<ImageCandidate> {
     const res = await wikimediaLimiter(() =>
       withRetry(async () => {
-        const r = await fetch(option.downloadUrl, { headers: { 'User-Agent': WIKIMEDIA_USER_AGENT } });
+        const r = await safeFetch(option.downloadUrl, { headers: { 'User-Agent': WIKIMEDIA_USER_AGENT }, timeoutMs: 30_000 });
         if (!r.ok) throw new HttpStatusError(`Wikimedia: could not download the image (${r.status})`, r.status);
         return { buffer: Buffer.from(await r.arrayBuffer()), type: r.headers.get('content-type') ?? 'image/jpeg' };
       }),

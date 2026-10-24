@@ -5,6 +5,7 @@ import { openverseLimiter } from '../util/limiter.js';
 import { withRetry } from '../util/retry.js';
 import { openverseAuthHeaders } from './openverseAuth.js';
 import { acquireFirst, bestFirst, creditLink, HttpStatusError, QuotaExhaustedError, type ImageCandidate, type ImageOption, type StockSource } from './provider.js';
+import { safeFetch } from '../util/safeFetch.js';
 
 /** Subset of the /v1/images/ response (see https://api.openverse.org/v1/schema/). */
 interface OpenverseImage {
@@ -145,7 +146,7 @@ export class OpenverseProvider implements StockSource {
   async download(option: ImageOption): Promise<ImageCandidate> {
     const { buffer, contentType } = await openverseLimiter(() =>
       withRetry(async () => {
-        const res = await fetch(option.downloadUrl, { redirect: 'follow', signal: AbortSignal.timeout(30_000) });
+        const res = await safeFetch(option.downloadUrl, { timeoutMs: 30_000 });
         if (!res.ok) throw new HttpStatusError(`Openverse: could not download the image (${res.status})`, res.status);
         const type = res.headers.get('content-type') ?? '';
         if (!type.startsWith('image/')) throw new HttpStatusError(`Openverse: the URL is not an image (${type || 'no type'})`, 415);

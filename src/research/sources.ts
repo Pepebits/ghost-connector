@@ -1,7 +1,6 @@
-import { lookup } from 'node:dns/promises';
-import { isIP } from 'node:net';
 import { getConfig } from '../config.js';
 import { logger } from '../logger.js';
+import { safeFetch } from '../util/safeFetch.js';
 
 /**
  * Reads the URLs the editor gives as sources (in the instructions or in the
@@ -83,55 +82,23 @@ export function extractUrls(text: string): string[] {
   return [...new Set(clean)].slice(0, MAX_URLS);
 }
 
-function isPrivateAddress(ip: string): boolean {
-  if (isIP(ip) === 6) {
-    const v = ip.toLowerCase();
-    if (v.startsWith('::ffff:')) return isPrivateAddress(v.slice(7));
-    return v === '::1' || v === '::' || v.startsWith('fc') || v.startsWith('fd') || v.startsWith('fe80');
-  }
-  const [a, b] = ip.split('.').map(Number) as [number, number];
-  return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
-}
-
-async function assertPublic(url: URL): Promise<void> {
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error('only http(s) URLs are fetched');
-  const host = url.hostname.replace(/^\[|\]$/g, '');
-  if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local')) throw new Error('local host');
-  const addrs = isIP(host) ? [{ address: host }] : await lookup(host, { all: true });
-  if (addrs.some((a) => isPrivateAddress(a.address))) throw new Error('private network host');
-}
-
-/** GET with timeout, size limit and redirects checked one by one. */
+/** GET with timeout, size limit and redirects checked one by one (see util/safeFetch.ts). */
 async function getText(rawUrl: string, headers: Record<string, string> = {}): Promise<{ status: number; body: string; contentType: string }> {
-  let url = new URL(rawUrl);
-  for (let hop = 0; hop < 5; hop++) {
-    await assertPublic(url);
-    const res = await fetch(url, {
-      headers: { 'user-agent': 'ghost-connector (+https://github.com/Pepebits)', ...headers },
-      redirect: 'manual',
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-    const location = res.headers.get('location');
-    if (res.status >= 300 && res.status < 400 && location) {
-      url = new URL(location, url);
-      continue;
+  const res = await safeFetch(rawUrl, { headers: { 'user-agent': 'ghost-connector (+https://github.com/Pepebits)', ...headers }, timeoutMs: TIMEOUT_MS });
+  const reader = res.body?.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  while (reader) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    chunks.push(value);
+    if (size > MAX_BYTES) {
+      await reader.cancel();
+      break;
     }
-    const reader = res.body?.getReader();
-    const chunks: Uint8Array[] = [];
-    let size = 0;
-    while (reader) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      size += value.byteLength;
-      chunks.push(value);
-      if (size > MAX_BYTES) {
-        await reader.cancel();
-        break;
-      }
-    }
-    return { status: res.status, body: Buffer.concat(chunks).toString('utf8'), contentType: res.headers.get('content-type') ?? '' };
   }
-  throw new Error('too many redirects');
+  return { status: res.status, body: Buffer.concat(chunks).toString('utf8'), contentType: res.headers.get('content-type') ?? '' };
 }
 
 function githubHeaders(): Record<string, string> {

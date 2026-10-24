@@ -4,6 +4,7 @@ import type { ImagePlan } from '../types.js';
 import { pexelsLimiter } from '../util/limiter.js';
 import { withRetry } from '../util/retry.js';
 import { acquireFirst, bestFirst, creditLink, HttpStatusError, QuotaExhaustedError, type ImageCandidate, type ImageOption, type StockSource } from './provider.js';
+import { safeFetch } from '../util/safeFetch.js';
 
 function remainingFrom(res: Response): number | null {
   const header = res.headers.get('x-ratelimit-remaining');
@@ -85,7 +86,7 @@ export class PexelsProvider implements StockSource {
   async download(option: ImageOption): Promise<ImageCandidate> {
     const buffer = await pexelsLimiter(() =>
       withRetry(async () => {
-        const res = await fetch(option.downloadUrl);
+        const res = await safeFetch(option.downloadUrl, { timeoutMs: 30_000 });
         if (!res.ok) throw new HttpStatusError(`Pexels: could not download the image (${res.status})`, res.status);
         return Buffer.from(await res.arrayBuffer());
       }),
