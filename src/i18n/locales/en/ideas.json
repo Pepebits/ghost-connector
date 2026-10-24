@@ -1,0 +1,83 @@
+{
+  "title": "Ideas",
+  "meta": "Topics for your next posts: what people almost find you for on Google, and gaps in what you publish.",
+  "write": "Write post",
+  "gsc": {
+    "title": "Searches you almost rank for",
+    "intro": "Last 28 days on Google and 90 on Bing (which has less traffic). You show up on the second page (average position 8–20) with real impressions: a new post, or a better one, can move them to the first. No AI cost.",
+    "notConfigured": "Neither Search Console nor Bing Webmaster is set up",
+    "notConfiguredBody": "Set up Google Search Console or Bing Webmaster Tools (or both) to see these searches.",
+    "configure": "Set up",
+    "error": "Could not read the search data: {error}",
+    "none": "No searches on the second page",
+    "noneBody": "With more impressions (or more time) they will show up here.",
+    "improveHint": "This post already ranks: expand it in Ghost or write a more specific one.",
+    "topicFromQuery": "A post that properly answers the search “{query}”: what people want to know when they search it, with concrete examples.",
+    "footnote": "Data lags 2–3 days (Bing aggregates it by week). When a search shows up in both, impressions are added up. The table is kept until you press “Refresh”.",
+    "cols": {
+      "query": "Search",
+      "impressions": "Impressions",
+      "clicks": "Clicks",
+      "position": "Position",
+      "page": "Ranking page",
+      "action": "Action",
+      "source": "Engine"
+    },
+    "onlyBing": "Bing doesn't say which page.",
+    "google": "Google",
+    "bing": "Bing",
+    "scanned": {
+      "line": "Checked: {parts}; none at average position 8–20 with 10 or more impressions.",
+      "google": {
+        "one": "1 Google search (28 days)",
+        "other": "{count} Google searches (28 days)"
+      },
+      "bing": {
+        "one": "1 Bing search (90 days)",
+        "other": "{count} Bing searches (90 days)"
+      }
+    },
+    "refresh": "Refresh",
+    "refreshing": "Fetching…",
+    "updatedAt": "Data from {time}."
+  },
+  "ai": {
+    "title": "AI ideas",
+    "intro": "From your published posts and your drafts: follow-ups, missing how-tos, updates of old posts.",
+    "introGsc": "From your published posts, your drafts and the Google and Bing searches below.",
+    "generatedAt": "generated {time}",
+    "generate": "Generate ideas",
+    "again": "Generate others",
+    "busy": "Thinking of ideas…",
+    "empty": "No ideas yet",
+    "emptyBody": "Press “Generate ideas”. It is a short AI call (cents) and counts towards spend and the daily cap.",
+    "fromSearch": "Search",
+    "related": "Builds on: {posts}",
+    "create": "Create draft",
+    "used": "Draft created",
+    "openDraft": "Open draft",
+    "dismiss": "Dismiss",
+    "dismissLabel": "Dismiss the idea “{title}”",
+    "dismissedCount": {
+      "one": "1 dismissed idea",
+      "other": "{count} dismissed ideas"
+    },
+    "restore": "Restore",
+    "dismissedHint": "Dismissed ideas are not proposed again when generating new ones.",
+    "allDismissed": "You dismissed every idea"
+  },
+  "ctr": {
+    "title": "Good position, few clicks",
+    "intro": "Google searches where you already show up on the first page (position 1–7) but get less than half the usual clicks for that spot. The post ranks well: what doesn't convince is the title or meta description shown on Google. Change them in Ghost.",
+    "none": "No results with few clicks",
+    "noneBody": "Your first-page posts have a normal CTR for their position (or there are fewer than 50 impressions yet).",
+    "cols": {
+      "ctr": "CTR / usual"
+    },
+    "footnote": "Google only (Bing gives no page). The “usual” CTR is a rough average from public studies: it varies a lot per search (if Google shows the answer directly, hardly anyone clicks).",
+    "suggest": "Propose with AI",
+    "view": "View proposal",
+    "applied": "Applied · view",
+    "appliedTitle": "Changed titles"
+  }
+}

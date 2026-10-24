@@ -1,0 +1,83 @@
+{
+  "title": "Ideas",
+  "meta": "Temas para tus próximos posts: lo que ya casi te buscan en Google y huecos entre lo que publicas.",
+  "write": "Escribir post",
+  "gsc": {
+    "title": "Búsquedas en las que casi estás",
+    "intro": "Últimos 28 días en Google y 90 en Bing (que tiene menos tráfico). Apareces en la segunda página (posición media 8–20) con impresiones reales: un post nuevo, o uno mejor, puede llevarlas a la primera. Sin coste de IA.",
+    "notConfigured": "Search Console ni Bing Webmaster están configurados",
+    "notConfiguredBody": "Configura Google Search Console o Bing Webmaster Tools (o los dos) para ver estas búsquedas.",
+    "configure": "Configurar",
+    "error": "No se pudieron leer los datos de búsqueda: {error}",
+    "none": "Ninguna búsqueda en la segunda página",
+    "noneBody": "Con más impresiones (o más tiempo) aparecerán aquí.",
+    "improveHint": "Ya sale este post: amplíalo en Ghost o escribe uno más específico.",
+    "topicFromQuery": "Un post que responda bien a la búsqueda «{query}»: lo que la gente quiere saber al buscarlo, con ejemplos concretos.",
+    "footnote": "Los datos llegan con 2–3 días de retraso (Bing los agrega por semanas). Si una búsqueda sale en los dos, se suman las impresiones. La tabla se guarda hasta que pulses «Actualizar».",
+    "cols": {
+      "query": "Búsqueda",
+      "impressions": "Impresiones",
+      "clicks": "Clics",
+      "position": "Posición",
+      "page": "Página que sale",
+      "action": "Acción",
+      "source": "Buscador"
+    },
+    "onlyBing": "Bing no indica la página.",
+    "google": "Google",
+    "bing": "Bing",
+    "scanned": {
+      "line": "Revisadas: {parts}; ninguna en posición media 8–20 con 10 impresiones o más.",
+      "google": {
+        "one": "1 búsqueda de Google (28 días)",
+        "other": "{count} búsquedas de Google (28 días)"
+      },
+      "bing": {
+        "one": "1 búsqueda de Bing (90 días)",
+        "other": "{count} búsquedas de Bing (90 días)"
+      }
+    },
+    "refresh": "Actualizar",
+    "refreshing": "Consultando…",
+    "updatedAt": "Datos de {time}."
+  },
+  "ai": {
+    "title": "Ideas con IA",
+    "intro": "A partir de tus posts publicados y tus borradores: continuaciones, «cómo hacer» que faltan, actualizaciones de posts antiguos.",
+    "introGsc": "A partir de tus posts publicados, tus borradores y las búsquedas de Google y Bing de abajo.",
+    "generatedAt": "generadas {time}",
+    "generate": "Generar ideas",
+    "again": "Generar otras",
+    "busy": "Pensando ideas…",
+    "empty": "Todavía no hay ideas",
+    "emptyBody": "Pulsa «Generar ideas». Es una llamada corta a la IA (céntimos) y cuenta en el gasto y en el tope diario.",
+    "fromSearch": "Búsqueda",
+    "related": "Se apoya en: {posts}",
+    "create": "Crear borrador",
+    "used": "Borrador creado",
+    "openDraft": "Abrir borrador",
+    "dismiss": "Descartar",
+    "dismissLabel": "Descartar la idea «{title}»",
+    "dismissedCount": {
+      "one": "1 idea descartada",
+      "other": "{count} ideas descartadas"
+    },
+    "restore": "Recuperar",
+    "dismissedHint": "Las descartadas no se vuelven a proponer al generar otras.",
+    "allDismissed": "Has descartado todas las ideas"
+  },
+  "ctr": {
+    "title": "Buen puesto, pocos clics",
+    "intro": "Búsquedas de Google en las que ya sales en la primera página (posición 1–7), pero con menos de la mitad de los clics habituales para ese puesto. El post está bien posicionado: lo que no convence es el título o la meta descripción que se ve en Google. Cámbialos en Ghost.",
+    "none": "Ningún resultado con pocos clics",
+    "noneBody": "Tus posts de la primera página tienen un CTR normal para su posición (o aún no hay 50 impresiones).",
+    "cols": {
+      "ctr": "CTR / habitual"
+    },
+    "footnote": "Solo Google (Bing no indica la página). El CTR «habitual» es una media aproximada de estudios públicos: cambia mucho según la búsqueda (si Google muestra la respuesta directamente, casi nadie hace clic).",
+    "suggest": "Proponer con IA",
+    "view": "Ver propuesta",
+    "applied": "Aplicado · ver",
+    "appliedTitle": "Títulos cambiados"
+  }
+}

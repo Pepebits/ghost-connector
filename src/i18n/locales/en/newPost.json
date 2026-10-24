@@ -1,0 +1,19 @@
+{
+  "title": "New post",
+  "intro": "Describe the topic and what data to use. The connector creates an empty draft in Ghost and plans it: you'll watch the text being written live and review it before anything else is written.",
+  "optional": "(optional)",
+  "busy": "Creating draft…",
+  "topic": { "label": "Topic", "hint": "What the post should cover, in a sentence or two.", "placeholder": "e.g. How to grow vegetables on a small balcony" },
+  "postTitle": { "label": "Title", "hint": "Leave it empty to use the topic. The writer may suggest a better one." },
+  "sources": { "label": "Sources and data", "hint": "Links, figures or notes to use. Links are read before writing: a website, a repo or a GitHub organization (its most-starred repos)." },
+  "instructions": { "label": "Instructions", "hint": "Tone, length, angle, sections you want…" },
+  "submit": "Create draft and plan",
+  "steps": {
+    "title": "What happens next",
+    "create": "An <strong class=\"text-fg\">empty draft</strong> is created on {url} (the only thing written to Ghost now).",
+    "read": "Any links you added are read.",
+    "write": "The writer drafts the post. Meanwhile, SEO and image candidates are prepared.",
+    "review": "You review, answer its questions, pick the image and apply. <strong class=\"text-fg\">Nothing is ever published.</strong>",
+    "note": "It never invents quotes or interviews with real people: if you ask for them without providing the answers, it leaves the questions ready for you."
+  }
+}

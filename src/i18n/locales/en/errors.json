@@ -1,0 +1,19 @@
+{
+  "title": {
+    "400": "Something is missing from the form",
+    "404": "Not found",
+    "409": "Something changed in the meantime",
+    "422": "Invalid data",
+    "502": "An external service failed",
+    "default": "Couldn't complete the action",
+    "short": "Error"
+  },
+  "unexpected": "Unexpected error.",
+  "nothingWritten": "Nothing was written to Ghost.",
+  "goBack": "Go back",
+  "tryAgain": "and try again.",
+  "back": {
+    "post": "Post"
+  },
+  "pageNotFound": "This page doesn't exist. The link may be old or mistyped."
+}

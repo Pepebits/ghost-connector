@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "label": "Principal",
+    "dashboard": "Borradores",
+    "ideas": "Ideas",
+    "jobs": "Tareas",
+    "settings": "Configuración"
+  },
+  "skipToContent": "Saltar al contenido",
+  "search": {
+    "button": "Buscar",
+    "title": "Buscar posts y comandos"
+  },
+  "theme": {
+    "label": "Tema",
+    "auto": "Automático (sistema)",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "footer": {
+    "productOf": "un producto de",
+    "newTab": "abre en una pestaña nueva"
+  },
+  "time": {
+    "justNow": "hace un momento"
+  },
+  "actions": {
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "clearFilters": "Limpiar filtros"
+  },
+  "cost": {
+    "unpriced": "sin precio para {models}",
+    "unknown": "coste desconocido ({which})"
+  },
+  "metaDescription": "Panel privado de Ghost Connector: completa, optimiza e ilustra los borradores de tu blog con IA."
+}

@@ -1,0 +1,437 @@
+{
+  "title": "Configuración",
+  "intro": "Las claves nunca se muestran: solo puedes sustituirlas. El resto de variables (<code>DATA_DIR</code>, <code>LOG_LEVEL</code>…) siguen solo en el <code>.env</code>. Este conector nunca publica: todo queda en <code>draft</code>.",
+  "language": {
+    "title": "Idioma",
+    "intro": "Idioma de la interfaz. Se aplica al momento, también con tareas en curso.",
+    "label": "Idioma de la interfaz",
+    "apply": "Cambiar idioma",
+    "palette": "Idioma: {name}"
+  },
+  "groups": {
+    "ghost": {
+      "title": "Ghost"
+    },
+    "ai": {
+      "title": "IA",
+      "intro": "La prueba hace una llamada mínima al modelo (1 token)."
+    },
+    "images": {
+      "title": "Fuentes de imágenes"
+    },
+    "unsplash": {
+      "title": "Unsplash",
+      "intro": "Fuente de imágenes principal. Opcional."
+    },
+    "pixabay": {
+      "title": "Pixabay",
+      "intro": "Fotos de stock gratis. La clave se obtiene al momento al registrarte. Opcional."
+    },
+    "pexels": {
+      "title": "Pexels",
+      "intro": "Respaldo cuando Unsplash agota su cuota. Opcional."
+    },
+    "openverse": {
+      "title": "Openverse",
+      "intro": "Fotos con licencia Creative Commons (Flickr, Wikimedia…). Funciona sin credenciales (200 peticiones al día). Con ellas, tienes más cuota. La atribución va siempre en el pie de foto."
+    },
+    "wikimedia": {
+      "title": "Wikimedia Commons",
+      "intro": "Las imágenes de Wikipedia: personas, lugares, logos y temas técnicos o históricos. Sin clave. La atribución va siempre en el pie de foto."
+    },
+    "gsc": {
+      "title": "Google Search Console",
+      "intro": "Opcional, para la página Ideas: las búsquedas en las que tu blog casi llega a la primera página. Crea una cuenta de servicio en Google Cloud, activa la API de Search Console, descarga su clave JSON y añade su email como usuario de la propiedad en Search Console."
+    },
+    "bing": {
+      "title": "Bing Webmaster Tools",
+      "intro": "Opcional, para la página Ideas: suma las búsquedas de Bing (que también alimenta Copilot y parte de la búsqueda de ChatGPT) a las de Google. Genera la API key en Bing Webmaster → Configuración → Acceso a la API. Si ya tienes Search Console, puedes importar el sitio desde ahí."
+    },
+    "behaviour": {
+      "title": "Comportamiento"
+    }
+  },
+  "status": {
+    "configured": "Configurado",
+    "notConfigured": "Sin configurar",
+    "noKey": "Sin clave",
+    "enabled": "Activada",
+    "disabled": "Desactivada",
+    "enabledWithCreds": "Activada · con credenciales",
+    "enabledNoCreds": "Activada · sin credenciales"
+  },
+  "fields": {
+    "GHOST_API_URL": {
+      "label": "URL del sitio",
+      "help": "Sin barra final."
+    },
+    "GHOST_ADMIN_API_KEY": {
+      "label": "Admin API Key",
+      "help": "Formato id:secret (Ghost → Integraciones). La Content API Key no sirve."
+    },
+    "GHOST_API_VERSION": {
+      "label": "Versión de la API"
+    },
+    "AI_PROVIDER": {
+      "label": "Proveedor",
+      "help": "openai-compatible sirve para OpenAI, OpenRouter, Groq, Ollama, LM Studio…"
+    },
+    "AI_API_KEY": {
+      "label": "API key"
+    },
+    "AI_MODEL": {
+      "label": "Modelo principal",
+      "help": "Se usa en todos los pasos salvo que elijas otro abajo. Obligatorio con openai-compatible."
+    },
+    "AI_BASE_URL": {
+      "label": "Base URL",
+      "help": "Vacío = la del proveedor. Obligatoria con openai-compatible (p. ej. https://api.openai.com/v1)."
+    },
+    "AI_MAX_TOKENS": {
+      "label": "Máx. tokens por respuesta"
+    },
+    "AI_MODEL_WRITER": {
+      "label": "Redactar el post",
+      "help": "Escribe y mejora el texto del artículo. Es donde más se nota la calidad."
+    },
+    "AI_MODEL_SEO": {
+      "label": "SEO",
+      "help": "Meta title, descripción, slug, etiquetas y extracto. Suele bastar un modelo pequeño."
+    },
+    "AI_MODEL_IMAGE": {
+      "label": "Imagen destacada",
+      "help": "Decide qué foto buscar. Suele bastar un modelo pequeño."
+    },
+    "AI_MODEL_RESOLVE": {
+      "label": "Responder pendientes",
+      "help": "Reescribe las partes del texto que dependían de tus respuestas."
+    },
+    "AI_PRICES": {
+      "label": "Precios (USD por millón de tokens)",
+      "help": "modelo=entrada/salida, separados por comas. Sin precio, el coste sale como desconocido. deepseek-flash ya lo trae."
+    },
+    "IMAGE_SOURCES_ORDER": {
+      "label": "Orden de las fuentes",
+      "help": "Se prueba la primera. Si no tiene clave, agota su cuota o no encuentra nada, se pasa a la siguiente."
+    },
+    "UNSPLASH_ACCESS_KEY": {
+      "label": "Access key"
+    },
+    "UNSPLASH_APP_NAME": {
+      "label": "Nombre de la app",
+      "help": "Se usa en la atribución (utm_source)."
+    },
+    "PIXABAY_API_KEY": {
+      "label": "API key"
+    },
+    "PEXELS_API_KEY": {
+      "label": "API key"
+    },
+    "OPENVERSE_ENABLED": {
+      "label": "Usar Openverse como respaldo"
+    },
+    "OPENVERSE_CLIENT_ID": {
+      "label": "Client ID",
+      "help": "Opcional: sube el límite de 200/día. Se obtiene con \"Registrar aplicación\"."
+    },
+    "OPENVERSE_CLIENT_SECRET": {
+      "label": "Client secret"
+    },
+    "OPENVERSE_LICENSES": {
+      "label": "Licencias permitidas",
+      "help": "Separadas por comas: cc0, pdm, by, by-sa. by-sa obliga a compartir las imágenes derivadas con la misma licencia."
+    },
+    "WIKIMEDIA_ENABLED": {
+      "label": "Usar Wikimedia Commons"
+    },
+    "WIKIMEDIA_LICENSES": {
+      "label": "Licencias permitidas",
+      "help": "Separadas por comas: cc0, pdm, by, by-sa. by-sa obliga a compartir las imágenes derivadas con la misma licencia."
+    },
+    "GSC_SITE_URL": {
+      "label": "Propiedad",
+      "help": "Tal como aparece en Search Console: sc-domain:tudominio.com o https://tudominio.com/"
+    },
+    "GSC_SERVICE_ACCOUNT": {
+      "label": "Clave de la cuenta de servicio",
+      "help": "Ruta al archivo JSON (recomendado) o su contenido. Solo se usa en lectura."
+    },
+    "BING_SITE_URL": {
+      "label": "Sitio",
+      "help": "La URL del sitio tal como aparece en Bing Webmaster: https://tudominio.com/"
+    },
+    "BING_API_KEY": {
+      "label": "API key",
+      "help": "Solo se usa en lectura."
+    },
+    "UI_LANGUAGE": {
+      "label": "Idioma de la interfaz"
+    },
+    "CONTENT_STRATEGY": {
+      "label": "Estrategia de contenido"
+    },
+    "DRAFT_FILTER": {
+      "label": "Qué borradores procesar"
+    },
+    "MAX_POSTS_PER_RUN": {
+      "label": "Posts máximos por ejecución"
+    },
+    "CONCURRENCY": {
+      "label": "Concurrencia"
+    },
+    "TARGET_WORD_COUNT": {
+      "label": "Palabras objetivo"
+    },
+    "ALLOW_SLUG_CHANGE": {
+      "label": "Permitir cambiar el slug"
+    },
+    "INTERNAL_LINKS": {
+      "label": "Sugerir enlaces internos",
+      "help": "El writer puede enlazar de 1 a 3 posts ya publicados de tu blog que traten lo mismo."
+    },
+    "AUTO_PLAN_TIME": {
+      "label": "Planificar cada noche a las",
+      "help": "Hora (HH:MM, hora local) para planificar solo los borradores nuevos, los que nunca se han planificado. Solo planifica: no aplica nada en Ghost. Vacío = desactivado. Si el panel estaba apagado a esa hora, lo hace al arrancar ese mismo día."
+    },
+    "AUTO_PLAN_MAX": {
+      "label": "Máximo de borradores por noche",
+      "help": "Tope propio de la planificación nocturna, además del tope diario de gasto. Por defecto, 3."
+    },
+    "GITHUB_TOKEN": {
+      "label": "Token de GitHub",
+      "help": "Opcional. Al leer fuentes de github.com (p. ej. los repos con más estrellas de una organización) sube el límite de 60 a 5000 peticiones/hora. Vale un token sin permisos."
+    },
+    "SITE_CONTEXT": {
+      "label": "Contexto del sitio",
+      "help": "Se le pasa a los agentes: de qué va el blog, tono, público."
+    },
+    "AI_DAILY_BUDGET_USD": {
+      "label": "Tope de gasto diario (USD)",
+      "help": "Deja de empezar trabajo nuevo con IA cuando las últimas 24 horas llegan a esta cantidad. 0 = sin tope. Un post que ya está en marcha puede terminar y pasarse un poco. Los modelos sin precio cuentan como $0."
+    }
+  },
+  "secret": {
+    "setWithId": "configurada · {id}:••••",
+    "set": "configurada · ••••••••",
+    "unset": "sin configurar",
+    "keep": "Déjalo vacío para mantener la actual.",
+    "paste": "Pégala aquí.",
+    "clear": "Borrar la clave",
+    "ownerOnly": "Solo el propietario puede ver o cambiar las claves.",
+    "ownerOnlyEndpoint": "Solo el propietario puede cambiarlo: decide adónde se envían las claves."
+  },
+  "order": {
+    "up": "Subir {name}",
+    "down": "Bajar {name}",
+    "position": "{name}: posición {pos}"
+  },
+  "draftFilter": {
+    "all": "Todos los borradores",
+    "tag": "Solo los borradores con una etiqueta",
+    "notTag": "Todos menos los que tengan una etiqueta",
+    "custom": "Avanzado: filtro NQL a mano",
+    "tagLabel": "Etiqueta",
+    "tagPlaceholder": "slug, p. ej. revisar o hash-revisar",
+    "tagHelp": "Las etiquetas internas de Ghost (las que empiezan por #) tienen el slug <code>hash-…</code>: <code>#revisar</code> es <code>hash-revisar</code>.",
+    "nqlLabel": "Filtro resultante (NQL)",
+    "nqlHelp": "Siempre se limita a borradores: aunque el filtro no lo diga, nunca se procesan posts publicados. Sintaxis NQL: <a href=\"https://ghost.org/docs/content-api/#filtering\" target=\"_blank\" rel=\"noopener noreferrer\">documentación de Ghost</a>.",
+    "test": "Probar filtro",
+    "internal": "interna"
+  },
+  "form": {
+    "test": "Probar conexión",
+    "testing": "Probando…",
+    "unreachable": "No se pudo contactar con el servidor local.",
+    "registerApp": "Registrar aplicación…",
+    "registerAnother": "Registrar otra aplicación…",
+    "saving": "Guardando…",
+    "save": "Guardar cambios",
+    "locked": {
+      "one": "Hay una tarea en curso: espera a que termine para guardar.",
+      "other": "Hay {count} tareas en curso: espera a que terminen para guardar."
+    },
+    "validated": "Se valida todo antes de escribir <code>{path}</code>. Si algo no es válido, no se guarda nada. Se aplica sin reiniciar.",
+    "saveSection": "Guardar"
+  },
+  "openverse": {
+    "title": "Registrar la aplicación en Openverse",
+    "intro": "Se envían estos datos a <code>api.openverse.org</code>. Openverse devuelve un client ID y un secreto, que se guardan directamente en tu <code>.env</code> (no se pueden volver a consultar). Te llegará un correo: hasta que lo confirmes, la cuota es la misma que sin credenciales.",
+    "name": "Nombre de la aplicación",
+    "nameHelp": "Tiene que ser único en todo Openverse.",
+    "description": "Descripción",
+    "defaultDescription": "Busca imágenes destacadas con licencia abierta para los posts de mi blog en Ghost, con atribución en el pie de foto.",
+    "email": "Correo electrónico",
+    "replace": "Sustituir las credenciales actuales",
+    "cancel": "Cancelar",
+    "submit": "Registrar en Openverse",
+    "registering": "Registrando…"
+  },
+  "cost": {
+    "title": "Uso y coste",
+    "total": "Coste total",
+    "runs": {
+      "one": "en 1 ejecución",
+      "other": "en {count} ejecuciones"
+    },
+    "last24h": "Últimas 24 h",
+    "avg": "Medio por ejecución",
+    "tokens": "Tokens",
+    "tokensValue": "{in} entrada · {out} salida",
+    "quota": "Cuota {provider}",
+    "budget": "Tope diario",
+    "budgetValue": "{spent} de {limit}",
+    "budgetNone": "Ninguno",
+    "chart": {
+      "title": "Gasto por día, últimos {count} días",
+      "summary": "{total} en total · máximo {peak} el {day}",
+      "empty": "Sin gasto en IA en los últimos {count} días.",
+      "cap": "- - tope diario {limit}",
+      "today": "Hoy",
+      "colDay": "Día",
+      "colCost": "Coste",
+      "colRuns": "Planes"
+    },
+    "agents": {
+      "title": "Gasto por agente",
+      "writer": "Redactor (writer)",
+      "seo": "SEO",
+      "image": "Imagen",
+      "resolve": "Pendientes",
+      "fix": "Corregir con IA",
+      "unknown": "Sin desglose (planes antiguos)",
+      "ideas": "Ideas de temas",
+      "snippet": "Títulos para Google"
+    }
+  },
+  "prompts": {
+    "title": "Prompts base",
+    "intro": "Afectan a todos los planes futuros. Cada guardado deja la versión anterior en el historial.",
+    "customized": "Personalizado",
+    "info": {
+      "writer.system": "Redacta o mejora el artículo",
+      "seo.system": "Meta title, meta description y extracto",
+      "image.system": "Elige o genera la imagen destacada",
+      "resolve.system": "Resuelve los marcadores PENDING",
+      "fix.system": "Corrige los avisos de calidad del plan",
+      "ideas.system": "Propone temas nuevos a partir de tus posts y de Search Console",
+      "snippet.system": "Propone títulos y descripciones de Google para posts publicados con pocos clics"
+    }
+  },
+  "index": {
+    "title": "Índice local",
+    "count": {
+      "one": "1 artefacto indexado.",
+      "other": "{count} artefactos indexados."
+    },
+    "data": "Datos en <code>{dir}</code>.",
+    "help": "Reindexa si el coste o la lista de borradores no cuadran con las ejecuciones guardadas. No borra ninguna.",
+    "reindexing": "Reindexando…",
+    "reindex": "Reindexar"
+  },
+  "notices": {
+    "reindexed": {
+      "one": "Índice reconstruido: 1 artefacto.",
+      "other": "Índice reconstruido: {count} artefactos."
+    },
+    "saved": "Guardado y aplicado: {keys}.",
+    "nothing": "No había cambios que guardar.",
+    "openverse": "Aplicación registrada en Openverse y credenciales guardadas. Revisa tu correo y confirma la dirección. Después, «Probar conexión» en Openverse te dirá tu cuota real.",
+    "errors": "No se ha guardado nada. Corrige: {list}.",
+    "savedSection": "Guardado. Se aplica sin reiniciar."
+  },
+  "errors": {
+    "newline": "no puede contener saltos de línea",
+    "jobs": "hay tareas en curso",
+    "ovName": "Nombre de la aplicación",
+    "ovNameMsg": "obligatorio, máximo 150 caracteres",
+    "ovDescription": "Descripción",
+    "ovDescriptionMsg": "obligatoria",
+    "ovEmailMsg": "no es un correo válido",
+    "ovExists": "ya hay credenciales. Marca \"sustituir\" para registrar otra aplicación",
+    "ovNotSaved": "registrada, pero no se pudo escribir el .env ({error}). Copia ahora OPENVERSE_CLIENT_ID={id} y OPENVERSE_CLIENT_SECRET={secret} en tu .env: no se pueden recuperar"
+  },
+  "nav": {
+    "label": "Secciones"
+  },
+  "model": {
+    "sameAsMain": "Igual que el modelo principal ({model})",
+    "other": "Otro (escribir el nombre)…",
+    "typeName": "Nombre del modelo, p. ej. gpt-5-mini",
+    "typeNameFor": "Nombre del modelo para {field}",
+    "loading": "Cargando los modelos del proveedor…",
+    "loaded": {
+      "one": "1 modelo disponible en tu proveedor.",
+      "other": "{count} modelos disponibles en tu proveedor."
+    },
+    "failed": "No se pudo cargar la lista de modelos ({message}). Elige «Otro» y escribe el nombre.",
+    "perAgentTitle": "Modelo por tarea (opcional)",
+    "perAgentIntro": "Cada paso de un plan es una llamada distinta a la IA. Por defecto, todos usan el modelo principal. Aquí puedes elegir otro para un paso, p. ej. uno más barato para el SEO y la búsqueda de imagen, y el mejor para redactar."
+  },
+  "keyLink": {
+    "ghost": "Crear la clave en Ghost → Ajustes → Integraciones",
+    "ai": "Conseguir una API key",
+    "unsplash": "Crea una app en Unsplash (gratis) y copia su Access Key",
+    "pixabay": "Consigue tu API key gratis en Pixabay (aparece en su documentación una vez registrado)",
+    "pexels": "Pide una API key gratis en Pexels",
+    "github": "Crear un token en GitHub (sin permisos)",
+    "gsc": "Cómo crear la cuenta de servicio",
+    "bing": "Generar la API key en Bing Webmaster"
+  },
+  "transfer": {
+    "title": "Exportar / importar",
+    "intro": "Lo que solo está en este panel, para llevarlo a otra instalación o guardarlo: planes e imágenes elegidas, prompts editados, configuración (sin claves), notas y asignaciones, ideas, cambios de título y meta y lo aprendido de tus revisiones. Los borradores siguen en Ghost.",
+    "never": "Nunca incluye usuarios, contraseñas, 2FA ni claves.",
+    "export": "Descargar exportación",
+    "file": "Archivo de exportación (.tar.gz)",
+    "import": "Revisar importación",
+    "importing": "Leyendo…",
+    "fullBackup": "La copia de seguridad completa (con usuarios, 2FA y, si quieres, las claves) se hace solo en el servidor: <code>ghost-connector backup</code>. Para restaurarla, para el panel y descomprímela en <code>{dir}</code>.",
+    "preview": {
+      "title": "Revisar la importación",
+      "meta": "Exportado de {site} el {time}{by}. Elige qué traer: se añade a lo que ya hay y nunca se borra nada.",
+      "by": " por {name}",
+      "otherSite": "Esta exportación es de otro sitio ({site}). Los planes, notas y asignaciones se refieren a posts de ese sitio: aquí solo servirán si los posts tienen los mismos ids (por ejemplo, el mismo Ghost con otra URL).",
+      "nothing": "Nada que cambiar",
+      "apply": "Importar lo marcado",
+      "applying": "Importando…",
+      "cancel": "Cancelar",
+      "parts": {
+        "plans": {
+          "title": "Planes e imágenes",
+          "body": "{newRuns} planes nuevos y {newImages} imágenes. {existingRuns} ya estaban y se dejan como están."
+        },
+        "prompts": {
+          "title": "Prompts editados",
+          "body": "Sustituye: {list}. Se guarda una revisión para poder volver atrás."
+        },
+        "settings": {
+          "title": "Configuración",
+          "body": "Cambia {count} ajustes (nunca claves ni la conexión con Ghost, Search Console o Bing):"
+        },
+        "team": {
+          "title": "Notas y asignaciones",
+          "body": "{notes} notas nuevas y {assignments} asignaciones.",
+          "skipped": "{count} asignaciones se saltan: su usuario no existe aquí o el post ya tiene a alguien."
+        },
+        "ideas": {
+          "title": "Ideas y cambios de título y meta",
+          "body": "{history} ideas descartadas o usadas y {snippets} cambios de título y meta."
+        },
+        "learning": {
+          "title": "Aprendizaje de revisiones",
+          "body": "{count} decisiones de revisión (las sugerencias para el prompt del redactor)."
+        }
+      },
+      "allHere": "Nada que importar: todo lo de este archivo ya está aquí."
+    },
+    "done": "Importado: {list}.",
+    "errors": {
+      "notExport": "Ese archivo no es una exportación de Ghost Connector.",
+      "tooBig": "El archivo es demasiado grande.",
+      "newerVersion": "La exportación es de una versión más nueva de Ghost Connector: actualiza este panel primero.",
+      "damaged": "El archivo está dañado.",
+      "expired": "La importación caducó (30 min). Vuelve a subir el archivo.",
+      "jobs": "Hay tareas en marcha: espera a que terminen para importar la configuración."
+    }
+  }
+}

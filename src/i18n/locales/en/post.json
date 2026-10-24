@@ -1,0 +1,265 @@
+{
+  "tabs": {
+    "preview": "Preview",
+    "review": "Review changes",
+    "image": "Image",
+    "imagePending": "Image (to choose)",
+    "edit": "Edit",
+    "plan": "Plan",
+    "pending": "Pending ({count})",
+    "answers": "Answers",
+    "history": "History"
+  },
+  "goTo": "Go to: {label}",
+  "header": {
+    "back": "Drafts",
+    "siteView": "Preview on site",
+    "editInGhost": "Edit in Ghost",
+    "words": {
+      "one": "1 word in Ghost",
+      "other": "{count} words in Ghost"
+    },
+    "updated": "updated {time}",
+    "lastPlanCost": "last plan: {cost} ({input} in / {output} out)",
+    "next": "Next to review",
+    "nextPalette": "Next post to review",
+    "sectionsAria": "Post sections",
+    "plannedTitle": "Plan title (set on apply): {title}"
+  },
+  "flash": {
+    "saved": "Changes saved to the plan.",
+    "resolved": "Answers added to the plan.",
+    "resolvedReview": "Review the result before applying it.",
+    "resolvedLeft": {
+      "one": "1 question left (it may be a follow-up on your answer).",
+      "other": "{count} questions left (they may be follow-ups on your answers)."
+    },
+    "fixed": "Warnings fixed with AI. Review the text before applying.",
+    "restored": "Previous version restored in Ghost."
+  },
+  "apply": {
+    "button": "Review and apply to Ghost",
+    "busy": "Checking Ghost…"
+  },
+  "next": {
+    "staleTitle": "The post changed in Ghost after the last plan.",
+    "staleBody": "That plan can no longer be applied without overwriting your changes.",
+    "replan": "Plan again",
+    "questionsTitle": {
+      "one": "The plan has a question for you.",
+      "other": "The plan has {count} questions for you."
+    },
+    "questionsBody": {
+      "one": "Answer it (you can paste links: they get read) and the connector finishes that part before writing anything to Ghost.",
+      "other": "Answer them (you can paste links: they get read) and the connector finishes those parts before writing anything to Ghost."
+    },
+    "answer": "Answer questions",
+    "reviewChanges": "Review changes",
+    "readyTitle": "A plan is ready, not yet written to Ghost.",
+    "readyBody": "Review the changes one by one (keep the ones you want), touch up the text if needed and apply it.",
+    "imageMissing": " You still need to <strong>choose the image</strong> (without one, it's applied with no image).",
+    "chooseImage": "Choose image",
+    "editText": "Edit text",
+    "liveTitle": {
+      "one": "The text in Ghost has a pending question.",
+      "other": "The text in Ghost has {count} pending questions."
+    },
+    "liveBody": {
+      "one": "Answer it and the connector rewrites that part.",
+      "other": "Answer them and the connector rewrites those parts."
+    },
+    "resolvePending": "Resolve pending",
+    "failedTitle": "The last attempt didn't go well.",
+    "failedBody": "Check the reason in History and plan again.",
+    "viewHistory": "View history",
+    "plan": "Plan",
+    "appliedTitle": "Applied to Ghost",
+    "appliedBody": "(still a draft). You can publish it from Ghost or ask for another improvement pass.",
+    "openInGhost": "Open in Ghost",
+    "improveAgain": "Improve again",
+    "neverTitle": "This post hasn't been planned yet.",
+    "neverBody": "Planning writes nothing to Ghost: it generates a proposal you review first."
+  },
+  "preview": {
+    "noPlan": "There's no plan for this post yet.",
+    "currentInGhost": "The current content can be seen in Ghost.",
+    "edited": " · edited by hand {time}",
+    "statusCurrent": "Plan {time}{edited} · <strong>not yet written to Ghost</strong>",
+    "statusOld": "Last plan ({status}) {time}{edited}",
+    "seo": "Proposed SEO",
+    "metaTitle": "Meta title",
+    "metaDescription": "Meta description",
+    "excerpt": "Excerpt",
+    "tags": "Tags",
+    "changes": "What the writer changed ({count})",
+    "sources": "Sources read ({ok}/{total})",
+    "sourceSuspicious": "read, but it tried to give instructions to the AI (removed)",
+    "sourceOk": "read",
+    "sourceFailed": "couldn't be read: {note}",
+    "qualityAria": "Plan quality",
+    "viewAria": "Which version to show",
+    "viewNew": "New",
+    "viewBoth": "Side by side",
+    "viewOriginal": "Original",
+    "newHeading": {
+      "one": "New · 1 word",
+      "other": "New · {count} words"
+    },
+    "originalHeading": "Original",
+    "empty": "(empty)",
+    "pendingMarker": "Blocks applying until resolved",
+    "sideAria": "Plan details"
+  },
+  "edit": {
+    "notEditable": "Only a plan waiting to be applied can be edited. If the post is already applied, edit it directly in {ghost}, or plan it again.",
+    "seoFields": "SEO fields",
+    "metaTitle": "Meta title",
+    "metaDescription": "Meta description",
+    "excerpt": "Excerpt",
+    "title": "Title",
+    "markdownAria": "Article body in Markdown",
+    "previewHeading": "Preview",
+    "save": "Save to plan",
+    "saveHint": "Saved to the local plan. Nothing is sent to Ghost until you apply the changes.",
+    "unsaved": {
+      "one": "· 1 word · unsaved",
+      "other": "· {count} words · unsaved"
+    }
+  },
+  "plan": {
+    "detectedImprove": "improve version",
+    "detectedDraft": "complete draft",
+    "promote": "Repeating this instruction across many posts? → {link}",
+    "promoteLink": "Promote it to the base prompt",
+    "replaceWarning": "Heads up: there's already an unapplied plan. The new one replaces it, including your manual edits.",
+    "busy": "Planning…",
+    "legend": "What should the writer do?",
+    "auto": "Automatic",
+    "autoHint": "— for this post: {mode}",
+    "draft": "Complete draft",
+    "draftHint": "— keeps what's written and fills in what's missing",
+    "improve": "Improve version",
+    "improveHint": "— rewrites, clarifies and expands a finished text",
+    "instructions": "Instructions (optional)",
+    "placeholder": "E.g.: add more commented code examples and explain each step",
+    "submit": "Plan",
+    "hint": "You'll watch the text being written live. Nothing is written to Ghost."
+  },
+  "pending": {
+    "answerPlaceholder": "Answer or link",
+    "unanswered": "Unanswered",
+    "answered": "Answered",
+    "answeredLinks": "Answered · links will be read",
+    "progress": "{answered} of {total} answered",
+    "answeredSummary": "Already answered ({count}) · change one if it didn't come out right",
+    "answeredHint": "If you change an answer, the part of the text that came from it is redone.",
+    "planIntro": "Answer what you know. Anything left blank stays pending. If you paste a link (a website, a GitHub repo or organization), the connector reads it and uses its data. Only those parts of the plan are rewritten. Nothing is sent to Ghost until you apply it.",
+    "busyPlan": "Completing the text… (may take a minute)",
+    "noneLeft": "No questions left. If an answer didn't come out right, change it below.",
+    "submitAnswers": "Complete the plan with my answers",
+    "submitFixes": "Redo with the corrected answers",
+    "askAgain": "If something isn't clear, the connector will ask you here again.",
+    "liveIntro": "Answer what you know. Anything left blank stays as is. You'll see a preview before anything is written to Ghost.",
+    "busyPreview": "Generating the preview…",
+    "preview": "Preview"
+  },
+  "urls": {
+    "count": {
+      "one": "1 link will be read before writing.",
+      "other": "{count} links will be read before writing."
+    },
+    "max": "{count} links will be read before writing (max 6)."
+  },
+  "history": {
+    "inferred": "inferred",
+    "recorded": "recorded",
+    "issues": "Issues",
+    "noIssues": "No issues.",
+    "attempts": "Apply attempts",
+    "noApplies": "No plan has been applied yet.",
+    "imageHeading": "Image",
+    "imageRetryHint": "No feature image (possibly because the Unsplash/Pexels quota ran out). Retry just the image, without touching anything else.",
+    "imageRetryBusy": "Searching for an image…",
+    "imageRetry": "Retry image",
+    "diff": "Plain-text diff of the last plan",
+    "cols": {
+      "date": "Date",
+      "result": "Result",
+      "reason": "Reason",
+      "image": "Image",
+      "origin": "Source",
+      "message": "Message"
+    },
+    "result": {
+      "applied": "Applied",
+      "conflict": "Conflict",
+      "skipped": "Skipped",
+      "failed": "Failed",
+      "restored": "Restored",
+      "not-draft": "Skipped",
+      "unavailable": "Skipped"
+    },
+    "reason": {
+      "ok": "—",
+      "conflict-updated-at": "The post changed in Ghost",
+      "not-draft": "No longer a draft",
+      "pending-unresolved": "Pending questions remained",
+      "sanity-body-ratio": "The text changed size too much",
+      "unknown-links": "Unreviewed links",
+      "ghost-put-failed": "Ghost rejected the write",
+      "no-writer-output": "No writer text",
+      "not-planned": "No current plan",
+      "write-locked": "Another process was writing the post",
+      "conflict": "The post changed in Ghost",
+      "unavailable": "Nothing to undo",
+      "failed": "Failed"
+    },
+    "imageResult": {
+      "not-chosen": "Not chosen",
+      "uploaded": "Uploaded",
+      "skipped-existing": "Already had one",
+      "skipped-plan": "No image (plan)",
+      "quota-exhausted": "Quota exhausted",
+      "failed": "Failed",
+      "none": "—",
+      "removed": "Removed"
+    }
+  },
+  "restore": {
+    "heading": "Undo the apply",
+    "hint": "Puts the Ghost post back to how it was before applying the plan (text, title, SEO, tags and image). Only possible while nobody has touched it in Ghost since. Ghost keeps a revision, so the applied version is not lost.",
+    "button": "Restore the previous version",
+    "dialogTitle": "Restore the previous version in Ghost?",
+    "dialogBody": "The draft goes back to how it was before applying. It stays a draft: nothing is published.",
+    "busy": "Restoring…"
+  },
+  "share": {
+    "title": "How it will look when shared",
+    "social": "Social networks",
+    "noDescription": "No meta description: Google will pick a snippet of the text.",
+    "noImage": "No image"
+  },
+  "team": {
+    "assignee": "Assigned to",
+    "nobody": "Nobody",
+    "save": "Assign",
+    "me": "{name} (you)",
+    "plannedBy": "Latest plan started by {name} {time}.",
+    "presence": {
+      "one": "{names} also has this post open right now.",
+      "other": "{names} also have this post open right now."
+    },
+    "presenceHint": "If you are both going to change it, agree first: a new plan replaces the one being reviewed and the other person's unsaved changes are lost.",
+    "notes": {
+      "tab": "Notes",
+      "tabCount": "Notes ({count})",
+      "intro": "For the team: what's missing, whose turn it is, what not to touch. Only shown here, never sent to Ghost.",
+      "empty": "No notes yet.",
+      "label": "New note",
+      "add": "Add note",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this note?",
+      "unknown": "someone"
+    }
+  }
+}

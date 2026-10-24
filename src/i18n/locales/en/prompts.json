@@ -1,0 +1,58 @@
+{
+  "restore": "Restore…",
+  "restoreTitle": "Restore this version of the prompt?",
+  "restoreBody": "The current version is saved to the history first, so you can go back to it.",
+  "restoreConfirm": "Restore",
+  "learning": {
+    "title": "What you reject when reviewing",
+    "empty": "No block reviews yet. When you review plans from the \"Review changes\" tab, you'll see here which kinds of writer changes you discard most.",
+    "rejects": "You reject {pct}% of {description}",
+    "ofTotal": "({rejected} of {total}).",
+    "rule": "Suggested rule:",
+    "append": "Append it to the end of the prompt to review it →",
+    "none": "No kind of change is rejected enough (at least {min} cases and {ratio}% rejection) to suggest a rule.",
+    "details": "Details of recent reviews",
+    "kind": "Kind of change",
+    "cases": "Cases",
+    "rejection": "Rejection"
+  },
+  "categories": {
+    "actions": {
+      "modified": "changes to {kind}",
+      "added": "additions of {kind}",
+      "removed": "removals of {kind}"
+    },
+    "kinds": {
+      "intro": "the intro",
+      "heading": "headings",
+      "paragraph": "paragraphs",
+      "code": "code blocks",
+      "list": "lists",
+      "table": "tables",
+      "blockquote": "quotes/callouts",
+      "other": "other blocks"
+    }
+  },
+  "appended": "The suggested text was appended at the end. Review and adjust it before saving.",
+  "notices": {
+    "saved": "Prompt saved. It will be used in the next plans.",
+    "reset": "The factory prompt is used again. Your version stays in the history.",
+    "reverted": "Version restored."
+  },
+  "noRevisions": "No saved versions yet: one is created the first time you save.",
+  "edit": "Edit {name}.md",
+  "editTitle": "Edit {name}",
+  "customized": "Customized",
+  "factory": "Factory",
+  "metaCustomized": "Your version is used, saved in <code>{path}</code>. The factory prompt stays untouched.",
+  "metaFactory": "The factory prompt is used. Saving creates your version. The factory one isn't modified and you can go back to it any time.",
+  "warning": "This affects ALL future plans for this prompt. The writer has rules calibrated against real failures -- edit with care.",
+  "contentLabel": "Content of prompt {name}",
+  "save": "Save prompt",
+  "reset": "Back to factory…",
+  "historyNote": "Each save keeps the previous version in the history.",
+  "resetTitle": "Go back to the factory prompt?",
+  "resetBody": "Your version stops being used. It stays saved in the history and you can restore it from there.",
+  "resetConfirm": "Back to factory",
+  "history": "History"
+}

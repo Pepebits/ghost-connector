@@ -1,0 +1,69 @@
+{
+  "noneTitle": "Sin imagen.",
+  "noneBody": "El post se aplicará sin imagen destacada. Elige una abajo si cambias de idea.",
+  "notChosenTitle": "Todavía no has elegido imagen.",
+  "notChosenBody": "Si aplicas sin elegir, el post queda sin imagen destacada: el conector ya no pone una por su cuenta.",
+  "downloaded": "Descargada en local (no está en Ghost). Se sube al aplicar.",
+  "alt": "Texto alternativo",
+  "altHint": "Describe lo que se ve, para lectores de pantalla y SEO.",
+  "caption": "Pie de foto",
+  "optional": "(opcional)",
+  "captionHint": "La atribución de la fuente se añade siempre detrás.",
+  "resultPreview": "Quedará así:",
+  "save": "Guardar en el plan",
+  "applyWithout": "Aplicar sin imagen",
+  "cancelChoice": "Descartar esta imagen",
+  "cancelReplace": "Cancelar y mantener la actual",
+  "searchFirst": "Busca para ver candidatas.",
+  "useBy": "Usar la foto de {author} en {provider}",
+  "unknownAuthor": "autor desconocido",
+  "chosen": "Elegida",
+  "busyDownload": "Descargando la imagen…",
+  "busySearch": "Buscando…",
+  "searchLabel": "Buscar fotos",
+  "placeholder": "p. ej. open source community",
+  "search": "Buscar",
+  "clickHint": "Haz clic en una para elegirla: se descarga en tu equipo para verla y editar su texto. Nada llega a Ghost hasta que apliques.",
+  "errors": {
+    "notPlanned": "Solo se puede elegir imagen en un plan vigente (\"planned\").",
+    "outsideData": "Ruta de imagen fuera de la carpeta de datos",
+    "gone": "Esa imagen ya no está en la lista. Vuelve a buscar.",
+    "chooseFirst": "Primero elige una imagen.",
+    "noneChosen": "No hay imagen elegida"
+  },
+  "current": {
+    "caption": "Imagen destacada actual en Ghost.",
+    "kept": "Se queda como está, salvo que elijas otra abajo o la quites.",
+    "remove": "Quitar imagen destacada",
+    "keep": "Mantener la actual",
+    "willRemove": "Se quitará al aplicar.",
+    "willReplace": "Se sustituirá por la que elegiste abajo al aplicar.",
+    "storageNote": "En Ghost no cambia nada hasta que apliques. La API de Ghost no permite borrar archivos subidos: si sustituyes o quitas esta imagen, el archivo anterior se queda en la biblioteca de medios de tu sitio. Solo se sube la imagen que elijas, una vez, al aplicar.",
+    "replaceTitle": "Cambiarla por otra"
+  },
+  "credit": {
+    "photo": "Foto de {author} en {provider}",
+    "image": "Imagen",
+    "by": " de {author}",
+    "openverse": "{title}{by} vía Openverse, {license}",
+    "pixabay": "Imagen de {author} en {provider}",
+    "wikimedia": "{title}{by} vía Wikimedia Commons, {license}"
+  },
+  "only": {
+    "intro": "No hay plan pendiente: puedes cambiar solo la imagen destacada. El texto no se toca y no se usa IA.",
+    "apply": "Aplicar imagen en Ghost",
+    "applyRemove": "Quitar imagen en Ghost",
+    "busy": "Actualizando Ghost…",
+    "note": "Solo se escriben la imagen destacada, su texto alternativo y su pie."
+  },
+  "notes": {
+    "notConfigured": "{source}: sin configurar",
+    "quota": "{source}: cuota agotada por ahora",
+    "failed": "{source}: {error}",
+    "noSources": "No hay ninguna fuente de imágenes configurada. Añade una clave en Configuración o activa Openverse."
+  },
+  "sourceLabel": "Fuente",
+  "sourceAll": "Todas, en tu orden",
+  "emptyTitle": "Ni rastro de fotos para «{query}»",
+  "emptyBody": "Prueba con otras palabras o con otra fuente. En inglés suele haber más resultados."
+}

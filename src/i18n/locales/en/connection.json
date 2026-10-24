@@ -1,0 +1,63 @@
+{
+  "rejected": "credentials rejected (HTTP {status})",
+  "notFound": "not found (HTTP 404): check the URL",
+  "http": "HTTP {status}: {body}",
+  "timeout": "no response in {s} s",
+  "ghost": {
+    "noUrl": "The site URL is missing.",
+    "noKey": "The Admin API Key is missing (if you change the URL you have to enter that site's key).",
+    "badKey": "The Admin API Key isn't in id:secret format.",
+    "ok": "Connected to \"{title}\" with Admin API permissions."
+  },
+  "drafts": {
+    "noGhost": "Set up Ghost first (URL and Admin API Key).",
+    "badFilter": "Ghost doesn't understand the filter: {body}",
+    "none": "The filter is valid, but no draft matches it.",
+    "ok": {
+      "one": "1 draft matches: {sample}{more}",
+      "other": "{count} drafts match. The most recent: {sample}{more}"
+    }
+  },
+  "ai": {
+    "noKey": "The API key is missing (if you change the Base URL you have to enter that provider's key).",
+    "noBaseUrl": "The Base URL is missing (required with openai-compatible).",
+    "noModel": "The model is missing (required with openai-compatible).",
+    "ok": "Model {model} responds ({provider})."
+  },
+  "unsplash": {
+    "noKey": "No access key configured.",
+    "ok": "Unsplash accepts the key (uses 1 request of the hourly quota)."
+  },
+  "pixabay": {
+    "noKey": "No API key configured.",
+    "ok": "Pixabay accepts the key."
+  },
+  "pexels": {
+    "noKey": "No API key configured.",
+    "ok": "Pexels accepts the key (uses 1 request of the hourly quota)."
+  },
+  "openverse": {
+    "usedToday": ", {count} requests today",
+    "unverified": " The email isn't verified yet: until then it has the anonymous quota (200/day).",
+    "ok": "Valid credentials (rate limit model: {model}{used}).{verified}",
+    "anon": "Openverse responds without credentials.",
+    "anonLeft": "Openverse responds without credentials. {left} requests left today."
+  },
+  "wikimedia": {
+    "ok": "Wikimedia Commons responds (no key needed)."
+  },
+  "gsc": {
+    "missing": "The property or the key is missing.",
+    "ok": {
+      "one": "Search Console answers: 1 row in the last 7 days.",
+      "other": "Search Console answers: {count} rows in the last 7 days."
+    }
+  },
+  "bing": {
+    "missing": "The site or the API key is missing.",
+    "ok": {
+      "one": "Bing Webmaster answers: 1 search in the last 90 days.",
+      "other": "Bing Webmaster answers: {count} searches in the last 90 days."
+    }
+  }
+}

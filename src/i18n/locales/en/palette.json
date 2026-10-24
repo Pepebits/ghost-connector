@@ -1,0 +1,36 @@
+{
+  "cmd": {
+    "goDrafts": "Go to Drafts",
+    "goJobs": "Go to Jobs",
+    "goSettings": "Go to Settings",
+    "newPost": "New post from a topic",
+    "sync": "Sync with Ghost",
+    "themeAuto": "Theme: automatic (system)",
+    "themeLight": "Theme: light",
+    "themeDark": "Theme: dark",
+    "shortcuts": "Show keyboard shortcuts",
+    "ghostOn": "Ghost: turn on the one that crosses the screen",
+    "ghostOff": "Ghost: turn off the one that crosses the screen"
+  },
+  "label": "Command palette",
+  "placeholder": "Search for a post or command…",
+  "inputLabel": "Search posts or commands",
+  "results": "Results",
+  "foot": "↑↓ move · Enter open · Esc close",
+  "groupCommands": "Commands",
+  "groupPosts": "Posts",
+  "noResults": "No results",
+  "help": {
+    "title": "Keyboard shortcuts",
+    "palette": "Command palette",
+    "help": "This help",
+    "go": "Go to Drafts / Jobs / Settings",
+    "newPost": "New post",
+    "move": "Move down / up the list",
+    "open": "Open the selected post",
+    "select": "Select for bulk actions",
+    "save": "Edit tab: save to the plan",
+    "enter": "Enter",
+    "foot": "Esc to close"
+  }
+}

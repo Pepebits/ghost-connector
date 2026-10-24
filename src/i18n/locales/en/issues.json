@@ -1,0 +1,12 @@
+{
+  "agentError": "[{stage}] {message}",
+  "planStale": "The post changed in Ghost since this plan was generated. Applying it would detect a conflict.",
+  "planStaleAction": "Run \"plan\" again for this post before applying.",
+  "applyStatus": "The last apply attempt ended as \"{status}\".",
+  "applyStatusAction": "Review the diff and decide whether to replan or apply with the appropriate options.",
+  "hasPending": {
+    "one": "1 [[PENDING:]] question unresolved in the content published in Ghost.",
+    "other": "{count} [[PENDING:]] questions unresolved in the content published in Ghost."
+  },
+  "hasPendingAction": "Use \"resolve\" to answer them."
+}

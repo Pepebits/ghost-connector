@@ -1,0 +1,35 @@
+{
+  "action": {
+    "modified": "Modificado",
+    "added": "Añadido",
+    "removed": "Quitado"
+  },
+  "viewRendered": "Ver renderizado",
+  "original": "Original",
+  "new": "Nuevo",
+  "keepNew": {
+    "removed": "Quitarlo",
+    "added": "Añadirlo",
+    "modified": "Usar el nuevo"
+  },
+  "keepOld": {
+    "removed": "Mantenerlo",
+    "added": "Descartarlo",
+    "modified": "Dejar el original"
+  },
+  "changeN": "Cambio {n}",
+  "noPlan": "No hay un plan pendiente de aplicar que revisar.",
+  "noChanges": "El plan no cambia el texto del original.",
+  "unchanged": {
+    "one": "· 1 bloque sin cambios ·",
+    "other": "· {count} bloques sin cambios ·"
+  },
+  "intro": {
+    "one": "<strong>1</strong> cambio del redactor. Elige en cada uno. Por defecto se aceptan todos.",
+    "other": "<strong>{count}</strong> cambios del redactor. Elige en cada uno. Por defecto se aceptan todos."
+  },
+  "acceptAll": "Aceptar todo",
+  "rejectAll": "Rechazar todo",
+  "save": "Guardar en el plan",
+  "summary": "{accepted} aceptado(s), {rejected} rechazado(s)"
+}

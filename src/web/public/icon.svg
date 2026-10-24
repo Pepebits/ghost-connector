@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Ghost Connector">
+<rect width="120" height="120" fill="#1c1b1b"/>
+<path fill="#fcf9f8" fill-rule="evenodd" d="M37 45 L57 45 L57 50 L62 50 L62 55 L67 55 L67 90 L57 90 L57 85 L52 85 L52 90 L42 90 L42 85 L37 85 L37 90 L27 90 L27 55 L32 55 L32 50 L37 50Z M32 60 L42 60 L42 70 L32 70Z M52 60 L62 60 L62 70 L52 70Z"/>
+<rect x="74" y="70" width="20" height="20" fill="#ff3e3e"/>
+</svg>

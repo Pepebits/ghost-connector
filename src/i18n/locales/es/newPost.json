@@ -1,0 +1,32 @@
+{
+  "title": "Nuevo post",
+  "intro": "Cuéntale de qué va y qué datos usar. El conector crea un borrador vacío en Ghost y lo planifica: verás el texto escribiéndose en vivo y lo revisas antes de que se escriba nada más.",
+  "optional": "(opcional)",
+  "busy": "Creando el borrador…",
+  "topic": {
+    "label": "Tema",
+    "hint": "De qué debe tratar el post, en una o dos frases.",
+    "placeholder": "p. ej. Cómo montar un huerto urbano en un balcón pequeño"
+  },
+  "postTitle": {
+    "label": "Título",
+    "hint": "Si lo dejas vacío, se usa el tema. El redactor puede proponer uno mejor."
+  },
+  "sources": {
+    "label": "Fuentes y datos",
+    "hint": "Enlaces, cifras o notas que debe usar. Los enlaces se leen antes de escribir: una web, un repo o una organización de GitHub (sus repos con más estrellas)."
+  },
+  "instructions": {
+    "label": "Instrucciones",
+    "hint": "Tono, longitud, enfoque, qué secciones quieres…"
+  },
+  "submit": "Crear borrador y planificar",
+  "steps": {
+    "title": "Qué va a pasar",
+    "create": "Se crea un <strong class=\"text-fg\">borrador vacío</strong> en {url} (lo único que se escribe en Ghost ahora).",
+    "read": "Se leen los enlaces que hayas puesto.",
+    "write": "El redactor escribe el post. Mientras, se preparan el SEO y las candidatas de imagen.",
+    "review": "Tú revisas, contestas sus preguntas, eliges la imagen y aplicas. <strong class=\"text-fg\">Nunca se publica.</strong>",
+    "note": "No inventa citas ni entrevistas de personas reales: si las pides sin darle las respuestas, te dejará las preguntas preparadas."
+  }
+}

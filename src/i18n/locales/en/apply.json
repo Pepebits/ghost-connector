@@ -1,0 +1,38 @@
+{
+  "title": "Review before applying",
+  "meta": "Checked against Ghost just now · {title}",
+  "conflict": "Conflict: the post changed in Ghost (updated {actual}) after this plan was generated ({planned}).",
+  "conflictAction": "Plan this post again before applying.",
+  "notDraft": "The post is no longer a draft in Ghost.",
+  "pending": {
+    "one": "1 [[PENDING:]] question is still unresolved in the planned text.",
+    "other": "{count} [[PENDING:]] questions are still unresolved in the planned text."
+  },
+  "unknownLinks": {
+    "one": "1 link or image doesn't come from the draft, your instructions or the sources read. It may be the writer's general knowledge or something a website tried to slip in: review it.",
+    "other": "{count} links or images don't come from the draft, your instructions or the sources read. They may be the writer's general knowledge or something a website tried to slip in: review them."
+  },
+  "noImage": "You haven't chosen a feature image: it will be applied <strong>without an image</strong>.",
+  "chooseImage": "{link} first, if you want.",
+  "chooseImageLink": "Choose one",
+  "imageChosen": "The image you chose will be uploaded ({provider}).",
+  "changeImage": "Change it",
+  "sanity": "The new body has <strong>{after}</strong> words versus <strong>{before}</strong> in the original (<strong>{ratio}x</strong>, outside the range [{min}x, {max}x]). The writer may have gone off the rails.",
+  "allGood": "All good: ready to apply.",
+  "allowPending": {
+    "one": "Apply even though 1 question is unresolved",
+    "other": "Apply even though {count} questions are unresolved"
+  },
+  "allowLinks": {
+    "one": "I've reviewed that link and it's correct",
+    "other": "I've reviewed those {count} links and they're correct"
+  },
+  "forceSanity": "Apply anyway despite the length guard (I've reviewed the diff)",
+  "confirmed": "I've reviewed this post's full diff",
+  "busy": "Applying to Ghost…",
+  "submit": "Apply to Ghost",
+  "hint": "It's saved as a draft and Ghost keeps the previous version in its history.",
+  "blocked": "It can't be applied until the above is resolved.",
+  "imageRemove": "The current featured image will be removed from the post (the file stays in Ghost's media library).",
+  "imageReplace": "The current featured image will be replaced by the one you chose ({provider})."
+}

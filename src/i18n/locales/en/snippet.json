@@ -1,0 +1,32 @@
+{
+  "title": "Google title and description",
+  "meta": "Search “{query}”: position {position}, CTR {ctr}.",
+  "now": "How it looks on Google now",
+  "nowApplied": "How it will look on Google (applied)",
+  "options": "Proposals",
+  "optionsIntro": "Generated {time}. You can tweak the text before applying it.",
+  "again": "Propose others",
+  "busy": "Thinking of titles…",
+  "apply": "Apply in Ghost",
+  "confirmTitle": "Change the Google title and description?",
+  "confirmBody": "The post “{title}” is PUBLISHED: only its meta title and meta description change (not the content, slug or status). You can restore the previous ones.",
+  "appliedAt": "Applied {time}.",
+  "restore": "Restore the previous ones",
+  "restoreTitle": "Restore the previous title and description?",
+  "restoreBody": "The values the post had before applying come back.",
+  "footnote": "Only meta_title and meta_description of the published post are touched. If someone changes them in Ghost meanwhile, they are not overwritten.",
+  "result": {
+    "applied": "Applied in Ghost.",
+    "restored": "Previous values restored.",
+    "conflict": "The title or description changed in Ghost since the proposal: nothing was touched. Press “Propose others” to start from the current ones.",
+    "failed": "Ghost did not accept the change. Check the logs.",
+    "unavailable": "There is nothing to apply or restore."
+  },
+  "follow": {
+    "before": "Before: CTR {ctr} (position {position})",
+    "after": "after: CTR {ctr} (position {position})",
+    "window": "from {from} to {to}, {impressions} impressions",
+    "pending": "The result shows up a few days after applying, when you press “Refresh” on Ideas.",
+    "noData": "No impressions for that search from {from} to {to}."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "kind": {
+    "never-planned": "Sin planificar",
+    "planned": "Planificado",
+    "plan-stale": "Plan desactualizado",
+    "applied": "Aplicado",
+    "applied-degraded": "Aplicado (con avisos)",
+    "has-pending": "Con pendientes",
+    "blocked": "Bloqueado",
+    "failed": "Fallido"
+  },
+  "jobState": {
+    "queued": "En cola",
+    "running": "En curso",
+    "cancelling": "Cancelando",
+    "cancelled": "Cancelada",
+    "done": "Terminada",
+    "error": "Error",
+    "interrupted": "Interrumpida"
+  }
+}

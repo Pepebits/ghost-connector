@@ -1,0 +1,13 @@
+{
+  "title": "Vista previa de las respuestas",
+  "meta": "Todavía no se ha escrito nada en Ghost.",
+  "changes": "Cambios",
+  "noChanges": "Sin cambios declarados.",
+  "unresolved": {
+    "one": "Queda una pregunta sin contestar. Se deja tal cual en el texto.",
+    "other": "Quedan {count} preguntas sin contestar. Se dejan tal cual en el texto."
+  },
+  "markdown": "Markdown resultante",
+  "busy": "Guardando en Ghost…",
+  "submit": "Guardar en Ghost"
+}

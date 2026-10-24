@@ -1,0 +1,290 @@
+import type { AuthUser, Invite, Role, UserListItem } from '../../auth/store.js';
+import { t } from '../../i18n/index.js';
+import { html, raw } from '../html.js';
+import { layout } from './layout.js';
+import { confirmDialog, flash, pageHeader, timeTag } from './ui.js';
+
+function card(title: string, intro: string, inner: string, error?: string): string {
+  return html`<div class="pt-6 sm:pt-12">
+    <h1 class="mb-1 text-2xl font-semibold">${title}</h1>
+    <p class="mb-5 text-sm text-muted">${intro}</p>
+    ${raw(error ? flash(error, 'err') : '')}
+    <div class="card p-5">${raw(inner)}</div>
+  </div>`;
+}
+
+const field = (o: { id: string; name: string; label: string; type?: string; autocomplete: string; hint?: string; extra?: string; value?: string }) =>
+  html`<div>
+    <label for="${o.id}" class="block font-medium">${o.label}</label>
+    ${o.hint ? raw(html`<p id="${o.id}-hint" class="mt-0.5 text-sm text-muted">${o.hint}</p>`) : ''}
+    <input id="${o.id}" name="${o.name}" type="${o.type ?? 'password'}" autocomplete="${o.autocomplete}" required class="mt-2 block w-full" ${o.value !== undefined ? raw(html`value="${o.value}"`) : ''} ${o.hint ? raw(`aria-describedby="${o.id}-hint"`) : ''} ${raw(o.extra ?? '')}>
+  </div>`;
+
+const usernameField = (value?: string, extra = 'autofocus') =>
+  field({ id: 'username', name: 'username', label: t('auth.username'), type: 'text', autocomplete: 'username', value, extra: `${extra} maxlength="64" autocapitalize="none" spellcheck="false"` });
+
+const newPasswordFields = (min: number, autofocus = false) =>
+  field({ id: 'pw-new', name: 'password', label: t('auth.newPassword'), autocomplete: 'new-password', hint: t('auth.passwordHint', { min }), extra: `minlength="${min}"${autofocus ? ' autofocus' : ''}` }) +
+  field({ id: 'pw-repeat', name: 'repeat', label: t('auth.repeatPassword'), autocomplete: 'new-password', extra: `minlength="${min}"` });
+
+export const roleBadge = (role: Role) => html`<span class="badge ${role === 'owner' ? 'badge-ok' : role === 'admin' ? 'badge-info' : 'badge-neutral'}">${t(`auth.roles.${role}`)}</span>`;
+
+/** Who may manage whom: the owner, everyone but themself; an admin, only editors. */
+export const canManage = (me: AuthUser, target: { id: number; role: Role }) =>
+  target.id !== me.id && target.role !== 'owner' && (me.role === 'owner' || target.role === 'editor');
+
+export function loginPage(o: { next?: string; username?: string; error?: string }): string {
+  const inner = html`<form method="post" action="/login" class="grid gap-4" data-busy="${t('auth.login.busy')}">
+    <input type="hidden" name="next" value="${o.next ?? '/'}">
+    ${raw(usernameField(o.username, o.username ? '' : 'autofocus'))}
+    ${raw(field({ id: 'pw', name: 'password', label: t('auth.password'), autocomplete: 'current-password', extra: o.username ? 'autofocus' : '' }))}
+    <div><button type="submit" class="btn">${t('auth.login.submit')}</button></div>
+  </form>
+  <p class="!mb-0 mt-4 text-xs text-muted">${t('auth.login.forgot')}</p>`;
+  return layout({ title: t('auth.login.title'), bare: true, bodyHtml: card(t('auth.login.title'), t('auth.login.intro'), inner, o.error) });
+}
+
+export function twoFactorPage(o: { error?: string }): string {
+  const inner = html`<form method="post" action="/login/2fa" class="grid gap-4">
+    ${raw(field({ id: 'code', name: 'code', label: t('auth.code'), type: 'text', autocomplete: 'one-time-code', hint: t('auth.twoFactor.hint'), extra: 'inputmode="text" autofocus maxlength="11" spellcheck="false"' }))}
+    <div class="flex flex-wrap items-center gap-3"><button type="submit" class="btn">${t('auth.twoFactor.submit')}</button><a href="/login" class="text-sm">${t('auth.twoFactor.back')}</a></div>
+  </form>`;
+  return layout({ title: t('auth.twoFactor.title'), bare: true, bodyHtml: card(t('auth.twoFactor.title'), t('auth.twoFactor.intro'), inner, o.error) });
+}
+
+/** First start: whoever gets here first creates the admin. */
+export function setupPage(o: { min: number; username?: string; error?: string }): string {
+  const inner = html`<form method="post" action="/setup-password" class="grid gap-4">
+    ${raw(usernameField(o.username ?? 'admin'))}
+    ${raw(newPasswordFields(o.min))}
+    <div><button type="submit" class="btn">${t('auth.setup.submit')}</button></div>
+  </form>`;
+  return layout({ title: t('auth.setup.title'), bare: true, bodyHtml: card(t('auth.setup.title'), t('auth.setup.intro'), inner, o.error) });
+}
+
+/** An invite (choose a username and password) or a password reset. */
+export function invitePage(o: { token: string; invite: Invite; min: number; username?: string; error?: string }): string {
+  const reset = o.invite.userId !== null;
+  const inner = html`<form method="post" action="/invite/${o.token}" class="grid gap-4">
+    ${raw(reset ? html`<p class="m-0 text-sm">${t('auth.username')}: <strong>${o.invite.username ?? ''}</strong></p>` : usernameField(o.username))}
+    ${raw(newPasswordFields(o.min, reset))}
+    <div><button type="submit" class="btn">${t(reset ? 'auth.invite.resetSubmit' : 'auth.invite.submit')}</button></div>
+  </form>`;
+  const title = reset ? t('auth.invite.resetTitle') : t('auth.invite.title');
+  const intro = reset ? t('auth.invite.resetIntro') : t('auth.invite.intro', { role: t(`auth.roles.${o.invite.role}`), by: o.invite.createdBy ?? '—' });
+  return layout({ title, bare: true, bodyHtml: card(title, intro, inner, o.error) });
+}
+
+export function inviteGonePage(): string {
+  return layout({ title: t('auth.invite.goneTitle'), bare: true, bodyHtml: card(t('auth.invite.goneTitle'), t('auth.invite.gone'), html`<a class="btn" href="/login">${t('auth.login.submit')}</a>`) });
+}
+
+/** Shown once to the admin who created the link. */
+export function inviteLinkPage(o: { url: string; invite: { role: Role; username?: string }; days: number }): string {
+  const body = html`
+    ${raw(pageHeader({ back: { href: '/settings#s-users', label: t('settings.title') }, title: o.invite.username ? t('auth.users.resetLinkTitle', { name: o.invite.username }) : t('auth.users.inviteLinkTitle', { role: t(`auth.roles.${o.invite.role}`) }) }))}
+    ${raw(flash(t('auth.users.linkOnce', { days: o.days }), 'warn'))}
+    <div class="card max-w-2xl p-4">
+      <label for="invite-url" class="block text-sm font-medium">${t('auth.users.link')}</label>
+      <input id="invite-url" type="text" readonly value="${o.url}" class="mt-2 block w-full font-mono text-sm" onfocus="this.select()">
+      <p class="!mb-0 mt-2 text-xs text-muted">${t('auth.users.linkHelp')}</p>
+    </div>
+    <p class="mt-4"><a class="btn" href="/settings#s-users">${t('auth.recovery.done')}</a></p>`;
+  return layout({ title: t('auth.users.link'), bodyHtml: body, section: 'settings' });
+}
+
+// ---------- My account ----------
+
+const ACCOUNT_NOTICES: Record<string, 'ok' | 'warn' | 'err'> = {
+  passwordChanged: 'ok',
+  revoked: 'ok',
+  disabled: 'warn',
+  recoveryUsed: 'warn',
+  badPassword: 'err',
+  weakPassword: 'err',
+  badCode: 'err',
+};
+
+export function accountPage(o: { user: AuthUser; totp: boolean; recoveryLeft: number; sessions: number; min: number; notice?: string }): string {
+  const twoFa = o.totp
+    ? html`<p class="text-sm"><span class="badge badge-ok">${t('auth.security.on')}</span> ${t('auth.security.recoveryLeft', { count: o.recoveryLeft })}</p>
+      <form method="post" class="grid max-w-md gap-3">
+        <p class="m-0 text-sm text-muted">${t('auth.security.codeToManage')}</p>
+        <div><label for="sec-code" class="block text-sm font-medium">${t('auth.code')}</label>
+        <input id="sec-code" name="code" type="text" autocomplete="one-time-code" required maxlength="11" spellcheck="false" class="mt-1 block w-full max-w-xs"></div>
+        <div class="flex flex-wrap gap-2">
+          <button type="submit" formaction="/account/2fa/recovery" class="btn btn-ghost btn-sm">${t('auth.security.newRecovery')}</button>
+          <button type="submit" formaction="/account/2fa/disable" class="btn btn-ghost btn-sm text-err">${t('auth.security.disable')}</button>
+        </div>
+      </form>`
+    : html`<p class="text-sm"><span class="badge badge-warn">${t('auth.security.off')}</span> ${t('auth.security.offBody')}</p>
+      <a class="btn btn-sm" href="/account/2fa">${t('auth.security.enable')}</a>`;
+  const body = html`
+    ${raw(pageHeader({ title: t('auth.account.title'), meta: html`${o.user.username} · ${raw(roleBadge(o.user.role))}` }))}
+    ${raw(o.notice && ACCOUNT_NOTICES[o.notice] ? flash(t(`auth.notices.${o.notice}`), ACCOUNT_NOTICES[o.notice]) : '')}
+    <div class="grid max-w-3xl gap-6">
+      <section class="card settings-section" id="s-2fa" aria-labelledby="s-2fa-h">
+        <h2 id="s-2fa-h" class="section-heading !mb-3">${t('auth.security.twoFactor')}</h2>
+        ${raw(twoFa)}
+      </section>
+      <section class="card settings-section" id="s-password" aria-labelledby="s-password-h">
+        <h2 id="s-password-h" class="section-heading !mb-3">${t('auth.security.changePassword')}</h2>
+        <form method="post" action="/account/password" class="grid max-w-md gap-3">
+          <input type="text" name="username" value="${o.user.username}" autocomplete="username" hidden>
+          ${raw(field({ id: 'sec-cur', name: 'current', label: t('auth.currentPassword'), autocomplete: 'current-password' }))}
+          ${raw(field({ id: 'sec-new', name: 'password', label: t('auth.newPassword'), autocomplete: 'new-password', hint: t('auth.passwordHint', { min: o.min }), extra: `minlength="${o.min}"` }))}
+          ${raw(field({ id: 'sec-rep', name: 'repeat', label: t('auth.repeatPassword'), autocomplete: 'new-password', extra: `minlength="${o.min}"` }))}
+          <div><button type="submit" class="btn btn-ghost btn-sm">${t('auth.security.changePassword')}</button></div>
+        </form>
+      </section>
+      <section class="card settings-section" id="s-sessions" aria-labelledby="s-sessions-h">
+        <h2 id="s-sessions-h" class="section-heading !mb-3">${t('auth.security.sessions')}</h2>
+        <form method="post" action="/account/sessions/revoke" class="flex flex-wrap items-center gap-3">
+          <span class="text-sm">${t('auth.security.sessionsCount', { count: o.sessions })}</span>
+          <button type="submit" class="btn btn-ghost btn-sm">${t('auth.security.revokeOthers')}</button>
+        </form>
+      </section>
+    </div>`;
+  return layout({ title: t('auth.account.title'), bodyHtml: body });
+}
+
+export function totpSetupPage(o: { secret: string; qrSvg: string; error?: string }): string {
+  const grouped = o.secret.replace(/(.{4})/g, '$1 ').trim();
+  const body = html`
+    ${raw(pageHeader({ back: { href: '/account', label: t('auth.account.title') }, title: t('auth.enroll.title'), meta: t('auth.enroll.intro') }))}
+    ${raw(o.error ? flash(o.error, 'err') : '')}
+    <div class="grid max-w-3xl gap-6 md:grid-cols-[auto_1fr]">
+      <div class="card w-fit bg-white p-3 [&_svg]:h-52 [&_svg]:w-52">${raw(o.qrSvg)}</div>
+      <div class="grid content-start gap-4">
+        <ol class="m-0 grid gap-2 pl-5 text-sm">
+          <li>${t('auth.enroll.step1')}</li>
+          <li>${t('auth.enroll.step2')}<br><code class="mt-1 inline-block select-all break-all text-xs">${grouped}</code></li>
+          <li>${t('auth.enroll.step3')}</li>
+        </ol>
+        <form method="post" action="/account/2fa" class="grid max-w-xs gap-3">
+          <input type="hidden" name="secret" value="${o.secret}">
+          ${raw(field({ id: 'enroll-code', name: 'code', label: t('auth.code'), type: 'text', autocomplete: 'one-time-code', extra: 'inputmode="numeric" pattern="[0-9 ]{6,7}" maxlength="7" autofocus' }))}
+          <div><button type="submit" class="btn">${t('auth.enroll.submit')}</button></div>
+        </form>
+      </div>
+    </div>`;
+  return layout({ title: t('auth.enroll.title'), bodyHtml: body });
+}
+
+export function recoveryCodesPage(codes: string[]): string {
+  const body = html`
+    ${raw(pageHeader({ title: t('auth.recovery.title'), meta: t('auth.recovery.intro') }))}
+    ${raw(flash(t('auth.recovery.once'), 'warn'))}
+    <ul class="card m-0 grid max-w-md list-none grid-cols-2 gap-2 p-4 font-mono text-sm">${raw(codes.map((c) => html`<li class="select-all">${c}</li>`).join(''))}</ul>
+    <p class="mt-4"><a class="btn" href="/account">${t('auth.recovery.done')}</a></p>`;
+  return layout({ title: t('auth.recovery.title'), bodyHtml: body });
+}
+
+/** Dashboard banner while the user's 2FA is off. */
+export function twoFactorNag(): string {
+  return html`<div class="flash flash-warn flex flex-wrap items-center justify-between gap-2" role="status">
+    <span>${t('auth.nag.text')}</span>
+    <span class="flex flex-wrap gap-2">
+      <a class="btn btn-sm" href="/account/2fa">${t('auth.nag.enable')}</a>
+      <form method="post" action="/account/2fa/snooze" class="m-0"><button type="submit" class="btn btn-ghost btn-sm">${t('auth.nag.later')}</button></form>
+    </span>
+  </div>`;
+}
+
+// ---------- Settings → Users (admin) ----------
+
+const USER_NOTICES: Record<string, 'ok' | 'warn' | 'err'> = {
+  transferred: 'ok',
+  owner: 'err',
+  badPassword: 'err',
+  roleChanged: 'ok',
+  deleted: 'ok',
+  twoFactorReset: 'ok',
+  inviteRevoked: 'ok',
+  lastAdmin: 'err',
+  self: 'err',
+};
+
+export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: Invite[]; notice?: string }): string {
+  const rows = o.users
+    .map((u) => {
+      const self = u.id === o.me.id;
+      const manage = canManage(o.me, u);
+      const owner = o.me.role === 'owner';
+      const other: Exclude<Role, 'owner'> = u.role === 'admin' ? 'editor' : 'admin';
+      const buttons = [
+        owner && manage ? html`<form method="post" action="/settings/users/${u.id}/role" class="m-0"><input type="hidden" name="role" value="${other}"><button type="submit" class="btn btn-ghost btn-sm">${t(`auth.users.makeRole.${other}`)}</button></form>` : '',
+        manage ? html`<form method="post" action="/settings/users/${u.id}/reset-password" class="m-0"><button type="submit" class="btn btn-ghost btn-sm">${t('auth.users.resetPassword')}</button></form>` : '',
+        manage && u.totp ? html`<button type="button" class="btn btn-ghost btn-sm" data-open-dialog="u-2fa-${u.id}">${t('auth.users.reset2fa')}</button>` : '',
+        owner && !self ? html`<button type="button" class="btn btn-ghost btn-sm" data-open-dialog="u-own-${u.id}">${t('auth.users.transfer')}</button>` : '',
+        manage ? html`<button type="button" class="btn btn-ghost btn-sm text-err" data-open-dialog="u-del-${u.id}">${t('auth.users.delete')}</button>` : '',
+      ].join('');
+      const dialogs = [
+        manage && u.totp ? confirmDialog({ id: `u-2fa-${u.id}`, title: t('auth.users.reset2faConfirm', { name: u.username }), body: t('auth.users.reset2faBody'), confirmLabel: t('auth.users.reset2fa'), action: `/settings/users/${u.id}/reset-2fa` }) : '',
+        manage ? confirmDialog({ id: `u-del-${u.id}`, title: t('auth.users.deleteConfirm', { name: u.username }), body: t('auth.users.deleteBody'), confirmLabel: t('auth.users.delete'), danger: true, action: `/settings/users/${u.id}/delete` }) : '',
+        owner && !self
+          ? confirmDialog({
+              id: `u-own-${u.id}`,
+              title: t('auth.users.transferConfirm', { name: u.username }),
+              body: t('auth.users.transferBody', { name: u.username }),
+              confirmLabel: t('auth.users.transfer'),
+              danger: true,
+              action: `/settings/users/${u.id}/transfer`,
+              fields: html`<label for="own-pw-${u.id}" class="sr-only">${t('auth.currentPassword')}</label><input id="own-pw-${u.id}" name="password" type="password" autocomplete="current-password" required placeholder="${t('auth.currentPassword')}" class="mb-3 block w-full">`,
+            })
+          : '',
+      ].join('');
+      const actions = self
+        ? html`<span class="text-xs text-muted">${t('auth.users.you')}</span>`
+        : buttons
+          ? html`<div class="flex flex-wrap justify-end gap-1">${raw(buttons)}</div>${raw(dialogs)}`
+          : '';
+      return html`<tr>
+        <td class="font-medium">${u.username}</td>
+        <td>${raw(roleBadge(u.role))}</td>
+        <td>${raw(u.totp ? html`<span class="badge badge-ok">${t('auth.security.on')}</span>` : html`<span class="badge badge-warn">${t('auth.security.off')}</span>`)}</td>
+        <td class="whitespace-nowrap text-muted max-sm:hidden">${raw(u.lastSeen ? timeTag(u.lastSeen) : '—')}</td>
+        <td class="text-right">${raw(actions)}</td>
+      </tr>`;
+    })
+    .join('');
+
+  const invites = o.invites.length
+    ? html`<h3 class="mb-2 mt-6 text-sm font-semibold">${t('auth.users.pending')}</h3>
+      <ul class="m-0 list-none p-0">${raw(
+        o.invites
+          .map(
+            (i) => html`<li class="flex flex-wrap items-center justify-between gap-2 border-b border-line py-2 text-sm last:border-b-0">
+              <span>${i.username ? t('auth.users.pendingReset', { name: i.username }) : raw(t('auth.users.pendingInvite', { role: roleBadge(i.role) }))} <span class="text-xs text-muted">· ${raw(t('auth.users.expires', { time: timeTag(i.expiresAt) }))}${i.createdBy ? ` · ${t('auth.by', { name: i.createdBy })}` : ''}</span></span>
+              <form method="post" action="/settings/invites/revoke" class="m-0"><input type="hidden" name="id" value="${i.id}"><button type="submit" class="btn btn-ghost btn-sm">${t('auth.users.revoke')}</button></form>
+            </li>`,
+          )
+          .join(''),
+      )}</ul>`
+    : '';
+
+  return html`<section class="card settings-section min-w-0" id="s-users" aria-labelledby="s-users-h">
+    <h2 id="s-users-h" class="section-heading !mb-1">${t('auth.users.title')}</h2>
+    <p class="!mt-0 text-sm text-muted">${t('auth.users.intro')}</p>
+    ${raw(o.notice && USER_NOTICES[o.notice] ? flash(t(`auth.users.notices.${o.notice}`), USER_NOTICES[o.notice]) : '')}
+    <div class="overflow-x-auto">
+      <table class="data-table">
+        <thead><tr><th scope="col">${t('auth.username')}</th><th scope="col">${t('auth.users.role')}</th><th scope="col">2FA</th><th scope="col" class="max-sm:hidden">${t('auth.users.lastSeen')}</th><th scope="col"><span class="sr-only">${t('auth.users.actions')}</span></th></tr></thead>
+        <tbody>${raw(rows)}</tbody>
+      </table>
+    </div>
+    ${raw(invites)}
+    <h3 class="mb-2 mt-6 text-sm font-semibold">${t('auth.users.invite')}</h3>
+    <form method="post" action="/settings/users/invite">
+      <label for="invite-role" class="block text-sm font-medium">${t('auth.users.role')}</label>
+      <div class="mt-1 flex flex-wrap items-stretch gap-2">
+        <select id="invite-role" name="role">
+          <option value="editor" selected>${t('auth.roles.editor')}</option>
+          ${o.me.role === 'owner' ? raw(html`<option value="admin">${t('auth.roles.admin')}</option>`) : ''}
+        </select>
+        <button type="submit" class="btn">${t('auth.users.createLink')}</button>
+      </div>
+    </form>
+    <p class="!mb-0 mt-3 text-xs text-muted">${t('auth.users.rolesHelp')}${o.me.role === 'owner' ? '' : ` ${t('auth.users.onlyOwnerAdmins')}`}</p>
+  </section>`;
+}

@@ -1,0 +1,69 @@
+{
+  "noneTitle": "No image.",
+  "noneBody": "The post will be applied without a feature image. Pick one below if you change your mind.",
+  "notChosenTitle": "You haven't chosen an image yet.",
+  "notChosenBody": "If you apply without choosing, the post has no feature image: the connector no longer adds one on its own.",
+  "downloaded": "Downloaded locally (not in Ghost). It's uploaded when you apply.",
+  "alt": "Alt text",
+  "altHint": "Describe what's shown, for screen readers and SEO.",
+  "caption": "Caption",
+  "optional": "(optional)",
+  "captionHint": "The source attribution is always added after it.",
+  "resultPreview": "It will look like this:",
+  "save": "Save to plan",
+  "applyWithout": "Apply without image",
+  "cancelChoice": "Discard this image",
+  "cancelReplace": "Cancel and keep the current one",
+  "searchFirst": "Search to see candidates.",
+  "useBy": "Use the photo by {author} on {provider}",
+  "unknownAuthor": "unknown author",
+  "chosen": "Chosen",
+  "busyDownload": "Downloading the image…",
+  "busySearch": "Searching…",
+  "searchLabel": "Search photos",
+  "placeholder": "e.g. open source community",
+  "search": "Search",
+  "clickHint": "Click one to choose it: it's downloaded to your machine so you can view it and edit its text. Nothing reaches Ghost until you apply.",
+  "errors": {
+    "notPlanned": "An image can only be chosen on a current plan (\"planned\").",
+    "outsideData": "Image path outside the data folder",
+    "gone": "That image is no longer in the list. Search again.",
+    "chooseFirst": "Choose an image first.",
+    "noneChosen": "No image chosen"
+  },
+  "current": {
+    "caption": "Current featured image in Ghost.",
+    "kept": "It stays as it is unless you choose another one below or remove it.",
+    "remove": "Remove featured image",
+    "keep": "Keep the current one",
+    "willRemove": "It will be removed when you apply.",
+    "willReplace": "It will be replaced by the one you chose below when you apply.",
+    "storageNote": "Nothing changes in Ghost until you apply. Ghost's API can't delete uploaded files: if you replace or remove this image, the old file stays in your site's media library. Only the image you choose is uploaded, once, on apply.",
+    "replaceTitle": "Replace it with another"
+  },
+  "credit": {
+    "photo": "Photo by {author} on {provider}",
+    "image": "Image",
+    "by": " by {author}",
+    "openverse": "{title}{by} via Openverse, {license}",
+    "pixabay": "Image by {author} from {provider}",
+    "wikimedia": "{title}{by} via Wikimedia Commons, {license}"
+  },
+  "only": {
+    "intro": "No pending plan: you can change just the featured image. The text is not touched and no AI is used.",
+    "apply": "Apply image to Ghost",
+    "applyRemove": "Remove image in Ghost",
+    "busy": "Updating Ghost…",
+    "note": "Only the featured image, its alt text and caption are written."
+  },
+  "notes": {
+    "notConfigured": "{source}: not configured",
+    "quota": "{source}: quota used up for now",
+    "failed": "{source}: {error}",
+    "noSources": "No image source is configured. Add a key in Settings or enable Openverse."
+  },
+  "sourceLabel": "Source",
+  "sourceAll": "All, in your order",
+  "emptyTitle": "Not a trace of photos for “{query}”",
+  "emptyBody": "Try other words or another source. English searches usually find more."
+}

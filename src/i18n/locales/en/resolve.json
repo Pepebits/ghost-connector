@@ -1,0 +1,13 @@
+{
+  "title": "Answers preview",
+  "meta": "Nothing has been written to Ghost yet.",
+  "changes": "Changes",
+  "noChanges": "No changes declared.",
+  "unresolved": {
+    "one": "1 question remains unanswered. It's left as is in the text.",
+    "other": "{count} questions remain unanswered. They're left as is in the text."
+  },
+  "markdown": "Resulting Markdown",
+  "busy": "Saving to Ghost…",
+  "submit": "Save to Ghost"
+}

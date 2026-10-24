@@ -1,0 +1,45 @@
+# Ghost Connector with Docker.
+#
+#   mkdir -p ghost-data && cp .env.example ghost-data/config.env   # then edit it, or:
+#   docker compose run --rm ghost-connector setup                  # step-by-step setup
+#   docker compose up -d
+#
+# Locally the panel is only published on http://127.0.0.1:4300 (another port:
+# GC_PORT=8080 and PUBLIC_URL=http://127.0.0.1:8080). On the first
+# start, open it and create the first user (the admin) right away.
+#
+# On a server, with Cloudflare Tunnel + Cloudflare Access: create the tunnel
+# in the Cloudflare dashboard (public hostname -> http://ghost-connector:4300),
+# protect that hostname with an Access policy, and set PUBLIC_URL and
+# CLOUDFLARE_TUNNEL_TOKEN in a .env next to this file. Then:
+#
+#   docker compose --profile tunnel up -d
+
+services:
+  ghost-connector:
+    build: .
+    image: ghost-connector:local
+    restart: unless-stopped
+    environment:
+      # Public address behind the tunnel/proxy (accepted Host/Origin, Secure cookie).
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      # Plan B for scripts only: a fixed token that logs in without password/2FA.
+      WEB_SESSION_TOKEN: ${WEB_SESSION_TOKEN:-}
+      # Local time for the nightly plan (AUTO_PLAN_TIME).
+      TZ: ${TZ:-Europe/Madrid}
+    volumes:
+      - ./ghost-data:/data
+    ports:
+      - "127.0.0.1:${GC_PORT:-4300}:4300"
+    stdin_open: true
+    tty: true
+
+  cloudflared:
+    image: cloudflare/cloudflared:2025.9.1
+    profiles: ["tunnel"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - ghost-connector

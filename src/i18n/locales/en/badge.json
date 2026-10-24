@@ -1,0 +1,21 @@
+{
+  "kind": {
+    "never-planned": "Not planned",
+    "planned": "Planned",
+    "plan-stale": "Plan outdated",
+    "applied": "Applied",
+    "applied-degraded": "Applied (with warnings)",
+    "has-pending": "Has pending items",
+    "blocked": "Blocked",
+    "failed": "Failed"
+  },
+  "jobState": {
+    "queued": "Queued",
+    "running": "Running",
+    "cancelling": "Cancelling",
+    "cancelled": "Cancelled",
+    "done": "Done",
+    "error": "Error",
+    "interrupted": "Interrupted"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "restore": "Restaurar…",
+  "restoreTitle": "¿Restaurar esta versión del prompt?",
+  "restoreBody": "La versión actual se guarda antes en el historial, así que puedes volver a ella.",
+  "restoreConfirm": "Restaurar",
+  "learning": {
+    "title": "Lo que rechazas al revisar",
+    "empty": "Todavía no hay revisiones por bloques. Cuando revises planes desde la pestaña \"Revisar cambios\", aquí verás qué tipo de cambio del redactor descartas más.",
+    "rejects": "Rechazas el {pct}% de los {description}",
+    "ofTotal": "({rejected} de {total}).",
+    "rule": "Regla sugerida:",
+    "append": "Añadirla al final del prompt para revisarla →",
+    "none": "Ningún tipo de cambio se rechaza lo bastante (al menos {min} casos y {ratio}% de rechazo) como para sugerir una regla.",
+    "details": "Detalle de las últimas revisiones",
+    "kind": "Tipo de cambio",
+    "cases": "Casos",
+    "rejection": "Rechazo"
+  },
+  "categories": {
+    "actions": {
+      "modified": "cambios en {kind}",
+      "added": "añadidos de {kind}",
+      "removed": "eliminaciones de {kind}"
+    },
+    "kinds": {
+      "intro": "la entradilla",
+      "heading": "los encabezados",
+      "paragraph": "los párrafos",
+      "code": "los bloques de código",
+      "list": "las listas",
+      "table": "las tablas",
+      "blockquote": "las citas/avisos",
+      "other": "otros bloques"
+    }
+  },
+  "appended": "Se añadió el texto sugerido al final. Revísalo y ajústalo antes de guardar.",
+  "notices": {
+    "saved": "Prompt guardado. Se usará en los próximos planes.",
+    "reset": "Se vuelve a usar el prompt de fábrica. Tu versión queda en el historial.",
+    "reverted": "Versión restaurada."
+  },
+  "noRevisions": "Todavía no hay versiones guardadas: se crea una la primera vez que guardes.",
+  "edit": "Editar {name}.md",
+  "editTitle": "Editar {name}",
+  "customized": "Personalizado",
+  "factory": "De fábrica",
+  "metaCustomized": "Se usa tu versión, guardada en <code>{path}</code>. El prompt de fábrica sigue intacto.",
+  "metaFactory": "Se usa el prompt de fábrica. Al guardar, se crea tu versión. El de fábrica no se modifica y puedes volver a él cuando quieras.",
+  "warning": "Esto afecta a TODOS los planes futuros de este prompt. El redactor tiene reglas calibradas contra fallos reales -- edita con cuidado.",
+  "contentLabel": "Contenido del prompt {name}",
+  "save": "Guardar prompt",
+  "reset": "Volver al de fábrica…",
+  "historyNote": "Cada guardado deja la versión anterior en el historial.",
+  "resetTitle": "¿Volver al prompt de fábrica?",
+  "resetBody": "Se deja de usar tu versión. Queda guardada en el historial y puedes restaurarla desde ahí.",
+  "resetConfirm": "Volver al de fábrica",
+  "history": "Historial"
+}

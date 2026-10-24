@@ -1,0 +1,265 @@
+{
+  "tabs": {
+    "preview": "Vista previa",
+    "review": "Revisar cambios",
+    "image": "Imagen",
+    "imagePending": "Imagen (por elegir)",
+    "edit": "Editar",
+    "plan": "Planificar",
+    "pending": "Pendientes ({count})",
+    "answers": "Respuestas",
+    "history": "Historial"
+  },
+  "goTo": "Ir a: {label}",
+  "header": {
+    "back": "Borradores",
+    "siteView": "Vista previa en el sitio",
+    "editInGhost": "Editar en Ghost",
+    "words": {
+      "one": "1 palabra en Ghost",
+      "other": "{count} palabras en Ghost"
+    },
+    "updated": "actualizado {time}",
+    "lastPlanCost": "último plan: {cost} ({input} in / {output} out)",
+    "next": "Siguiente por revisar",
+    "nextPalette": "Siguiente post por revisar",
+    "sectionsAria": "Secciones del post",
+    "plannedTitle": "Título del plan (se pone al aplicar): {title}"
+  },
+  "flash": {
+    "saved": "Cambios guardados en el plan.",
+    "resolved": "Respuestas incorporadas al plan.",
+    "resolvedReview": "Revisa el resultado antes de aplicarlo.",
+    "resolvedLeft": {
+      "one": "Queda una pregunta (puede ser de seguimiento sobre lo que respondiste).",
+      "other": "Quedan {count} preguntas (pueden ser de seguimiento sobre lo que respondiste)."
+    },
+    "fixed": "Avisos corregidos con IA. Revisa el texto antes de aplicar.",
+    "restored": "Restaurada la versión anterior en Ghost."
+  },
+  "apply": {
+    "button": "Revisar y aplicar en Ghost",
+    "busy": "Comprobando en Ghost…"
+  },
+  "next": {
+    "staleTitle": "El post cambió en Ghost después del último plan.",
+    "staleBody": "Ese plan ya no se puede aplicar sin pisar tus cambios.",
+    "replan": "Volver a planificar",
+    "questionsTitle": {
+      "one": "El plan tiene una pregunta para ti.",
+      "other": "El plan tiene {count} preguntas para ti."
+    },
+    "questionsBody": {
+      "one": "Contéstala (puedes pegar enlaces: se leen) y el conector termina esa parte antes de escribir nada en Ghost.",
+      "other": "Contéstalas (puedes pegar enlaces: se leen) y el conector termina esas partes antes de escribir nada en Ghost."
+    },
+    "answer": "Responder preguntas",
+    "reviewChanges": "Revisar cambios",
+    "readyTitle": "Hay un plan listo, todavía sin escribir en Ghost.",
+    "readyBody": "Revisa los cambios uno a uno (quédate con los que quieras), retoca el texto si hace falta y aplícalo.",
+    "imageMissing": " Falta <strong>elegir la imagen</strong> (sin elegir, se aplica sin imagen).",
+    "chooseImage": "Elegir imagen",
+    "editText": "Editar texto",
+    "liveTitle": {
+      "one": "El texto en Ghost tiene una pregunta pendiente.",
+      "other": "El texto en Ghost tiene {count} preguntas pendientes."
+    },
+    "liveBody": {
+      "one": "Contéstala y el conector reescribe esa parte.",
+      "other": "Contéstalas y el conector reescribe esas partes."
+    },
+    "resolvePending": "Resolver pendientes",
+    "failedTitle": "El último intento no salió bien.",
+    "failedBody": "Mira el motivo en Historial y vuelve a planificar.",
+    "viewHistory": "Ver historial",
+    "plan": "Planificar",
+    "appliedTitle": "Aplicado en Ghost",
+    "appliedBody": "(sigue en borrador). Puedes publicarlo desde Ghost o pedir otra pasada de mejora.",
+    "openInGhost": "Abrir en Ghost",
+    "improveAgain": "Mejorar otra vez",
+    "neverTitle": "Este post todavía no se ha planificado.",
+    "neverBody": "Planificar no escribe nada en Ghost: genera una propuesta que revisas antes."
+  },
+  "preview": {
+    "noPlan": "Todavía no hay ningún plan para este post.",
+    "currentInGhost": "El contenido actual se ve en Ghost.",
+    "edited": " · editado a mano {time}",
+    "statusCurrent": "Plan {time}{edited} · <strong>todavía no escrito en Ghost</strong>",
+    "statusOld": "Último plan ({status}) {time}{edited}",
+    "seo": "SEO propuesto",
+    "metaTitle": "Meta title",
+    "metaDescription": "Meta description",
+    "excerpt": "Extracto",
+    "tags": "Etiquetas",
+    "changes": "Qué ha cambiado el redactor ({count})",
+    "sources": "Fuentes leídas ({ok}/{total})",
+    "sourceSuspicious": "leída, pero intentaba dar instrucciones a la IA (se quitaron)",
+    "sourceOk": "leída",
+    "sourceFailed": "no se pudo leer: {note}",
+    "qualityAria": "Calidad del plan",
+    "viewAria": "Qué versión mostrar",
+    "viewNew": "Nuevo",
+    "viewBoth": "Lado a lado",
+    "viewOriginal": "Original",
+    "newHeading": {
+      "one": "Nuevo · 1 palabra",
+      "other": "Nuevo · {count} palabras"
+    },
+    "originalHeading": "Original",
+    "empty": "(vacío)",
+    "pendingMarker": "Bloquea la aplicación hasta resolverlo",
+    "sideAria": "Detalles del plan"
+  },
+  "edit": {
+    "notEditable": "Solo se puede editar un plan pendiente de aplicar. Si el post ya está aplicado, edítalo directamente en {ghost}, o planifícalo de nuevo.",
+    "seoFields": "Campos SEO",
+    "metaTitle": "Meta title",
+    "metaDescription": "Meta description",
+    "excerpt": "Extracto",
+    "title": "Título",
+    "markdownAria": "Cuerpo del artículo en Markdown",
+    "previewHeading": "Vista previa",
+    "save": "Guardar en el plan",
+    "saveHint": "Se guarda en el plan local. No se envía nada a Ghost hasta que apliques los cambios.",
+    "unsaved": {
+      "one": "· 1 palabra · sin guardar",
+      "other": "· {count} palabras · sin guardar"
+    }
+  },
+  "plan": {
+    "detectedImprove": "mejorar versión",
+    "detectedDraft": "completar borrador",
+    "promote": "¿Repites esta instrucción en muchos posts? → {link}",
+    "promoteLink": "Promoverla al prompt base",
+    "replaceWarning": "Ojo: ya hay un plan sin aplicar. El nuevo lo sustituye, incluidas tus ediciones a mano.",
+    "busy": "Planificando…",
+    "legend": "¿Qué tiene que hacer el redactor?",
+    "auto": "Automático",
+    "autoHint": "— para este post: {mode}",
+    "draft": "Completar borrador",
+    "draftHint": "— conserva lo escrito y rellena lo que falta",
+    "improve": "Mejorar versión",
+    "improveHint": "— reescribe, aclara y amplía un texto ya terminado",
+    "instructions": "Instrucciones (opcional)",
+    "placeholder": "Ej.: añade más ejemplos de código comentados y explica cada paso",
+    "submit": "Planificar",
+    "hint": "Verás el texto escribiéndose en vivo. No escribe nada en Ghost."
+  },
+  "pending": {
+    "answerPlaceholder": "Respuesta o enlace",
+    "unanswered": "Sin responder",
+    "answered": "Respondida",
+    "answeredLinks": "Respondida · se leerán los enlaces",
+    "progress": "{answered} de {total} respondidas",
+    "answeredSummary": "Ya respondidas ({count}) · cambia una si no quedó bien",
+    "answeredHint": "Si cambias una respuesta, se rehace la parte del texto que salió de ella.",
+    "planIntro": "Contesta lo que sepas. Lo que dejes en blanco sigue pendiente. Si pegas un enlace (una web, un repo u organización de GitHub), el conector lo lee y usa sus datos. Solo se reescriben esas partes del plan. No se envía nada a Ghost hasta que lo apliques.",
+    "busyPlan": "Completando el texto… (puede tardar un minuto)",
+    "noneLeft": "No quedan preguntas. Si alguna respuesta no quedó bien, cámbiala abajo.",
+    "submitAnswers": "Completar el plan con mis respuestas",
+    "submitFixes": "Rehacer con las respuestas corregidas",
+    "askAgain": "Si algo no queda claro, el conector te volverá a preguntar aquí.",
+    "liveIntro": "Contesta lo que sepas. Lo que dejes en blanco queda igual. Verás una vista previa antes de escribir en Ghost.",
+    "busyPreview": "Generando la vista previa…",
+    "preview": "Vista previa"
+  },
+  "urls": {
+    "count": {
+      "one": "Se leerá 1 enlace antes de escribir.",
+      "other": "Se leerán {count} enlaces antes de escribir."
+    },
+    "max": "Se leerán {count} enlaces antes de escribir (máximo 6)."
+  },
+  "history": {
+    "inferred": "inferido",
+    "recorded": "registrado",
+    "issues": "Incidencias",
+    "noIssues": "Sin incidencias.",
+    "attempts": "Intentos de aplicar",
+    "noApplies": "Todavía no se ha aplicado ningún plan.",
+    "imageHeading": "Imagen",
+    "imageRetryHint": "Sin imagen destacada (posiblemente por cuota de Unsplash/Pexels agotada). Reintenta solo la imagen, sin tocar el resto.",
+    "imageRetryBusy": "Buscando imagen…",
+    "imageRetry": "Reintentar imagen",
+    "diff": "Diferencias en texto plano del último plan",
+    "cols": {
+      "date": "Fecha",
+      "result": "Resultado",
+      "reason": "Razón",
+      "image": "Imagen",
+      "origin": "Origen",
+      "message": "Mensaje"
+    },
+    "result": {
+      "applied": "Aplicado",
+      "conflict": "Conflicto",
+      "skipped": "Omitido",
+      "failed": "Fallo",
+      "restored": "Restaurado",
+      "not-draft": "Omitido",
+      "unavailable": "Omitido"
+    },
+    "reason": {
+      "ok": "—",
+      "conflict-updated-at": "El post cambió en Ghost",
+      "not-draft": "Ya no es un borrador",
+      "pending-unresolved": "Quedaban pendientes",
+      "sanity-body-ratio": "El texto cambió demasiado de tamaño",
+      "unknown-links": "Enlaces sin revisar",
+      "ghost-put-failed": "Ghost rechazó la escritura",
+      "no-writer-output": "Sin texto del redactor",
+      "not-planned": "No había plan vigente",
+      "write-locked": "Otro proceso escribía el post",
+      "conflict": "El post cambió en Ghost",
+      "unavailable": "No había nada que deshacer",
+      "failed": "Fallo"
+    },
+    "imageResult": {
+      "not-chosen": "Sin elegir",
+      "uploaded": "Subida",
+      "skipped-existing": "Ya tenía",
+      "skipped-plan": "Sin imagen (plan)",
+      "quota-exhausted": "Cuota agotada",
+      "failed": "Fallo",
+      "none": "—",
+      "removed": "Quitada"
+    }
+  },
+  "restore": {
+    "heading": "Deshacer la aplicación",
+    "hint": "Devuelve el post de Ghost a como estaba antes de aplicar el plan (texto, título, SEO, etiquetas e imagen). Solo se puede mientras nadie lo haya tocado en Ghost después. Ghost guarda una revisión, así que la versión aplicada no se pierde.",
+    "button": "Restaurar la versión anterior",
+    "dialogTitle": "¿Restaurar la versión anterior en Ghost?",
+    "dialogBody": "El borrador vuelve a como estaba antes de aplicar. Sigue siendo un borrador: no se publica nada.",
+    "busy": "Restaurando…"
+  },
+  "share": {
+    "title": "Así se verá al compartir",
+    "social": "Redes sociales",
+    "noDescription": "Sin meta description: Google elegirá un trozo del texto.",
+    "noImage": "Sin imagen"
+  },
+  "team": {
+    "assignee": "Asignado a",
+    "nobody": "Nadie",
+    "save": "Asignar",
+    "me": "{name} (tú)",
+    "plannedBy": "Último plan lanzado por {name} {time}.",
+    "presence": {
+      "one": "{names} también tiene este post abierto ahora mismo.",
+      "other": "{names} también tienen este post abierto ahora mismo."
+    },
+    "presenceHint": "Si vais a cambiarlo a la vez, poneos de acuerdo: un plan nuevo sustituye al que se está revisando y los cambios sin guardar de la otra persona se pierden.",
+    "notes": {
+      "tab": "Notas",
+      "tabCount": "Notas ({count})",
+      "intro": "Para el equipo: qué falta, a quién le toca, qué no tocar. Solo se ven aquí, nunca van a Ghost.",
+      "empty": "Todavía no hay notas.",
+      "label": "Nota nueva",
+      "add": "Añadir nota",
+      "delete": "Borrar",
+      "deleteConfirm": "¿Borrar esta nota?",
+      "unknown": "alguien"
+    }
+  }
+}

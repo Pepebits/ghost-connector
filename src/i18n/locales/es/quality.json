@@ -1,0 +1,45 @@
+{
+  "title": "Calidad",
+  "ok": "Correcto: ",
+  "review": "Revisar: ",
+  "checks": {
+    "length": "Longitud",
+    "sections": "Estructura",
+    "pending": "Pendientes",
+    "keyword-title": "Keyword en el título",
+    "keyword-intro": "Keyword en la entradilla",
+    "meta-title": "Meta title",
+    "meta-description": "Meta description",
+    "image": "Imagen destacada",
+    "title-length": "Longitud del título"
+  },
+  "details": {
+    "length": "{count} palabras (objetivo {min}-{max})",
+    "sectionsH1": {
+      "one": "1 H1 en el cuerpo (el H1 es el título, usa ##)",
+      "other": "{count} H1 en el cuerpo (el H1 es el título, usa ##)"
+    },
+    "sections": {
+      "one": "1 sección H2 (objetivo {min}-{max})",
+      "other": "{count} secciones H2 (objetivo {min}-{max})"
+    },
+    "pendingNone": "Ningún [[PENDING:]]",
+    "pending": {
+      "one": "1 [[PENDING:]] sin resolver (impide aplicar)",
+      "other": "{count} [[PENDING:]] sin resolver (impiden aplicar)"
+    },
+    "keywordTitle": "\"{keyword}\"",
+    "keywordIntro": "\"{keyword}\" en el primer párrafo",
+    "metaTitle": "{count}/{max} caracteres",
+    "metaDescription": "{count} caracteres (objetivo {min}-{max})",
+    "imageYes": "Tiene (o hay una prevista)",
+    "imageNo": "Sin imagen destacada",
+    "titleLength": "{count}/{max} caracteres"
+  },
+  "fix": {
+    "one": "Corregir 1 aviso con IA",
+    "other": "Corregir {count} avisos con IA"
+  },
+  "fixBusy": "Corrigiendo con IA…",
+  "fixHint": "Reescribe solo lo necesario en el plan, con tus ediciones incluidas. Ghost no se toca hasta que apliques."
+}

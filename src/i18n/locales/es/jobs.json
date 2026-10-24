@@ -1,0 +1,113 @@
+{
+  "type": {
+    "plan": "Planificar",
+    "apply": "Aplicar en Ghost",
+    "resolve": "Resolver pendientes",
+    "sync": "Sincronizar"
+  },
+  "mode": {
+    "draft": "completar borrador",
+    "improve": "mejorar versión"
+  },
+  "target": {
+    "allDrafts": "Todos los borradores de Ghost",
+    "more": {
+      "one": "{first} y 1 más",
+      "other": "{first} y {count} más"
+    }
+  },
+  "options": {
+    "mode": "modo: {mode}",
+    "instructions": "con instrucciones",
+    "allowPending": "aplicado con pendientes",
+    "forceSanity": "forzando el guard de longitud"
+  },
+  "cancel": {
+    "button": "Cancelar tarea…",
+    "title": "¿Cancelar esta tarea?",
+    "body": "Se para en cuanto termine el post que está procesando. Lo ya terminado se conserva.",
+    "confirm": "Cancelar tarea"
+  },
+  "list": {
+    "title": "Tareas",
+    "meta": "Las tareas en segundo plano: planificar, aplicar, resolver y sincronizar.",
+    "progress": "Progreso",
+    "errors": {
+      "one": "1 error",
+      "other": "{count} errores"
+    },
+    "warnings": {
+      "one": "1 aviso",
+      "other": "{count} avisos"
+    },
+    "jobFailed": "la tarea falló",
+    "started": "empezó {time}",
+    "filter": {
+      "all": "Todas",
+      "active": "En curso",
+      "failed": "Con fallos",
+      "anyType": "Cualquier tipo",
+      "byState": "Filtrar por estado",
+      "byType": "Filtrar por tipo"
+    },
+    "active": "En curso",
+    "more": "Ver más tareas",
+    "delete": {
+      "button": "Borrar historial…",
+      "title": "¿Borrar todas las tareas terminadas?",
+      "body": "Se borran las tareas terminadas, canceladas o con fallo y su registro, sin importar el filtro activo. No se puede deshacer. Las tareas en curso, los posts y los planes no se tocan.",
+      "confirm": "Borrar historial",
+      "none": "No había tareas terminadas que borrar.",
+      "done": {
+        "one": "Borrada 1 tarea del historial.",
+        "other": "Borradas {count} tareas del historial."
+      }
+    },
+    "col": {
+      "type": "Tipo",
+      "target": "Sobre",
+      "state": "Estado",
+      "progress": "Progreso",
+      "duration": "Duración",
+      "created": "Creada"
+    },
+    "empty": {
+      "filtered": "Ninguna tarea con estos filtros.",
+      "title": "Todavía no hay tareas.",
+      "body": "Aparecen aquí al planificar, aplicar o sincronizar posts.",
+      "action": "Ir a Borradores"
+    }
+  },
+  "console": {
+    "noResult": "sin resultado",
+    "pending": "pendiente",
+    "posts": "Posts ({count})",
+    "instructions": "Instrucciones",
+    "jobFailed": "La tarea falló:",
+    "liveDraft": "Borrador en vivo",
+    "waitingWriter": "esperando al redactor…",
+    "liveDraftEmpty": "El texto aparecerá aquí en cuanto el redactor empiece a escribir.",
+    "viewResult": "Ver el resultado en el post",
+    "viewDrafts": "Ver los borradores",
+    "meta": "creada {time} · duración {duration}",
+    "progress": "Progreso",
+    "progressLabel": "Progreso de la tarea",
+    "log": "Registro",
+    "logLabel": "Registro de la tarea",
+    "filterLog": "Filtrar el registro",
+    "filter": {
+      "all": "Todo",
+      "warn": "Avisos y errores",
+      "error": "Solo errores"
+    },
+    "pageTitle": "{type} · tarea {id}",
+    "draftDone": {
+      "one": "(terminado, 1 palabra)",
+      "other": "(terminado, {count} palabras)"
+    },
+    "draftWriting": {
+      "one": "(escribiendo… 1 palabra)",
+      "other": "(escribiendo… {count} palabras)"
+    }
+  }
+}

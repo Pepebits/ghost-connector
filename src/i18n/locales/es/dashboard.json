@@ -1,0 +1,135 @@
+{
+  "title": "Borradores",
+  "selectRow": "Seleccionar {title}",
+  "flags": {
+    "issuesTitle": "Incidencias",
+    "issues": {
+      "one": "1 incidencia",
+      "other": "{count} incidencias"
+    },
+    "pendingTitle": "Preguntas [[PENDING:]] en Ghost",
+    "pending": {
+      "one": "1 pendiente",
+      "other": "{count} pendientes"
+    },
+    "noImage": "sin imagen",
+    "assigned": "→ {name}",
+    "assignedTitle": "Asignado a {name}",
+    "viewing": "{names} lo tiene abierto",
+    "notes": {
+      "one": "1 nota",
+      "other": "{count} notas"
+    }
+  },
+  "ghostStatus": {
+    "published": "Publicado",
+    "scheduled": "Programado",
+    "sent": "Enviado",
+    "draft": "Borrador"
+  },
+  "queue": {
+    "title": "Para revisar",
+    "empty": "Bandeja vacía: no queda nada por revisar.",
+    "more": "y {count} más en la lista de abajo.",
+    "startFirst": "Empezar por el primero",
+    "hint": {
+      "planned": "Plan listo: revisar y aplicar",
+      "has-pending": "Preguntas pendientes en Ghost",
+      "plan-stale": "Cambio en Ghost: volver a planificar",
+      "failed": "El último intento falló",
+      "blocked": "Bloqueado al aplicar"
+    }
+  },
+  "gone": {
+    "summary": "Fuera de alcance (publicados u otro cambio de estado): {count}",
+    "colTitle": "Título",
+    "colStatus": "Estado en Ghost",
+    "colDetected": "Detectado"
+  },
+  "meta": {
+    "lastSync": "última sincronización {time}",
+    "neverSynced": "nunca sincronizado",
+    "spend": "gasto 24 h {day} (total {total})",
+    "images": "imágenes: {quotas}",
+    "details": "detalles"
+  },
+  "sync": {
+    "button": "Sincronizar",
+    "busy": "Sincronizando…",
+    "title": "Releer los borradores de {url} (filtro {filter})"
+  },
+  "newPost": "Nuevo post",
+  "allDrafts": "Todos los borradores",
+  "search": "Buscar por título o slug",
+  "filterByStatus": "Filtrar por estado",
+  "chipAll": "Todos",
+  "chipNoImage": "Sin imagen",
+  "selectAll": "Seleccionar todos",
+  "cols": {
+    "title": "Título",
+    "status": "Estado",
+    "flags": "Avisos",
+    "words": "Palabras"
+  },
+  "empty": {
+    "none": "Todavía no hay borradores.",
+    "noneBody": "Sincroniza para leer los borradores de {url}, o crea uno nuevo.",
+    "filtered": "Ningún borrador con estos filtros."
+  },
+  "footer": {
+    "one": "{visible} de 1 borrador. Marca varios para planificarlos o aplicarlos a la vez.",
+    "other": "{visible} de {count} borradores. Marca varios para planificarlos o aplicarlos a la vez."
+  },
+  "batch": {
+    "selected": {
+      "one": "1 seleccionado",
+      "other": "{count} seleccionados"
+    },
+    "modeLabel": "Qué tiene que hacer el redactor",
+    "modeAuto": "Automático",
+    "modeDraft": "Completar borrador",
+    "modeImprove": "Mejorar versión",
+    "instructionsLabel": "Instrucciones para el redactor",
+    "instructionsPlaceholder": "Instrucciones (opcional)",
+    "plan": "Planificar",
+    "planBusy": "Encolando…",
+    "apply": "Aplicar en Ghost…",
+    "dialogTitle": "¿Aplicar en Ghost los posts seleccionados?",
+    "dialogBody": "Escribe en el sitio real el último plan de cada uno. Quedan en borrador y Ghost guarda la versión anterior. Los que tengan conflictos o preguntas sin resolver se saltan.",
+    "dialogConfirm": "Aplicar en Ghost"
+  },
+  "peek": {
+    "label": "Vista rápida del post",
+    "empty": "Pulsa una fila (o muévete con <kbd>j</kbd>/<kbd>k</kbd>) para ver aquí su resumen sin salir de la lista.",
+    "changes": "Cambios del redactor",
+    "moreChanges": "y {count} más…",
+    "pending": {
+      "one": "1 pendiente",
+      "other": "{count} pendientes"
+    },
+    "reviewChanges": "Revisar cambios",
+    "checking": "Comprobando…",
+    "reviewApply": "Revisar y aplicar…",
+    "plan": "Planificar…",
+    "open": "Abrir",
+    "words": {
+      "one": "1 palabra en Ghost",
+      "other": "{count} palabras en Ghost"
+    },
+    "planWords": {
+      "one": "plan de 1 palabra",
+      "other": "plan de {count} palabras"
+    }
+  },
+  "plannedTitle": "En el plan: {title}",
+  "autoPlan": {
+    "done": {
+      "one": "La planificación automática preparó 1 borrador nuevo {time}: revísalo antes de aplicar.",
+      "other": "La planificación automática preparó {count} borradores nuevos {time}: revísalos antes de aplicar."
+    },
+    "view": "Ver la tarea",
+    "budget": "La planificación automática no se hizo {time}: se había alcanzado el tope diario de gasto.",
+    "dismiss": "Entendido"
+  },
+  "chipMine": "Míos"
+}

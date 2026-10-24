@@ -1,0 +1,399 @@
+/*
+ * Source of the UI styles (Tailwind v4). Compiled to
+ * src/web/public/app.css with `npm run css:build` (runs automatically before
+ * `dev` and `build`; `npm run css:watch` while editing the views).
+ * The views are TS templates: Tailwind scans their classes via @source.
+ */
+@import "tailwindcss";
+@source "./views";
+@source "./public/*.js";
+
+/* Dark mode via a class on <html> (set by the layout script from the
+   saved choice or, if none, from the system). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Semantic colors: the utilities (bg-panel, text-muted...) point to
+   variables that change with the theme, so no view needs `dark:`. */
+@theme inline {
+  --color-bg: var(--gc-bg);
+  --color-panel: var(--gc-panel);
+  --color-panel-2: var(--gc-panel-2);
+  --color-line: var(--gc-line);
+  --color-line-strong: var(--gc-line-strong);
+  --color-field-border: var(--gc-field-border);
+  --color-fg: var(--gc-fg);
+  --color-muted: var(--gc-muted);
+  --color-accent: var(--gc-accent);
+  --color-accent-hover: var(--gc-accent-hover);
+  --color-on-accent: var(--gc-on-accent);
+  --color-ok: var(--gc-ok);
+  --color-warn: var(--gc-warn);
+  --color-err: var(--gc-err);
+  --color-ok-soft: var(--gc-ok-soft);
+  --color-warn-soft: var(--gc-warn-soft);
+  --color-err-soft: var(--gc-err-soft);
+  --color-info-soft: var(--gc-info-soft);
+  --color-info-fg: var(--gc-info-fg);
+  --color-log: var(--gc-log);
+}
+
+@utility card {
+  @apply bg-panel border border-line rounded-md;
+}
+
+/* "Side by side" and the editor break out of <main>'s width and use almost the whole
+   window; the 3rem margin covers the scrollbar (100vw includes it). */
+@utility breakout {
+  @apply xl:relative xl:left-1/2 xl:-translate-x-1/2 xl:w-[min(1900px,calc(100vw-3rem))];
+}
+
+@layer base {
+  :root {
+    --gc-bg: #f6f7f9;
+    --gc-panel: #ffffff;
+    --gc-panel-2: #eef0f4;
+    --gc-line: #dde1e8;
+    --gc-line-strong: #c4cad4;
+    --gc-fg: #1a1d23;
+    --gc-muted: #5f6877;
+    --gc-accent: #2563eb;
+    --gc-accent-hover: #1d4fd8;
+    --gc-on-accent: #ffffff;
+    --gc-ok: #0f7650;
+    --gc-warn: #8a5300;
+    --gc-err: #b42f28;
+    --gc-ok-soft: #dcf5ea;
+    --gc-warn-soft: #fdf0d5;
+    --gc-err-soft: #fde2e0;
+    --gc-info-soft: #dde9fd;
+    --gc-info-fg: #1e4fb8;
+    --gc-log: #f0f2f5;
+    /* Form control border: >=3:1 against the background (WCAG 1.4.11) */
+    --gc-field-border: #858e9e;
+    /* PEPEBITS wordmark letters: ink or bone only (brand guide) */
+    --gc-brand-ink: #1c1b1b;
+    --gc-ghost-body: #1c1b1b;
+    --gc-ghost-eyes: #f6f7f9;
+    --gc-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235f6877' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    color-scheme: light;
+  }
+  .dark {
+    --gc-bg: #0f1115;
+    --gc-panel: #171a21;
+    --gc-panel-2: #1c2028;
+    --gc-line: #2a2e38;
+    --gc-line-strong: #3a3f4c;
+    --gc-fg: #e6e8eb;
+    --gc-muted: #8b93a1;
+    --gc-accent: #5b9dfb;
+    --gc-accent-hover: #79b0fc;
+    --gc-on-accent: #08131f;
+    --gc-ok: #3ecf8e;
+    --gc-warn: #f5a524;
+    --gc-err: #f5615a;
+    --gc-ok-soft: #0f3d2c;
+    --gc-warn-soft: #4a3a10;
+    --gc-err-soft: #3d1818;
+    --gc-info-soft: #1e3a5f;
+    --gc-info-fg: #8ec5ff;
+    --gc-log: #0a0c10;
+    --gc-field-border: #666f80;
+    --gc-brand-ink: #fcf9f8;
+    --gc-ghost-body: #fcf9f8;
+    --gc-ghost-eyes: #0f1115;
+    --gc-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%238b93a1' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    color-scheme: dark;
+  }
+
+  body { @apply bg-bg text-fg text-[15px] leading-normal antialiased; }
+  a { @apply text-accent hover:underline; }
+  /* A link inside text can't be distinguished by color alone (blue
+     on "muted" gray doesn't reach 3:1): always underlined. */
+  :where(p, li, dd, .text-muted, .page-meta) a:not(.btn) { @apply underline underline-offset-2; }
+  code { @apply bg-panel-2 rounded px-1.5 py-0.5 text-[0.9em]; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-accent rounded-sm; }
+  h1 { @apply text-2xl font-semibold flex items-center gap-2.5 flex-wrap mb-1; }
+  h3 { @apply text-sm font-semibold mt-5 mb-2; }
+  details > summary { @apply cursor-pointer; }
+  /* Preflight removes margins; the views' running text needs them */
+  main p { @apply my-2; }
+
+  /* A single base for all form controls */
+  /* All text inputs (no type, text, email, url, number, password...), not just text/search */
+  input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="submit"], [type="button"], [type="file"], [type="range"], [type="color"]), textarea, select {
+    @apply bg-panel border border-field-border text-fg rounded-md px-3 py-2 min-h-10 text-[0.95rem] transition-colors
+      hover:border-muted focus:border-accent;
+  }
+  /* Focus always visible with keyboard: 2px ring, not just the border color change */
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    @apply outline-2 outline-offset-1 outline-accent;
+  }
+  input[readonly] { @apply bg-panel-2 text-muted cursor-default hover:border-field-border; }
+  :is(input, textarea, select):disabled { @apply opacity-60 cursor-not-allowed; }
+  [aria-invalid="true"] { @apply border-err; }
+
+  /* Native select (accessible, no JS) with its own arrow spaced from the border:
+     12px from the right and 40px padding so the text doesn't overlap it. */
+  select {
+    @apply cursor-pointer pr-10 bg-no-repeat;
+    appearance: none;
+    background-image: var(--gc-chevron);
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+  }
+  select:hover { @apply bg-panel-2; }
+
+  /* Progressive enhancement: where customizable select exists (recent Chromium and
+     Safari) the dropdown list is styled too. Other
+     browsers use the native list, which keeps working the same. */
+  @supports (appearance: base-select) {
+    select, select::picker(select) { appearance: base-select; }
+    /* Here the arrow is ::picker-icon (not a background): flex to center it and 12px from the edge. */
+    select { background-image: none; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-right: 0.75rem; }
+    select::picker-icon {
+      content: '';
+      width: 1rem;
+      height: 1rem;
+      background: var(--gc-chevron) center / 1rem no-repeat;
+      transition: rotate 150ms;
+    }
+    select:open::picker-icon { rotate: 180deg; }
+    select::picker(select) {
+      @apply mt-1 rounded-md border border-field-border bg-panel p-1 text-fg shadow-xl;
+    }
+    select option { @apply rounded px-3 py-2 cursor-pointer; }
+    select option:hover, select option:focus-visible { @apply bg-panel-2 outline-none; }
+    select option:checked { @apply font-semibold; }
+    select option::checkmark { @apply text-accent; }
+  }
+  textarea { @apply leading-normal resize-y; }
+  input[type="checkbox"], input[type="radio"] { @apply accent-accent size-4 cursor-pointer; }
+}
+
+@layer components {
+  /* Buttons: repeated across all views with the same variants */
+  .btn {
+    @apply inline-flex min-h-10 items-center justify-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold
+      text-on-accent cursor-pointer transition hover:bg-accent-hover hover:no-underline active:translate-y-px
+      disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-ghost { @apply bg-transparent text-fg border border-line font-medium hover:bg-panel-2; }
+  .btn-ghost.is-active { @apply border-accent text-accent; }
+  .btn-danger { @apply bg-err text-white hover:bg-err hover:opacity-90; }
+  /* Same height as inputs and selects (min-h-10), so a field and its button line up; -sm is for toolbars and tables. */
+  .btn-sm { @apply min-h-0 px-3 py-1 text-xs; }
+  .btn-link { @apply bg-transparent p-0 ml-2 text-sm font-normal text-accent underline cursor-pointer; }
+
+  /* Notice card with a colored left border */
+  .issue { @apply bg-panel border-l-[3px] border-line rounded-r-md px-3.5 py-2.5 mb-2.5; }
+  .issue-error { @apply border-err; }
+  .issue-warning { @apply border-warn; }
+  .issue-info { @apply border-accent; }
+  .issue-action { @apply text-muted text-sm mt-1; }
+
+  .badge { @apply inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+  .badge-neutral { @apply bg-panel-2 text-muted; }
+  .badge-info { @apply bg-info-soft text-info-fg; }
+  .badge-ok { @apply bg-ok-soft text-ok; }
+  .badge-warn { @apply bg-warn-soft text-warn; }
+  .badge-err { @apply bg-err-soft text-err; }
+
+  .chip { @apply rounded-full border border-line px-3.5 py-1 text-sm text-muted transition-colors hover:text-fg hover:border-line-strong hover:no-underline; }
+  .chip-active { @apply border-accent text-accent; }
+
+  .chip-count { @apply ml-0.5 tabular-nums opacity-75; }
+  .chip-clear { @apply text-sm text-muted underline hover:text-fg; }
+
+  /* Common header (views/ui.ts pageHeader) */
+  .page-header { @apply mb-6; }
+  .back-link { @apply mb-2 inline-flex items-center gap-1 text-sm text-muted hover:text-fg; }
+  .page-header-row { @apply flex flex-wrap items-start justify-between gap-x-6 gap-y-3 md:flex-nowrap; }
+  .page-header-row > :first-child { @apply basis-full md:basis-auto md:flex-1; }
+  .page-actions { @apply shrink-0; }
+  .page-title { @apply !m-0 break-words; }
+  .page-meta { @apply mt-1 text-sm text-muted; }
+  .page-actions { @apply flex flex-wrap items-center gap-2; }
+  /* Section title within a page: one for all */
+  .section-heading { @apply !mt-0 mb-3 text-base font-semibold; }
+
+  /* Settings: section nav + one column of sections, each saved on its own */
+  .settings-layout { @apply grid gap-6 lg:grid-cols-[11rem_minmax(0,1fr)]; }
+  .settings-nav { @apply hidden lg:block; }
+  .settings-nav ul { @apply sticky top-4 m-0 grid list-none gap-0.5 p-0 text-sm; }
+  .settings-nav a { @apply block rounded-md px-2.5 py-1.5 text-muted no-underline hover:bg-panel-2 hover:text-fg hover:no-underline; }
+  /* Selected item like Primer NavList: background + bold text, and a separate
+     pill-shaped bar just outside the item (not an inset border, which follows
+     the item's rounded corners and looks bent). */
+  .settings-nav a { @apply relative; }
+  .settings-nav a[aria-current] { @apply bg-panel-2 font-semibold text-fg; }
+  .settings-nav a[aria-current]::before { @apply absolute -left-2 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-accent content-['']; }
+  .settings-section { @apply scroll-mt-4 p-5 sm:p-6; }
+  .key-link { @apply mt-2 inline-flex items-center gap-1 text-sm after:content-['↗'] after:text-xs; }
+  .settings-section-foot { @apply mt-6 border-t border-line pt-4; }
+
+  /* Notices after an action (views/ui.ts flash) */
+  .flash { @apply mb-4 rounded-md border px-3.5 py-2 text-sm; }
+  .flash-ok { @apply border-ok bg-ok-soft text-ok; }
+  .flash-info { @apply border-accent bg-info-soft text-info-fg; }
+  .flash-warn { @apply border-warn bg-warn-soft text-warn; }
+  .flash-err { @apply border-err bg-err-soft text-err; }
+
+  /* Empty list (views/ui.ts emptyState) */
+  .empty-state { @apply py-10 text-center text-muted; }
+  .empty-state p { @apply !my-1; }
+
+  .flag { @apply inline-block whitespace-nowrap rounded-full border border-line px-2 py-px text-xs mr-1 mb-1; }
+
+  /* User menu in the header (avatar with the initial) */
+  .user-menu { @apply relative; }
+  .user-menu > summary { @apply list-none; }
+  .user-menu > summary::-webkit-details-marker { display: none; }
+  .user-avatar { @apply grid size-8 cursor-pointer select-none place-items-center rounded-full bg-accent text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent; }
+  .user-menu-panel { @apply absolute right-0 top-full z-30 mt-2 w-52 overflow-hidden rounded-lg border border-line bg-panel py-1 text-sm shadow-lg; }
+  .user-menu-item { @apply block cursor-pointer px-3 py-2 text-fg hover:bg-panel-2 hover:no-underline focus-visible:bg-panel-2 focus-visible:outline-none; }
+
+  /* Data tables (posts, jobs, history) */
+  .data-table { @apply w-full border-collapse; }
+  .data-table th { @apply text-left text-muted font-semibold text-xs uppercase tracking-wide px-3 py-2.5 border-b border-line sticky top-0 bg-bg; }
+  .data-table td { @apply text-left align-top px-3 py-2.5 border-b border-line; }
+  .data-table tbody tr { @apply transition-colors hover:bg-panel; }
+
+  .section-title { @apply text-xs font-bold uppercase tracking-wider text-muted border-b border-line pb-2 mb-3.5; }
+
+  /* Detail tabs: without JS all are shown; with JS only the active one */
+  /* Pending-items form (detail → Pending) */
+  .pending-num { @apply mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border border-line-strong text-sm font-semibold text-muted tabular-nums transition-colors; }
+  [data-pending-item].is-answered { @apply border-accent/60; }
+  [data-pending-item].is-answered .pending-num { @apply border-accent bg-accent text-bg; }
+  [data-pending-item].is-answered [data-pending-state] { @apply text-ok; }
+  /* Image candidate grid (detail → Image) */
+  .image-option { @apply block w-full overflow-hidden rounded-md border border-line bg-panel p-0 text-left transition hover:border-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent cursor-pointer; }
+  .image-option img { @apply transition-opacity; }
+  .image-option:hover img { @apply opacity-90; }
+  .image-option.is-chosen { @apply border-accent ring-2 ring-accent; }
+  .image-option { @apply relative; }
+  .image-option:disabled { @apply cursor-wait; }
+  .is-picking .image-option:not([aria-busy]) { @apply opacity-50; }
+  .image-option .busy-overlay { @apply absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-bg/75 text-sm font-medium text-fg backdrop-blur-[1px]; }
+  .spinner { @apply size-7 rounded-full border-[3px] border-line border-t-accent motion-safe:animate-spin; }
+  .tab { @apply px-3.5 py-2.5 text-muted border-b-2 border-transparent whitespace-nowrap hover:text-fg hover:no-underline; }
+  .tab.is-active { @apply text-fg border-accent; }
+  .has-tabs .tab-panel { @apply hidden; }
+  .has-tabs .tab-panel.is-active { @apply block; }
+
+  /* Rendered article (preview, live draft, editor): generated HTML
+     content without its own classes, so it's styled by tag. */
+  .article-preview {
+    @apply card px-5 py-4 max-h-[75vh] overflow-y-auto leading-relaxed [overflow-wrap:anywhere];
+    & h1, & .article-title { @apply text-2xl font-semibold mt-0 mb-3; }
+    & h2 { @apply text-lg font-semibold mt-6 mb-2; }
+    & h3 { @apply text-base mt-5; }
+    & p, & ul, & ol, & table, & pre, & blockquote { @apply my-3; }
+    & ul { @apply list-disc pl-6; }
+    & ol { @apply list-decimal pl-6; }
+    & pre { @apply bg-panel-2 p-3 rounded-md overflow-x-auto text-sm; }
+    & pre code { @apply bg-transparent p-0; }
+    & blockquote { @apply border-l-[3px] border-accent px-3.5 py-1 text-muted; }
+    & table { @apply border-collapse; }
+    & th, & td { @apply border border-line px-2.5 py-1; }
+    & img { @apply max-w-full h-auto; }
+    & mark { @apply bg-warn-soft text-fg rounded-sm px-0.5; }
+  }
+  .pending-marker { @apply !bg-warn-soft !text-warn rounded-sm px-1 font-medium; }
+
+  /* New / Side by side / Original view */
+  .preview-grid { @apply grid gap-4 grid-cols-1; }
+  .preview-grid[data-view-target="both"] { @apply lg:grid-cols-2; }
+  .preview-grid[data-view-target="new"] .preview-original,
+  .preview-grid[data-view-target="original"] .preview-new { @apply hidden; }
+  .preview-grid[data-view-target="new"] .article-preview,
+  /* The "before" side: told apart by a dashed border, not by fading (fading broke link contrast). */
+  .article-before { @apply border-dashed; }
+  .preview-grid[data-view-target="original"] .article-preview { @apply max-w-3xl; }
+
+
+  /* Preview tab: the article in the main column and its context (quality,
+     changes, sources, SEO) in a sidebar, like GitHub's PR sidebar or
+     Ghost's post settings. The article grows with the page (no inner scroll:
+     a scroll area inside the page traps the wheel and keyboard). Side by
+     side needs the full width, so the sidebar moves below. */
+  .preview-layout { @apply grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]; }
+  /* Side by side widens the WHOLE layout (toolbar and panel too), so everything shares one edge. */
+  .preview-layout:has([data-view-target="both"]) { @apply breakout lg:grid-cols-1; }
+  /* Not sticky on purpose: with a section open the panel gets taller than the
+     screen, and a sticky panel can't scroll to its own bottom until the
+     article ends. It scrolls with the page, like GitHub's PR sidebar. */
+  .preview-side { @apply -order-1 grid gap-4 lg:order-none; }
+  .preview-layout:has([data-view-target="both"]) .preview-side { @apply lg:grid-cols-2; }
+  .article-preview-full { @apply !max-h-none overflow-visible; }
+  .preview-grid[data-view-target="new"] .article-preview-full,
+  .preview-grid[data-view-target="original"] .article-preview-full { @apply max-w-none; }
+  .side-section { @apply px-4 py-3; }
+  .side-section > summary { @apply cursor-pointer text-sm font-medium; }
+
+  /* Theme picker: 3 icons (auto / light / dark) */
+  .theme-switch { @apply inline-flex items-center gap-0.5 rounded-md border border-line bg-panel-2 p-0.5; }
+  .theme-btn {
+    @apply inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded border-0 bg-transparent p-0 text-muted
+      hover:text-fg focus-visible:outline-2 focus-visible:outline-accent;
+  }
+  .theme-btn[aria-pressed="true"] { @apply bg-panel text-fg shadow-sm; }
+
+  /* Header logo. Motion in "pixel" steps (steps), no
+     easing: the brand is blocky. At rest it only blinks now and
+     then; on hover or focus, it floats and the bit pulses like a cursor. */
+  .brand-logo { @apply shrink-0; }
+  .brand-logo-ghost, .brand-logo-eyes, .brand-logo-bit { transform-box: fill-box; transform-origin: center; }
+  .brand-logo-eyes { animation: gc-blink 7s steps(1, end) infinite; }
+  .brand-link:hover .brand-logo-ghost, .brand-link:focus-visible .brand-logo-ghost { animation: gc-float 0.9s steps(3, jump-none) infinite alternate; }
+  .brand-link:hover .brand-logo-eyes, .brand-link:focus-visible .brand-logo-eyes { animation: gc-blink 1.8s steps(1, end) infinite; }
+  .brand-link:hover .brand-logo-bit, .brand-link:focus-visible .brand-logo-bit { animation: gc-cursor 0.6s steps(1, end) infinite; }
+  @keyframes gc-blink { 0%, 94% { transform: scaleY(1); } 95%, 98% { transform: scaleY(0.2); } }
+  @keyframes gc-float { from { transform: translateY(0); } to { transform: translateY(-10%); } }
+  @keyframes gc-cursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  /* Empty image search (imageTab.ts): the ghost floats and looks around. */
+  .ghost-empty-body, .ghost-empty-eyes { transform-box: fill-box; transform-origin: center; }
+  .ghost-empty-body { animation: gc-float 0.9s steps(3, jump-none) infinite alternate; }
+  .ghost-empty-eyes { animation: gc-look 3.2s steps(1, end) infinite; }
+  .ghost-empty-bit { animation: gc-cursor 1.2s steps(1, end) infinite; }
+  @keyframes gc-look { 0%, 24% { transform: translateX(0); } 25%, 49% { transform: translateX(-12%); } 50%, 74% { transform: translateX(0); } 75%, 100% { transform: translateX(12%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .ghost-empty-body, .ghost-empty-eyes, .ghost-empty-bit { animation: none !important; }
+    .brand-logo-ghost, .brand-logo-eyes, .brand-logo-bit { animation: none !important; }
+  }
+
+  /* Little ghost crossing the screen (ghost.js): decorative, never captures clicks. */
+  .gc-ghost { @apply pointer-events-none fixed bottom-4 left-0 z-40 opacity-80; }
+  .gc-ghost .gc-ghost-eyes { transform-box: fill-box; transform-origin: center; animation: gc-blink 3s steps(1, end) infinite; }
+  @media (prefers-reduced-motion: reduce) { .gc-ghost { display: none; } }
+
+  /* Footer: PEPEBITS signature */
+  .site-footer { @apply mt-12 border-t border-line bg-panel; }
+  .brand-ink { fill: var(--gc-brand-ink); }
+  .site-footer a:hover .brand-ink { opacity: 0.85; }
+
+  /* Confirmation dialog (destructive actions) */
+  .confirm-dialog {
+    @apply m-auto w-[min(480px,calc(100vw-2rem))] rounded-lg border border-line bg-panel p-5 text-fg shadow-2xl backdrop:bg-black/50;
+  }
+
+  /* Command palette (palette.js) */
+  .palette {
+    @apply m-auto mt-[12vh] w-[min(640px,calc(100vw-2rem))] rounded-lg border border-line bg-panel p-0 text-fg shadow-2xl
+      backdrop:bg-black/50;
+  }
+  .palette-input { @apply !w-full !rounded-none !border-0 !border-b !border-line !bg-transparent !px-4 !py-3.5 !text-base; }
+  .palette-list { @apply max-h-[50vh] overflow-y-auto py-1.5; }
+  .palette-group { @apply px-4 pb-1 pt-2.5 text-xs font-semibold uppercase tracking-wide text-muted; }
+  .palette-item { @apply mx-1.5 flex cursor-pointer items-center justify-between gap-3 rounded-md px-2.5 py-2; }
+  .palette-item.is-active { @apply bg-panel-2; }
+  .palette-empty { @apply px-4 py-6 text-center text-muted; }
+  .palette-foot { @apply !m-0 border-t border-line px-4 py-2 text-xs text-muted; }
+  .palette-title { @apply px-4 pt-4 text-base font-semibold; }
+  .palette-help { @apply grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 px-4 py-3 text-sm; }
+  kbd { @apply rounded border border-line bg-panel-2 px-1.5 py-0.5 font-mono text-xs text-muted; }
+
+  /* Job log filter (job-log.js) */
+  [data-show="warn"] .log-line[data-level="info"],
+  [data-show="error"] .log-line:not([data-level="error"]) { @apply hidden; }
+}

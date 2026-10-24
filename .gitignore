@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.runs/
+.data/
+*.log
+.DS_Store
+
+# Generado por Tailwind (npm run css:build) desde src/web/styles.css
+src/web/public/app.css
+
+# Docker volume (config with keys + data)
+ghost-data/

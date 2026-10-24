@@ -1,0 +1,135 @@
+{
+  "title": "Drafts",
+  "selectRow": "Select {title}",
+  "flags": {
+    "issuesTitle": "Issues",
+    "issues": {
+      "one": "1 issue",
+      "other": "{count} issues"
+    },
+    "pendingTitle": "[[PENDING:]] questions in Ghost",
+    "pending": {
+      "one": "1 open question",
+      "other": "{count} open questions"
+    },
+    "noImage": "no image",
+    "assigned": "→ {name}",
+    "assignedTitle": "Assigned to {name}",
+    "viewing": "{names} has it open",
+    "notes": {
+      "one": "1 note",
+      "other": "{count} notes"
+    }
+  },
+  "ghostStatus": {
+    "published": "Published",
+    "scheduled": "Scheduled",
+    "sent": "Sent",
+    "draft": "Draft"
+  },
+  "queue": {
+    "title": "To review",
+    "empty": "All clear: nothing left to review.",
+    "more": "and {count} more in the list below.",
+    "startFirst": "Start with the first",
+    "hint": {
+      "planned": "Plan ready: review and apply",
+      "has-pending": "Open questions in Ghost",
+      "plan-stale": "Changed in Ghost: plan again",
+      "failed": "The last attempt failed",
+      "blocked": "Blocked on apply"
+    }
+  },
+  "gone": {
+    "summary": "Out of scope (published or otherwise changed status): {count}",
+    "colTitle": "Title",
+    "colStatus": "Status in Ghost",
+    "colDetected": "Detected"
+  },
+  "meta": {
+    "lastSync": "last synced {time}",
+    "neverSynced": "never synced",
+    "spend": "24 h spend {day} (total {total})",
+    "images": "images: {quotas}",
+    "details": "details"
+  },
+  "sync": {
+    "button": "Sync",
+    "busy": "Syncing…",
+    "title": "Re-read drafts from {url} (filter {filter})"
+  },
+  "newPost": "New post",
+  "allDrafts": "All drafts",
+  "search": "Search by title or slug",
+  "filterByStatus": "Filter by status",
+  "chipAll": "All",
+  "chipNoImage": "No image",
+  "selectAll": "Select all",
+  "cols": {
+    "title": "Title",
+    "status": "Status",
+    "flags": "Flags",
+    "words": "Words"
+  },
+  "empty": {
+    "none": "No drafts yet.",
+    "noneBody": "Sync to read the drafts from {url}, or create a new one.",
+    "filtered": "No drafts match these filters."
+  },
+  "footer": {
+    "one": "{visible} of 1 draft. Select several to plan or apply them together.",
+    "other": "{visible} of {count} drafts. Select several to plan or apply them together."
+  },
+  "batch": {
+    "selected": {
+      "one": "1 selected",
+      "other": "{count} selected"
+    },
+    "modeLabel": "What the writer should do",
+    "modeAuto": "Automatic",
+    "modeDraft": "Complete draft",
+    "modeImprove": "Improve version",
+    "instructionsLabel": "Instructions for the writer",
+    "instructionsPlaceholder": "Instructions (optional)",
+    "plan": "Plan",
+    "planBusy": "Queuing…",
+    "apply": "Apply to Ghost…",
+    "dialogTitle": "Apply the selected posts to Ghost?",
+    "dialogBody": "Writes each post's latest plan to the live site. They stay as drafts and Ghost keeps the previous version. Posts with conflicts or unresolved questions are skipped.",
+    "dialogConfirm": "Apply to Ghost"
+  },
+  "peek": {
+    "label": "Post quick view",
+    "empty": "Click a row (or move with <kbd>j</kbd>/<kbd>k</kbd>) to see its summary here without leaving the list.",
+    "changes": "Writer changes",
+    "moreChanges": "and {count} more…",
+    "pending": {
+      "one": "1 open question",
+      "other": "{count} open questions"
+    },
+    "reviewChanges": "Review changes",
+    "checking": "Checking…",
+    "reviewApply": "Review and apply…",
+    "plan": "Plan…",
+    "open": "Open",
+    "words": {
+      "one": "1 word in Ghost",
+      "other": "{count} words in Ghost"
+    },
+    "planWords": {
+      "one": "1-word plan",
+      "other": "{count}-word plan"
+    }
+  },
+  "plannedTitle": "In the plan: {title}",
+  "autoPlan": {
+    "done": {
+      "one": "The automatic plan prepared 1 new draft {time}: review it before applying.",
+      "other": "The automatic plan prepared {count} new drafts {time}: review them before applying."
+    },
+    "view": "View the job",
+    "budget": "The automatic plan was skipped {time}: the daily spending cap had been reached.",
+    "dismiss": "Got it"
+  },
+  "chipMine": "Mine"
+}

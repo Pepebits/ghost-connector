@@ -1,0 +1,72 @@
+{
+  "name": "ghost-connector",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Custom connector that completes, optimizes (SEO) and illustrates Ghost drafts with AI subagents (multi-model; DeepSeek by default).",
+  "license": "MIT",
+  "bin": {
+    "ghost-connector": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    ".env.example"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "css:build": "tailwindcss -i src/web/styles.css -o src/web/public/app.css --minify",
+    "css:watch": "tailwindcss -i src/web/styles.css -o src/web/public/app.css --watch",
+    "prebuild": "npm run css:build",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "start": "node dist/index.js",
+    "predev": "npm run css:build --silent",
+    "dev": "tsx src/index.ts",
+    "smoke:ghost": "tsx scripts/smoke-ghost.ts",
+    "seed:test-post": "tsx scripts/seed-test-post.ts",
+    "test:writer": "tsx scripts/test-writer.ts",
+    "test:pipeline": "tsx scripts/test-pipeline.ts",
+    "test:image": "tsx scripts/test-image.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/formbody": "^9.0.0",
+    "@fastify/static": "^10.1.4",
+    "@tryghost/admin-api": "^1.14.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.12.5",
+    "jsonwebtoken": "^9.0.2",
+    "marked": "^14.1.2",
+    "openai": "^7.43.0",
+    "p-limit": "^6.1.0",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0",
+    "qrcode": "^1.5.4",
+    "sanitize-html": "^2.13.1",
+    "sharp": "^0.35.4",
+    "turndown": "^7.2.0",
+    "undici": "^6.20.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.14",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.9.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/sanitize-html": "^2.13.0",
+    "@types/turndown": "^5.0.5",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^5.0.1"
+  }
+}

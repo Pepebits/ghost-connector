@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "label": "Main",
+    "dashboard": "Drafts",
+    "ideas": "Ideas",
+    "jobs": "Jobs",
+    "settings": "Settings"
+  },
+  "skipToContent": "Skip to content",
+  "search": {
+    "button": "Search",
+    "title": "Search posts and commands"
+  },
+  "theme": {
+    "label": "Theme",
+    "auto": "Automatic (system)",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "footer": {
+    "productOf": "a product by",
+    "newTab": "opens in a new tab"
+  },
+  "time": {
+    "justNow": "just now"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "clearFilters": "Clear filters"
+  },
+  "cost": {
+    "unpriced": "no price for {models}",
+    "unknown": "unknown cost ({which})"
+  },
+  "metaDescription": "Private Ghost Connector panel: completes, optimizes and illustrates your blog drafts with AI."
+}

@@ -1,0 +1,69 @@
+{
+  "type": { "plan": "Plan", "apply": "Apply to Ghost", "resolve": "Resolve pending items", "sync": "Sync" },
+  "mode": { "draft": "complete draft", "improve": "improve version" },
+  "target": {
+    "allDrafts": "All Ghost drafts",
+    "more": { "one": "{first} and 1 more", "other": "{first} and {count} more" }
+  },
+  "options": {
+    "mode": "mode: {mode}",
+    "instructions": "with instructions",
+    "allowPending": "applied with pending items",
+    "forceSanity": "length guard overridden"
+  },
+  "cancel": {
+    "button": "Cancel job…",
+    "title": "Cancel this job?",
+    "body": "It stops as soon as the post in progress is finished. Completed work is kept.",
+    "confirm": "Cancel job"
+  },
+  "list": {
+    "title": "Jobs",
+    "meta": "Background tasks: planning, applying, resolving and syncing.",
+    "progress": "Progress",
+    "errors": { "one": "1 error", "other": "{count} errors" },
+    "warnings": { "one": "1 warning", "other": "{count} warnings" },
+    "jobFailed": "job failed",
+    "started": "started {time}",
+    "filter": { "all": "All", "active": "Running", "failed": "Failed", "anyType": "Any type", "byState": "Filter by status", "byType": "Filter by type" },
+    "active": "Running",
+    "more": "Show more jobs",
+    "delete": {
+      "button": "Delete history…",
+      "title": "Delete all finished jobs?",
+      "body": "Deletes finished, cancelled and failed jobs and their logs, regardless of the active filter. This can't be undone. Running jobs, posts and plans aren't affected.",
+      "confirm": "Delete history",
+      "none": "There were no finished jobs to delete.",
+      "done": { "one": "Deleted 1 job from the history.", "other": "Deleted {count} jobs from the history." }
+    },
+    "col": { "type": "Type", "target": "Target", "state": "Status", "progress": "Progress", "duration": "Duration", "created": "Created" },
+    "empty": {
+      "filtered": "No jobs match these filters.",
+      "title": "No jobs yet.",
+      "body": "They show up here when you plan, apply or sync posts.",
+      "action": "Go to Drafts"
+    }
+  },
+  "console": {
+    "noResult": "no result",
+    "pending": "pending",
+    "posts": "Posts ({count})",
+    "instructions": "Instructions",
+    "jobFailed": "Job failed:",
+    "liveDraft": "Live draft",
+    "waitingWriter": "waiting for the writer…",
+    "liveDraftEmpty": "The text will appear here as soon as the writer starts.",
+    "viewResult": "View the result in the post",
+    "viewDrafts": "View drafts",
+    "meta": "created {time} · duration {duration}",
+    "progress": "Progress",
+    "progressLabel": "Job progress",
+    "log": "Log",
+    "logLabel": "Job log",
+    "filterLog": "Filter the log",
+    "filter": { "all": "All", "warn": "Warnings and errors", "error": "Errors only" },
+    "pageTitle": "{type} · job {id}",
+    "draftDone": { "one": "(done, 1 word)", "other": "(done, {count} words)" },
+    "draftWriting": { "one": "(writing… 1 word)", "other": "(writing… {count} words)" }
+  }
+}

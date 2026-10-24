@@ -1,0 +1,36 @@
+{
+  "cmd": {
+    "goDrafts": "Ir a Borradores",
+    "goJobs": "Ir a Tareas",
+    "goSettings": "Ir a Configuración",
+    "newPost": "Nuevo post desde un tema",
+    "sync": "Sincronizar con Ghost",
+    "themeAuto": "Tema: automático (sistema)",
+    "themeLight": "Tema: claro",
+    "themeDark": "Tema: oscuro",
+    "shortcuts": "Ver atajos de teclado",
+    "ghostOn": "Fantasma: activar el que cruza la pantalla",
+    "ghostOff": "Fantasma: desactivar el que cruza la pantalla"
+  },
+  "label": "Paleta de comandos",
+  "placeholder": "Busca un post o un comando…",
+  "inputLabel": "Buscar post o comando",
+  "results": "Resultados",
+  "foot": "↑↓ moverse · Intro abrir · Esc cerrar",
+  "groupCommands": "Comandos",
+  "groupPosts": "Posts",
+  "noResults": "Sin resultados",
+  "help": {
+    "title": "Atajos de teclado",
+    "palette": "Paleta de comandos",
+    "help": "Esta ayuda",
+    "go": "Ir a Borradores / Tareas / Configuración",
+    "newPost": "Nuevo post",
+    "move": "Bajar / subir por la lista",
+    "open": "Abrir el post seleccionado",
+    "select": "Marcar para acciones en lote",
+    "save": "Pestaña Editar: guardar en el plan",
+    "enter": "Intro",
+    "foot": "Esc para cerrar"
+  }
+}

@@ -1,0 +1,437 @@
+{
+  "title": "Settings",
+  "intro": "Keys are never shown: you can only replace them. Other variables (<code>DATA_DIR</code>, <code>LOG_LEVEL</code>…) live only in the <code>.env</code>. This connector never publishes: everything stays as <code>draft</code>.",
+  "language": {
+    "title": "Language",
+    "intro": "Language of the interface. Applied right away, even while jobs are running.",
+    "label": "Interface language",
+    "apply": "Change language",
+    "palette": "Language: {name}"
+  },
+  "groups": {
+    "ghost": {
+      "title": "Ghost"
+    },
+    "ai": {
+      "title": "AI",
+      "intro": "The test makes a minimal call to the model (1 token)."
+    },
+    "images": {
+      "title": "Image sources"
+    },
+    "unsplash": {
+      "title": "Unsplash",
+      "intro": "Main image source. Optional."
+    },
+    "pixabay": {
+      "title": "Pixabay",
+      "intro": "Free stock photos. The key is issued right away when you sign up. Optional."
+    },
+    "pexels": {
+      "title": "Pexels",
+      "intro": "Fallback when Unsplash runs out of quota. Optional."
+    },
+    "openverse": {
+      "title": "Openverse",
+      "intro": "Creative Commons photos (Flickr, Wikimedia…). Works without credentials (200 requests a day). With them, you get more quota. Attribution always goes in the caption."
+    },
+    "wikimedia": {
+      "title": "Wikimedia Commons",
+      "intro": "Wikipedia's images: people, places, logos and technical or historical topics. No key needed. The attribution always goes in the caption."
+    },
+    "gsc": {
+      "title": "Google Search Console",
+      "intro": "Optional, for the Ideas page: the searches where your blog almost reaches the first page. Create a service account in Google Cloud, enable the Search Console API, download its JSON key and add its email as a user of the property in Search Console."
+    },
+    "bing": {
+      "title": "Bing Webmaster Tools",
+      "intro": "Optional, for the Ideas page: adds Bing searches (Bing also powers Copilot and part of ChatGPT search) to Google's. Generate the API key in Bing Webmaster → Settings → API access. If you already use Search Console, you can import the site from there."
+    },
+    "behaviour": {
+      "title": "Behaviour"
+    }
+  },
+  "status": {
+    "configured": "Configured",
+    "notConfigured": "Not configured",
+    "noKey": "No key",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "enabledWithCreds": "Enabled · with credentials",
+    "enabledNoCreds": "Enabled · no credentials"
+  },
+  "fields": {
+    "GHOST_API_URL": {
+      "label": "Site URL",
+      "help": "No trailing slash."
+    },
+    "GHOST_ADMIN_API_KEY": {
+      "label": "Admin API Key",
+      "help": "Format id:secret (Ghost → Integrations). The Content API Key won't work."
+    },
+    "GHOST_API_VERSION": {
+      "label": "API version"
+    },
+    "AI_PROVIDER": {
+      "label": "Provider",
+      "help": "openai-compatible works for OpenAI, OpenRouter, Groq, Ollama, LM Studio…"
+    },
+    "AI_API_KEY": {
+      "label": "API key"
+    },
+    "AI_MODEL": {
+      "label": "Main model",
+      "help": "Used for every step unless you pick another one below. Required with openai-compatible."
+    },
+    "AI_BASE_URL": {
+      "label": "Base URL",
+      "help": "Empty = the provider's. Required with openai-compatible (e.g. https://api.openai.com/v1)."
+    },
+    "AI_MAX_TOKENS": {
+      "label": "Max tokens per response"
+    },
+    "AI_MODEL_WRITER": {
+      "label": "Writing the post",
+      "help": "Writes and improves the article text. The step where quality matters most."
+    },
+    "AI_MODEL_SEO": {
+      "label": "SEO",
+      "help": "Meta title, description, slug, tags and excerpt. A small model is usually enough."
+    },
+    "AI_MODEL_IMAGE": {
+      "label": "Featured image",
+      "help": "Decides what photo to look for. A small model is usually enough."
+    },
+    "AI_MODEL_RESOLVE": {
+      "label": "Answering pending questions",
+      "help": "Rewrites the parts of the text that depended on your answers."
+    },
+    "AI_PRICES": {
+      "label": "Prices (USD per million tokens)",
+      "help": "model=input/output, comma-separated. Without a price, the cost shows as unknown. deepseek-flash is built in."
+    },
+    "IMAGE_SOURCES_ORDER": {
+      "label": "Source order",
+      "help": "The first one is tried. If it has no key, runs out of quota or finds nothing, the next one is used."
+    },
+    "UNSPLASH_ACCESS_KEY": {
+      "label": "Access key"
+    },
+    "UNSPLASH_APP_NAME": {
+      "label": "App name",
+      "help": "Used in the attribution (utm_source)."
+    },
+    "PIXABAY_API_KEY": {
+      "label": "API key"
+    },
+    "PEXELS_API_KEY": {
+      "label": "API key"
+    },
+    "OPENVERSE_ENABLED": {
+      "label": "Use Openverse as fallback"
+    },
+    "OPENVERSE_CLIENT_ID": {
+      "label": "Client ID",
+      "help": "Optional: raises the 200/day limit. Get one with \"Register app\"."
+    },
+    "OPENVERSE_CLIENT_SECRET": {
+      "label": "Client secret"
+    },
+    "OPENVERSE_LICENSES": {
+      "label": "Allowed licenses",
+      "help": "Comma-separated: cc0, pdm, by, by-sa. by-sa requires sharing derived images under the same license."
+    },
+    "WIKIMEDIA_ENABLED": {
+      "label": "Use Wikimedia Commons"
+    },
+    "WIKIMEDIA_LICENSES": {
+      "label": "Allowed licenses",
+      "help": "Comma-separated: cc0, pdm, by, by-sa. by-sa requires sharing derived images under the same license."
+    },
+    "GSC_SITE_URL": {
+      "label": "Property",
+      "help": "As shown in Search Console: sc-domain:yourdomain.com or https://yourdomain.com/"
+    },
+    "GSC_SERVICE_ACCOUNT": {
+      "label": "Service account key",
+      "help": "Path to the JSON file (recommended) or its content. Read-only use."
+    },
+    "BING_SITE_URL": {
+      "label": "Site",
+      "help": "The site URL as shown in Bing Webmaster: https://yourdomain.com/"
+    },
+    "BING_API_KEY": {
+      "label": "API key",
+      "help": "Read-only use."
+    },
+    "UI_LANGUAGE": {
+      "label": "Interface language"
+    },
+    "CONTENT_STRATEGY": {
+      "label": "Content strategy"
+    },
+    "DRAFT_FILTER": {
+      "label": "Which drafts to process"
+    },
+    "MAX_POSTS_PER_RUN": {
+      "label": "Max posts per run"
+    },
+    "CONCURRENCY": {
+      "label": "Concurrency"
+    },
+    "TARGET_WORD_COUNT": {
+      "label": "Target word count"
+    },
+    "ALLOW_SLUG_CHANGE": {
+      "label": "Allow slug changes"
+    },
+    "INTERNAL_LINKS": {
+      "label": "Suggest internal links",
+      "help": "The writer may link 1 to 3 posts already published on your blog that cover the same topic."
+    },
+    "AUTO_PLAN_TIME": {
+      "label": "Plan every night at",
+      "help": "Time (HH:MM, local) to plan only the new drafts, the ones never planned. It only plans: nothing is applied to Ghost. Empty = off. If the panel was off at that time, it runs when it starts later that day."
+    },
+    "AUTO_PLAN_MAX": {
+      "label": "Max drafts per night",
+      "help": "Own cap for the nightly plan, besides the daily spending cap. Default 3."
+    },
+    "GITHUB_TOKEN": {
+      "label": "GitHub token",
+      "help": "Optional. When reading sources from github.com (e.g. an organization's most-starred repos) it raises the limit from 60 to 5000 requests/hour. A token with no permissions is enough."
+    },
+    "SITE_CONTEXT": {
+      "label": "Site context",
+      "help": "Passed to the agents: what the blog is about, tone, audience."
+    },
+    "AI_DAILY_BUDGET_USD": {
+      "label": "Daily spending cap (USD)",
+      "help": "Stops starting new AI work once the last 24 hours reach this amount. 0 = no cap. A post already running can finish and go slightly over. Models without a price count as $0."
+    }
+  },
+  "secret": {
+    "setWithId": "set · {id}:••••",
+    "set": "set · ••••••••",
+    "unset": "not set",
+    "keep": "Leave empty to keep the current one.",
+    "paste": "Paste it here.",
+    "clear": "Delete the key",
+    "ownerOnly": "Only the owner can see or change keys.",
+    "ownerOnlyEndpoint": "Only the owner can change it: it decides where the keys are sent."
+  },
+  "order": {
+    "up": "Move {name} up",
+    "down": "Move {name} down",
+    "position": "{name}: position {pos}"
+  },
+  "draftFilter": {
+    "all": "All drafts",
+    "tag": "Only drafts with a tag",
+    "notTag": "All except those with a tag",
+    "custom": "Advanced: hand-written NQL filter",
+    "tagLabel": "Tag",
+    "tagPlaceholder": "slug, e.g. review or hash-review",
+    "tagHelp": "Ghost internal tags (those starting with #) have the slug <code>hash-…</code>: <code>#review</code> is <code>hash-review</code>.",
+    "nqlLabel": "Resulting filter (NQL)",
+    "nqlHelp": "Always limited to drafts: even if the filter doesn't say so, published posts are never processed. NQL syntax: <a href=\"https://ghost.org/docs/content-api/#filtering\" target=\"_blank\" rel=\"noopener noreferrer\">Ghost docs</a>.",
+    "test": "Test filter",
+    "internal": "internal"
+  },
+  "form": {
+    "test": "Test connection",
+    "testing": "Testing…",
+    "unreachable": "Couldn't reach the local server.",
+    "registerApp": "Register app…",
+    "registerAnother": "Register another app…",
+    "saving": "Saving…",
+    "save": "Save changes",
+    "locked": {
+      "one": "A job is running: wait for it to finish to save.",
+      "other": "{count} jobs are running: wait for them to finish to save."
+    },
+    "validated": "Everything is validated before writing <code>{path}</code>. If anything is invalid, nothing is saved. Applied without restarting.",
+    "saveSection": "Save"
+  },
+  "openverse": {
+    "title": "Register the app with Openverse",
+    "intro": "This data is sent to <code>api.openverse.org</code>. Openverse returns a client ID and a secret, saved straight to your <code>.env</code> (they can't be looked up again). You'll get an email: until you confirm it, the quota is the same as without credentials.",
+    "name": "App name",
+    "nameHelp": "Must be unique across all of Openverse.",
+    "description": "Description",
+    "defaultDescription": "Finds openly licensed featured images for the posts on my Ghost blog, with attribution in the caption.",
+    "email": "Email",
+    "replace": "Replace the current credentials",
+    "cancel": "Cancel",
+    "submit": "Register with Openverse",
+    "registering": "Registering…"
+  },
+  "cost": {
+    "title": "Usage and cost",
+    "total": "Total cost",
+    "runs": {
+      "one": "in 1 run",
+      "other": "in {count} runs"
+    },
+    "last24h": "Last 24 h",
+    "avg": "Average per run",
+    "tokens": "Tokens",
+    "tokensValue": "{in} input · {out} output",
+    "quota": "{provider} quota",
+    "budget": "Daily cap",
+    "budgetValue": "{spent} of {limit}",
+    "budgetNone": "None",
+    "chart": {
+      "title": "Spend per day, last {count} days",
+      "summary": "{total} in total · peak {peak} on {day}",
+      "empty": "No AI spend in the last {count} days.",
+      "cap": "- - daily cap {limit}",
+      "today": "Today",
+      "colDay": "Day",
+      "colCost": "Cost",
+      "colRuns": "Plans"
+    },
+    "agents": {
+      "title": "Spend per agent",
+      "writer": "Writer",
+      "seo": "SEO",
+      "image": "Image",
+      "resolve": "Pending items",
+      "fix": "Fix with AI",
+      "unknown": "No breakdown (older plans)",
+      "ideas": "Topic ideas",
+      "snippet": "Google titles"
+    }
+  },
+  "prompts": {
+    "title": "Base prompts",
+    "intro": "They affect all future plans. Each save keeps the previous version in the history.",
+    "customized": "Customized",
+    "info": {
+      "writer.system": "Writes or improves the article",
+      "seo.system": "Meta title, meta description and excerpt",
+      "image.system": "Picks or generates the featured image",
+      "resolve.system": "Resolves the PENDING markers",
+      "fix.system": "Fixes the plan quality warnings",
+      "ideas.system": "Suggests new topics from your posts and Search Console",
+      "snippet.system": "Proposes Google titles and descriptions for published posts with few clicks"
+    }
+  },
+  "index": {
+    "title": "Local index",
+    "count": {
+      "one": "1 artifact indexed.",
+      "other": "{count} artifacts indexed."
+    },
+    "data": "Data in <code>{dir}</code>.",
+    "help": "Reindex if the cost or the dashboard don't match the saved runs. No run is deleted.",
+    "reindexing": "Reindexing…",
+    "reindex": "Reindex"
+  },
+  "notices": {
+    "reindexed": {
+      "one": "Index rebuilt: 1 artifact.",
+      "other": "Index rebuilt: {count} artifacts."
+    },
+    "saved": "Saved and applied: {keys}.",
+    "nothing": "There were no changes to save.",
+    "openverse": "App registered with Openverse and credentials saved. Check your email and confirm the address. Then \"Test connection\" in Openverse will show your real quota.",
+    "errors": "Nothing was saved. Fix: {list}.",
+    "savedSection": "Saved. Applied without restarting."
+  },
+  "errors": {
+    "newline": "cannot contain line breaks",
+    "jobs": "jobs are running",
+    "ovName": "App name",
+    "ovNameMsg": "required, 150 characters max",
+    "ovDescription": "Description",
+    "ovDescriptionMsg": "required",
+    "ovEmailMsg": "not a valid email",
+    "ovExists": "credentials already exist. Check \"replace\" to register another app",
+    "ovNotSaved": "registered, but the .env couldn't be written ({error}). Copy OPENVERSE_CLIENT_ID={id} and OPENVERSE_CLIENT_SECRET={secret} into your .env now: they can't be recovered"
+  },
+  "nav": {
+    "label": "Sections"
+  },
+  "model": {
+    "sameAsMain": "Same as the main model ({model})",
+    "other": "Other (type the name)…",
+    "typeName": "Model name, e.g. gpt-5-mini",
+    "typeNameFor": "Model name for {field}",
+    "loading": "Loading models from the provider…",
+    "loaded": {
+      "one": "1 model available from your provider.",
+      "other": "{count} models available from your provider."
+    },
+    "failed": "Couldn't load the provider's models ({message}). Choose \"Other\" and type the name.",
+    "perAgentTitle": "Models per task (optional)",
+    "perAgentIntro": "Each step of a plan is a separate call to the AI. By default, all of them use the main model. Here you can pick another one for a step, e.g. a cheaper model for SEO and the image search, and the best one for writing."
+  },
+  "keyLink": {
+    "ghost": "Create a key in Ghost → Settings → Integrations",
+    "ai": "Get an API key",
+    "unsplash": "Create an Unsplash app (free) and copy its Access Key",
+    "pixabay": "Get your free Pixabay API key (shown in its docs once you sign in)",
+    "pexels": "Get a free Pexels API key",
+    "github": "Create a token on GitHub (no permissions needed)",
+    "gsc": "How to create the service account",
+    "bing": "Generate the API key in Bing Webmaster"
+  },
+  "transfer": {
+    "title": "Export / import",
+    "intro": "What only exists in this panel, to move it to another installation or keep it: plans and chosen images, edited prompts, settings (without keys), notes and assignments, ideas, title/meta changes and what your reviews taught. The drafts stay in Ghost.",
+    "never": "It never includes users, passwords, 2FA or keys.",
+    "export": "Download export",
+    "file": "Export file (.tar.gz)",
+    "import": "Review import",
+    "importing": "Reading…",
+    "fullBackup": "The full backup (with users, 2FA and, if you want, the keys) is only made on the server: <code>ghost-connector backup</code>. To restore it, stop the panel and extract it into <code>{dir}</code>.",
+    "preview": {
+      "title": "Review the import",
+      "meta": "Exported from {site} on {time}{by}. Choose what to bring in: it's added to what's here and nothing is ever deleted.",
+      "by": " by {name}",
+      "otherSite": "This export comes from another site ({site}). Plans, notes and assignments refer to that site's posts: here they only help if the posts have the same ids (e.g. the same Ghost under another URL).",
+      "nothing": "Nothing to change",
+      "apply": "Import selected",
+      "applying": "Importing…",
+      "cancel": "Cancel",
+      "parts": {
+        "plans": {
+          "title": "Plans and images",
+          "body": "{newRuns} new plans and {newImages} images. {existingRuns} were already here and are left as they are."
+        },
+        "prompts": {
+          "title": "Edited prompts",
+          "body": "Replaces: {list}. A revision is kept so you can go back."
+        },
+        "settings": {
+          "title": "Settings",
+          "body": "Changes {count} settings (never keys nor the connection to Ghost, Search Console or Bing):"
+        },
+        "team": {
+          "title": "Notes and assignments",
+          "body": "{notes} new notes and {assignments} assignments.",
+          "skipped": "{count} assignments are skipped: their user doesn't exist here or the post already has someone."
+        },
+        "ideas": {
+          "title": "Ideas and title/meta changes",
+          "body": "{history} dismissed or used ideas and {snippets} title/meta changes."
+        },
+        "learning": {
+          "title": "Review learning",
+          "body": "{count} review decisions (the suggestions for the writer prompt)."
+        }
+      },
+      "allHere": "Nothing to import: everything in this file is already here."
+    },
+    "done": "Imported: {list}.",
+    "errors": {
+      "notExport": "That file is not a Ghost Connector export.",
+      "tooBig": "The file is too big.",
+      "newerVersion": "The export comes from a newer Ghost Connector: update this panel first.",
+      "damaged": "The file is damaged.",
+      "expired": "The import expired (30 min). Upload the file again.",
+      "jobs": "Jobs are running: wait for them to finish before importing settings."
+    }
+  }
+}

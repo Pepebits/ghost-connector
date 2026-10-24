@@ -1,0 +1,63 @@
+{
+  "rejected": "credenciales rechazadas (HTTP {status})",
+  "notFound": "no encontrado (HTTP 404): revisa la URL",
+  "http": "HTTP {status}: {body}",
+  "timeout": "sin respuesta en {s} s",
+  "ghost": {
+    "noUrl": "Falta la URL del sitio.",
+    "noKey": "Falta la Admin API Key (si cambias la URL hay que escribir la clave de ese sitio).",
+    "badKey": "La Admin API Key no tiene el formato id:secret.",
+    "ok": "Conectado a \"{title}\" con permisos de Admin API."
+  },
+  "drafts": {
+    "noGhost": "Configura antes Ghost (URL y Admin API Key).",
+    "badFilter": "Ghost no entiende el filtro: {body}",
+    "none": "El filtro es válido, pero no hay ningún borrador que coincida.",
+    "ok": {
+      "one": "1 borrador coincide: {sample}{more}",
+      "other": "{count} borradores coinciden. Los más recientes: {sample}{more}"
+    }
+  },
+  "ai": {
+    "noKey": "Falta la API key (si cambias la Base URL hay que escribir la clave de ese proveedor).",
+    "noBaseUrl": "Falta la Base URL (obligatoria con openai-compatible).",
+    "noModel": "Falta el modelo (obligatorio con openai-compatible).",
+    "ok": "El modelo {model} responde ({provider})."
+  },
+  "unsplash": {
+    "noKey": "No hay access key configurada.",
+    "ok": "Unsplash acepta la clave (gasta 1 petición de la cuota horaria)."
+  },
+  "pixabay": {
+    "noKey": "No hay API key configurada.",
+    "ok": "Pixabay acepta la clave."
+  },
+  "pexels": {
+    "noKey": "No hay API key configurada.",
+    "ok": "Pexels acepta la clave (gasta 1 petición de la cuota horaria)."
+  },
+  "openverse": {
+    "usedToday": ", {count} peticiones hoy",
+    "unverified": " Falta verificar el correo: hasta entonces tiene la cuota anónima (200/día).",
+    "ok": "Credenciales válidas (modelo de límite: {model}{used}).{verified}",
+    "anon": "Openverse responde sin credenciales.",
+    "anonLeft": "Openverse responde sin credenciales. Quedan {left} peticiones hoy."
+  },
+  "wikimedia": {
+    "ok": "Wikimedia Commons responde (no necesita clave)."
+  },
+  "gsc": {
+    "missing": "Faltan la propiedad o la clave.",
+    "ok": {
+      "one": "Search Console responde: 1 fila en los últimos 7 días.",
+      "other": "Search Console responde: {count} filas en los últimos 7 días."
+    }
+  },
+  "bing": {
+    "missing": "Faltan el sitio o la API key.",
+    "ok": {
+      "one": "Bing Webmaster responde: 1 búsqueda en los últimos 90 días.",
+      "other": "Bing Webmaster responde: {count} búsquedas en los últimos 90 días."
+    }
+  }
+}

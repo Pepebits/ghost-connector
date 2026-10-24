@@ -1,0 +1,12 @@
+{
+  "agentError": "[{stage}] {message}",
+  "planStale": "El post cambió en Ghost desde que se generó este plan. Si lo aplicas, se detectará un conflicto.",
+  "planStaleAction": "Vuelve a correr \"plan\" para este post antes de aplicar.",
+  "applyStatus": "El último intento de aplicar quedó en \"{status}\".",
+  "applyStatusAction": "Revisa las diferencias y decide si replanificar o aplicar con las opciones adecuadas.",
+  "hasPending": {
+    "one": "1 pregunta [[PENDING:]] sin resolver en el contenido publicado en Ghost.",
+    "other": "{count} preguntas [[PENDING:]] sin resolver en el contenido publicado en Ghost."
+  },
+  "hasPendingAction": "Usa «Resolver pendientes» para contestarlas."
+}

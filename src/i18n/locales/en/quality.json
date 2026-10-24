@@ -1,0 +1,45 @@
+{
+  "title": "Quality",
+  "ok": "Pass: ",
+  "review": "Check: ",
+  "checks": {
+    "length": "Length",
+    "sections": "Structure",
+    "pending": "Open questions",
+    "keyword-title": "Keyword in title",
+    "keyword-intro": "Keyword in intro",
+    "meta-title": "Meta title",
+    "meta-description": "Meta description",
+    "image": "Featured image",
+    "title-length": "Title length"
+  },
+  "details": {
+    "length": "{count} words (target {min}–{max})",
+    "sectionsH1": {
+      "one": "1 H1 in the body (the title is the H1, use ##)",
+      "other": "{count} H1s in the body (the title is the H1, use ##)"
+    },
+    "sections": {
+      "one": "1 H2 section (target {min}–{max})",
+      "other": "{count} H2 sections (target {min}–{max})"
+    },
+    "pendingNone": "No [[PENDING:]] markers",
+    "pending": {
+      "one": "1 unresolved [[PENDING:]] (blocks apply)",
+      "other": "{count} unresolved [[PENDING:]] (blocks apply)"
+    },
+    "keywordTitle": "\"{keyword}\"",
+    "keywordIntro": "\"{keyword}\" in the first paragraph",
+    "metaTitle": "{count}/{max} characters",
+    "metaDescription": "{count} characters (target {min}–{max})",
+    "imageYes": "Set (or one is planned)",
+    "imageNo": "No featured image",
+    "titleLength": "{count}/{max} characters"
+  },
+  "fix": {
+    "one": "Fix 1 warning with AI",
+    "other": "Fix {count} warnings with AI"
+  },
+  "fixBusy": "Fixing with AI…",
+  "fixHint": "Rewrites only what is needed in the plan, your edits included. Ghost is not touched until you apply."
+}

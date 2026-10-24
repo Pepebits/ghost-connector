@@ -1,0 +1,32 @@
+{
+  "title": "Título y descripción en Google",
+  "meta": "Búsqueda «{query}»: posición {position}, CTR {ctr}.",
+  "now": "Cómo se ve ahora en Google",
+  "nowApplied": "Cómo se verá en Google (aplicado)",
+  "options": "Propuestas",
+  "optionsIntro": "Generadas {time}. Puedes retocar el texto antes de aplicarlo.",
+  "again": "Proponer otras",
+  "busy": "Pensando títulos…",
+  "apply": "Aplicar en Ghost",
+  "confirmTitle": "¿Cambiar el título y la descripción de Google?",
+  "confirmBody": "El post «{title}» está PUBLICADO: se cambian solo su meta title y su meta descripción (ni el contenido, ni el slug, ni el estado). Podrás restaurar los anteriores.",
+  "appliedAt": "Aplicado {time}.",
+  "restore": "Restaurar los anteriores",
+  "restoreTitle": "¿Restaurar el título y la descripción anteriores?",
+  "restoreBody": "Vuelven los valores que tenía el post antes de aplicar.",
+  "footnote": "Solo se tocan meta_title y meta_description del post publicado. Si alguien los cambia en Ghost mientras tanto, no se sobrescriben.",
+  "result": {
+    "applied": "Aplicado en Ghost.",
+    "restored": "Restaurados los valores anteriores.",
+    "conflict": "El título o la descripción cambiaron en Ghost desde la propuesta: no se ha tocado nada. Pulsa «Proponer otras» para partir de lo actual.",
+    "failed": "Ghost no aceptó el cambio. Mira los logs.",
+    "unavailable": "No hay nada que aplicar o restaurar."
+  },
+  "follow": {
+    "before": "Antes: CTR {ctr} (posición {position})",
+    "after": "después: CTR {ctr} (posición {position})",
+    "window": "del {from} al {to}, {impressions} impresiones",
+    "pending": "El resultado aparece unos días después de aplicar, al pulsar «Actualizar» en Ideas.",
+    "noData": "Sin impresiones para esa búsqueda del {from} al {to}."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "title": {
+    "400": "Falta algo en el formulario",
+    "404": "No encontrado",
+    "409": "Algo cambió mientras tanto",
+    "422": "Datos no válidos",
+    "502": "Falló un servicio externo",
+    "default": "No se pudo completar",
+    "short": "Error"
+  },
+  "unexpected": "Error inesperado.",
+  "nothingWritten": "No se ha escrito nada en Ghost.",
+  "goBack": "Vuelve",
+  "tryAgain": "y prueba de nuevo.",
+  "back": {
+    "post": "Post"
+  },
+  "pageNotFound": "Esta página no existe. Puede que el enlace sea antiguo o tenga una errata."
+}

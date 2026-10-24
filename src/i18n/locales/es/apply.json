@@ -1,0 +1,38 @@
+{
+  "title": "Revisar antes de aplicar",
+  "meta": "Comprobado contra Ghost ahora mismo · {title}",
+  "conflict": "Conflicto: el post cambió en Ghost (actualizado {actual}) después de generar este plan ({planned}).",
+  "conflictAction": "Vuelve a planificar este post antes de aplicar.",
+  "notDraft": "El post ya no está en borrador en Ghost.",
+  "pending": {
+    "one": "Queda una pregunta [[PENDING:]] sin resolver en el texto planificado.",
+    "other": "Quedan {count} preguntas [[PENDING:]] sin resolver en el texto planificado."
+  },
+  "unknownLinks": {
+    "one": "Un enlace o imagen que no sale del borrador, de tus instrucciones ni de las fuentes leídas. Puede ser conocimiento general del redactor o algo que una web intentó colar: revísalo.",
+    "other": "{count} enlaces o imágenes que no salen del borrador, de tus instrucciones ni de las fuentes leídas. Puede ser conocimiento general del redactor o algo que una web intentó colar: revísalos."
+  },
+  "noImage": "No has elegido imagen destacada: se aplicará <strong>sin imagen</strong>.",
+  "chooseImage": "{link} antes, si quieres.",
+  "chooseImageLink": "Elegir una",
+  "imageChosen": "Se subirá la imagen que elegiste ({provider}).",
+  "changeImage": "Cambiarla",
+  "sanity": "El cuerpo nuevo tiene <strong>{after}</strong> palabras frente a <strong>{before}</strong> del original (<strong>{ratio}x</strong>, fuera del rango [{min}x, {max}x]). Posible descarrile del redactor.",
+  "allGood": "Todo en orden: se puede aplicar.",
+  "allowPending": {
+    "one": "Aplicar aunque quede una pregunta sin resolver",
+    "other": "Aplicar aunque queden {count} preguntas sin resolver"
+  },
+  "allowLinks": {
+    "one": "He revisado ese enlace y es correcto",
+    "other": "He revisado esos {count} enlaces y son correctos"
+  },
+  "forceSanity": "Aplicar de todas formas pese al control de longitud (ya revisé las diferencias)",
+  "confirmed": "He revisado todas las diferencias de este post",
+  "busy": "Aplicando en Ghost…",
+  "submit": "Aplicar en Ghost",
+  "hint": "Se guarda como borrador y Ghost conserva la versión anterior en su historial.",
+  "blocked": "No se puede aplicar hasta resolver lo anterior.",
+  "imageRemove": "Se quitará la imagen destacada actual del post (el archivo se queda en la biblioteca de medios de Ghost).",
+  "imageReplace": "Se sustituirá la imagen destacada actual por la que elegiste ({provider})."
+}
