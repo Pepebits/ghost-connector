@@ -48,7 +48,7 @@
     "marked": "^14.1.2",
     "openai": "^7.43.0",
     "p-limit": "^6.1.0",
-    "pino": "^9.5.0",
+    "pino": "^10.4.0",
     "pino-pretty": "^11.3.0",
     "qrcode": "^1.5.4",
     "sanitize-html": "^2.13.1",
