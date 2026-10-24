@@ -80,4 +80,15 @@ describe('plan links', () => {
     });
     expect(unknownLinks(a)).toEqual(['https://evil.test/?r=1', 'https://track.test/p.gif', 'javascript:alert(1']);
   });
+
+  it('on shared hosts a source only vouches for the same account', () => {
+    const a = base('[ok](https://github.com/acme/other-repo) [bad](https://github.com/attacker/malware)');
+    expect(unknownLinks(a)).toEqual(['https://github.com/attacker/malware']);
+  });
+
+  it('catches links that only appear once rendered: GFM autolinks and entity-encoded hrefs', () => {
+    const a = base('Visit www.evil-phish.test/login or <a href="&#104;ttps://evil2.test">here</a>.');
+    const found = unknownLinks(a);
+    expect(found).toEqual(expect.arrayContaining(['http://www.evil-phish.test/login', 'https://evil2.test']));
+  });
 });
