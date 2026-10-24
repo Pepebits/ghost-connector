@@ -1,7 +1,8 @@
 # Weekly scan of the PUBLISHED image: new vulnerabilities appear in the base
 # image and dependencies even when the code doesn't change. If any HIGH or
 # CRITICAL one has a fix, it opens (or updates) an issue: the cue to cut a
-# patch release, which rebuilds the image with the fixes.
+# patch release, which rebuilds the image with the fixes. Once a scan is clean
+# again (that release went out), the issue is closed.
 name: Image scan
 
 on:
@@ -54,4 +55,15 @@ jobs:
             gh issue comment "$existing" --body-file body.md
           else
             gh issue create --title "$title" --label security --body-file body.md
+          fi
+      - if: steps.trivy.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title='Published Docker image has fixable vulnerabilities'
+          existing=$(gh issue list --state open --label security --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue close "$existing" --comment "The scan of \`pepebits/ghost-connector:latest\` is clean again: $RUN_URL"
           fi
