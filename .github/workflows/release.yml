@@ -1,4 +1,5 @@
-# Release: push an annotated tag (git tag -a v1.2.3) and this runs the
+# Release: bump "version" in package.json, add its section to CHANGELOG.md,
+# then push an annotated tag (git tag -a v1.2.3) and this runs the
 # checks, publishes the Docker image to Docker Hub and GHCR, creates the GitHub release
 # from the tag's message and announces it on Telegram.
 #
@@ -37,6 +38,15 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      # The tag names the image; package.json is what the panel shows; the
+      # changelog section is the release notes. All three must agree.
+      - name: Check the tag matches package.json and CHANGELOG.md
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "v$version" ]; then echo "::error::Tag $TAG does not match package.json version ($version)"; exit 1; fi
+          if ! grep -qE "^## \[$version\]" CHANGELOG.md; then echo "::error::CHANGELOG.md has no '## [$version]' section"; exit 1; fi
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
@@ -122,9 +132,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      # The notes are the annotated tag's message (subject, blank line, body).
+      # The notes are this version's section of CHANGELOG.md.
       - run: |
-          git tag -l --format='%(contents)' "$TAG" > notes.md
+          version="${TAG#v}"
+          awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {f=1; next} f && /^## / {exit} f && !/^\[[^]]+\]: / {print}' CHANGELOG.md > notes.md
+          echo "" >> notes.md
+          echo "**Full changelog**: [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/$TAG/CHANGELOG.md)" >> notes.md
           gh release create "$TAG" --title "$TAG" --notes-file notes.md --verify-tag
         env:
           TAG: ${{ github.ref_name }}
@@ -140,12 +153,12 @@ jobs:
       tag: ${{ inputs.tag || github.ref_name }}
       chat: ${{ inputs.chat || 'announcements' }}
       dry_run: ${{ inputs.dry_run || false }}
-      notes_source: tag
+      notes_source: changelog
       project_name: Ghost Connector
       install_title: 🐳 Docker image
       install_command: docker pull pepebits/ghost-connector:{version}
       buttons: >-
-        [{"text": "📝 Notes", "url": "{repo_url}/releases/tag/{tag}"},
+        [{"text": "📝 Changelog", "url": "{repo_url}/blob/{tag}/CHANGELOG.md"},
          {"text": "📖 Docs", "url": "{repo_url}#readme"},
          {"text": "🐳 Docker Hub", "url": "https://hub.docker.com/r/pepebits/ghost-connector/tags"}]
       footer: 🏷️ Also tagged {minor} and latest

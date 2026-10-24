@@ -113,19 +113,27 @@ reaching the HTML), using `app.inject()` without opening ports.
 
 ## Releases
 
-Releases are cut from an **annotated** tag; its message becomes the release
-notes and the Telegram announcement:
+1. Add the version's section to `CHANGELOG.md` (`## [1.2.0] — YYYY-MM-DD`,
+   with `### Added`, `### Changed`, `### Fixed`, `### Security`…) and its
+   compare link at the bottom.
+2. Bump `version` in `package.json` (`npm version 1.2.0 --no-git-tag-version`):
+   it's what the panel shows in its footer.
+3. Commit (`chore(release): 1.2.0`), then tag that commit and push the tag:
 
 ```bash
-git tag -a v1.2.0    # subject line, blank line, then paragraphs and "- " lists
+git tag -a v1.2.0 -m "v1.2.0"
 git push origin v1.2.0
 ```
+
+The release refuses to start if the tag doesn't match `package.json` or the
+changelog has no section for it. The GitHub release notes and the Telegram
+announcement are that changelog section.
 
 `.github/workflows/release.yml` then runs the checks (typecheck, tests,
 build), publishes the Docker image to Docker Hub (`pepebits/ghost-connector`)
 and GHCR (`ghcr.io/pepebits/ghost-connector`) as `1.2.0`, `1.2` and `latest`
 (amd64 and arm64), creates the GitHub release
-from the tag's message and announces it with
+from the changelog section and announces it with
 [Pepebits/release-announce](https://github.com/Pepebits/release-announce).
 In the notes, titled lists ("Added", "Fixed", "Security"…) become collapsible
 sections with their emoji.
@@ -157,6 +165,6 @@ Three automations keep up with that:
 | **Image scan** of the published `pepebits/ghost-connector:latest`; if a HIGH/CRITICAL vulnerability with a fix shows up, it opens (or updates) an issue labelled `security` | `.github/workflows/image-scan.yml` | Mondays, or by hand |
 
 When that issue appears: merge the pending Dependabot PRs and cut a patch
-release (`git tag -a v1.2.1`). The release rebuilds the image from scratch
+release (see [Releases](#releases)); the next weekly scan closes the issue. The release rebuilds the image from scratch
 with the OS updates, scans it again (it isn't published if anything fixable
 is left) and publishes it with an SBOM and a build provenance attestation.
