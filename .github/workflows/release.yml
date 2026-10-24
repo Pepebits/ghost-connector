@@ -25,13 +25,15 @@ on:
 permissions:
   contents: read
 
+# Actions are pinned by commit SHA (the jobs below hold registry credentials);
+# Dependabot or a manual bump updates them.
 jobs:
   check:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
           cache: npm
@@ -47,22 +49,22 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
       # Docker Hub: DOCKERHUB_USERNAME and DOCKERHUB_TOKEN (an access token with
       # read/write on the repository), usually as organization secrets.
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: |
             pepebits/ghost-connector
@@ -71,15 +73,42 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest
-      - uses: docker/build-push-action@v6
+      # Scan before publishing: stop on any HIGH/CRITICAL vulnerability that has a fix.
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: ghost-connector:scan
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ghost-connector:scan
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
+          # A bill of materials and a build provenance attestation, attached to the image.
+          sbom: true
+          provenance: mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      # Docker Hub overview and short description, from docs/dockerhub.md.
+      - uses: peter-evans/dockerhub-description@432a30c9e07499fd01da9f8a49f0faf9e0ca5b77 # v4.0.2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: pepebits/ghost-connector
+          short-description: AI subagents that finish, optimize (SEO) and illustrate your Ghost drafts. Never publishes.
+          readme-filepath: docs/dockerhub.md
 
   github-release:
     needs: publish
@@ -87,7 +116,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
       # The notes are the annotated tag's message (subject, blank line, body).
@@ -103,7 +132,7 @@ jobs:
     if: always() && (github.event_name == 'workflow_dispatch' || needs.github-release.result == 'success')
     permissions:
       contents: read
-    uses: Pepebits/release-announce/.github/workflows/announce.yml@v1
+    uses: Pepebits/release-announce/.github/workflows/announce.yml@995de24932883caf9ea520d1d9c51f1737ac4e7b # v1
     with:
       tag: ${{ inputs.tag || github.ref_name }}
       chat: ${{ inputs.chat || 'announcements' }}
@@ -117,4 +146,8 @@ jobs:
          {"text": "📖 Docs", "url": "{repo_url}#readme"},
          {"text": "🐳 Docker Hub", "url": "https://hub.docker.com/r/pepebits/ghost-connector/tags"}]
       footer: 🏷️ Also tagged {minor} and latest
-    secrets: inherit
+    # Only what the announcement needs (never the registry credentials).
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TELEGRAM_TEST_CHAT_ID: ${{ secrets.TELEGRAM_TEST_CHAT_ID }}
