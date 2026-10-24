@@ -3,8 +3,8 @@ import { checkSession, createSession, findUser, totpEnabled, verifyLogin } from 
 import { getDb, migrateSingleUser } from '../../src/db/index.js';
 import { hashPassword } from '../../src/auth/store.js';
 
-describe('migración del login único a usuarios', () => {
-  it('la contraseña y el 2FA anteriores pasan a "admin", que queda como propietario', async () => {
+describe('migration from single login to users', () => {
+  it('the previous password and 2FA move to "admin", who becomes owner', async () => {
     const db = getDb();
     const set = db.prepare('INSERT INTO meta (key, value) VALUES (?, ?)');
     set.run('auth_password_hash', await hashPassword('la frase de antes'));

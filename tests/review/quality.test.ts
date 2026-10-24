@@ -5,7 +5,7 @@ const body = (sections: number, wordsPerSection: number) =>
   ['Entradilla sobre la copia profunda en JavaScript y por que importa.', ...Array.from({ length: sections }, (_, i) => `## Seccion ${i + 1}\n\n${'palabra '.repeat(wordsPerSection)}`)].join('\n\n');
 
 describe('review/quality', () => {
-  it('un articulo correcto saca 100', () => {
+  it('a correct article scores 100', () => {
     const r = checkQuality({
       title: 'Copia profunda en JavaScript',
       markdown: body(4, 250),
@@ -18,7 +18,7 @@ describe('review/quality', () => {
     expect(r.score).toBe(100);
   });
 
-  it('detecta los fallos tipicos', () => {
+  it('detects the typical issues', () => {
     const r = checkQuality({
       title: 'Otro titulo '.repeat(8),
       markdown: '# H1 en el cuerpo\n\nTexto corto [[PENDING: ¿dato?]]',
@@ -32,13 +32,13 @@ describe('review/quality', () => {
     expect(r.score).toBe(0);
   });
 
-  it('avisa de un titulo de mas de 70 caracteres', () => {
+  it('warns about a title over 70 characters', () => {
     const long = 'El impacto del cambio de arquitectura de vehículos: de múltiples ECUs al SDV';
     expect(checkQuality({ title: long, markdown: 'x', hasImage: true }).checks.find((c) => c.id === 'title-length')?.ok).toBe(false);
     expect(checkQuality({ title: long.slice(0, 70), markdown: 'x', hasImage: true }).checks.find((c) => c.id === 'title-length')?.ok).toBe(true);
   });
 
-  it('la keyword se compara sin acentos ni mayusculas', () => {
+  it('the keyword is compared ignoring accents and case', () => {
     const r = checkQuality({ title: 'Cómo hacer una COPIA PROFUNDA', markdown: 'x', primaryKeyword: 'copia profunda', hasImage: true });
     expect(r.checks.find((c) => c.id === 'keyword-title')?.ok).toBe(true);
   });

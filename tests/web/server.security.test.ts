@@ -5,7 +5,7 @@ import { buildApp } from '../../src/web/server.js';
 // app.inject() (fastify light-my-request) exercises the real hooks without opening
 // any socket or touching Ghost/DeepSeek: GET routes only read the local
 // SQLite index (empty in tests, see tests/setup.ts).
-describe('server: guards de seguridad', () => {
+describe('server: security guards', () => {
   const FIXED_TOKEN = 'test-session-token';
   let app: Awaited<ReturnType<typeof buildApp>>['app'];
 
@@ -14,17 +14,17 @@ describe('server: guards de seguridad', () => {
     ({ app } = await buildApp({ port: 4399, host: '127.0.0.1', sessionToken: FIXED_TOKEN }));
   });
 
-  it('rechaza una peticion sin token/cookie con 401', async () => {
+  it('rejects a request without token/cookie with 401', async () => {
     const res = await app.inject({ method: 'GET', url: '/' });
     expect(res.statusCode).toBe(401);
   });
 
-  it('permite /healthz sin autenticacion', async () => {
+  it('allows /healthz without authentication', async () => {
     const res = await app.inject({ method: 'GET', url: '/healthz' });
     expect(res.statusCode).toBe(200);
   });
 
-  it('canjea ?t=<token> por una cookie httpOnly y dejar pasar esa misma respuesta', async () => {
+  it('exchanges ?t=<token> for an httpOnly cookie and lets that same response through', async () => {
     const res = await app.inject({ method: 'GET', url: `/?t=${FIXED_TOKEN}` });
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toBe('/');
@@ -33,12 +33,12 @@ describe('server: guards de seguridad', () => {
     expect(cookie?.httpOnly).toBe(true);
   });
 
-  it('rechaza un token incorrecto', async () => {
+  it('rejects a wrong token', async () => {
     const res = await app.inject({ method: 'GET', url: '/?t=lo-que-sea' });
     expect(res.statusCode).toBe(401);
   });
 
-  it('rechaza un POST con un Origin ajeno, incluso con la cookie de sesion valida', async () => {
+  it('rejects a POST with a foreign Origin, even with a valid session cookie', async () => {
     const auth = await app.inject({ method: 'GET', url: `/?t=${FIXED_TOKEN}` });
     const cookie = auth.cookies.find((c) => c.name === 'gc_session')!;
     const res = await app.inject({
@@ -49,12 +49,12 @@ describe('server: guards de seguridad', () => {
     expect(res.statusCode).toBe(403);
   });
 
-  it('rechaza un POST con un Host inesperado (cierra tambien DNS rebinding)', async () => {
+  it('rejects a POST with an unexpected Host (also blocks DNS rebinding)', async () => {
     const res = await app.inject({ method: 'POST', url: '/sync', headers: { host: 'evil.example.com' } });
     expect(res.statusCode).toBe(403);
   });
 
-  it('nunca expone secretos (API keys) en el HTML del dashboard', async () => {
+  it('never exposes secrets (API keys) in the dashboard HTML', async () => {
     const auth = await app.inject({ method: 'GET', url: `/?t=${FIXED_TOKEN}` });
     const cookie = auth.cookies.find((c) => c.name === 'gc_session')!;
     const res = await app.inject({ method: 'GET', url: '/', headers: { cookie: `${cookie.name}=${cookie.value}` } });
@@ -62,7 +62,7 @@ describe('server: guards de seguridad', () => {
     expect(res.body).not.toContain(process.env.AI_API_KEY);
   });
 
-  it('la pagina de configuracion nunca incluye los secretos, solo si estan configurados', async () => {
+  it('the settings page never includes secrets, only whether they are set', async () => {
     const auth = await app.inject({ method: 'GET', url: `/?t=${FIXED_TOKEN}` });
     const cookie = auth.cookies.find((c) => c.name === 'gc_session')!;
     const res = await app.inject({ method: 'GET', url: '/settings', headers: { cookie: `${cookie.name}=${cookie.value}` } });
@@ -72,7 +72,7 @@ describe('server: guards de seguridad', () => {
     expect(res.body).toContain('type="password"');
   });
 
-  it('guardar la configuracion exige el mismo origen (CSRF)', async () => {
+  it('saving settings requires same origin (CSRF)', async () => {
     const auth = await app.inject({ method: 'GET', url: `/?t=${FIXED_TOKEN}` });
     const cookie = auth.cookies.find((c) => c.name === 'gc_session')!;
     for (const url of ['/settings/env', '/api/settings/test/ai', '/settings/openverse/register']) {
@@ -87,7 +87,7 @@ describe('server: guards de seguridad', () => {
   });
 });
 
-describe('server: detras de un proxy (publicUrl)', () => {
+describe('server: behind a proxy (publicUrl)', () => {
   const TOKEN = 'test-session-token';
   let app: Awaited<ReturnType<typeof buildApp>>['app'];
 
@@ -95,7 +95,7 @@ describe('server: detras de un proxy (publicUrl)', () => {
     ({ app } = await buildApp({ port: 4398, host: '127.0.0.1', sessionToken: TOKEN, publicUrl: 'https://ghost.example.com' }));
   });
 
-  it('acepta el Host y el Origin publicos y sigue rechazando los ajenos', async () => {
+  it('accepts the public Host and Origin and still rejects foreign ones', async () => {
     const auth = await app.inject({ method: 'GET', url: `/?t=${TOKEN}`, headers: { host: 'ghost.example.com' } });
     const cookie = auth.cookies.find((c) => c.name === 'gc_session')!;
     expect(cookie.secure).toBe(true);

@@ -8,7 +8,7 @@ const job = (over: Partial<JobRecord>): JobRecord => ({
 });
 
 describe('web/jobInfo', () => {
-  it('describe sobre que posts trabaja', () => {
+  it('describes which posts it works on', () => {
     const titles = new Map([['a', 'Post A']]);
     expect(jobTarget(job({ params_json: '{"postIds":["a"]}' }), titles)).toBe('Post A');
     expect(jobTarget(job({ params_json: '{"postIds":["a","b","c"]}' }), titles)).toBe('Post A and 2 more');
@@ -16,11 +16,11 @@ describe('web/jobInfo', () => {
     expect(jobTarget(job({ params_json: 'corrupto' }), titles)).toBe('—');
   });
 
-  it('opciones legibles', () => {
+  it('readable options', () => {
     expect(jobOptions(job({ params_json: '{"mode":"improve","extraInstructions":"x"}' }))).toEqual(['mode: improve version', 'with instructions']);
   });
 
-  it('duraciones y fechas relativas', () => {
+  it('durations and relative dates', () => {
     expect(formatDuration(500)).toBe('<1 s');
     expect(formatDuration(26_000)).toBe('26 s');
     expect(formatDuration(125_000)).toBe('2 min 5 s');

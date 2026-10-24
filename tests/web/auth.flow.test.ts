@@ -15,7 +15,7 @@ const cookieOf = (res: { cookies: Array<{ name: string; value: string }> }, name
 };
 const form = (o: Record<string, string>) => new URLSearchParams(o).toString();
 
-describe('login con usuarios, roles y 2FA', () => {
+describe('login with users, roles and 2FA', () => {
   let app: App;
   let token: string;
   let admin: string;
@@ -30,7 +30,7 @@ describe('login con usuarios, roles y 2FA', () => {
     ({ app, sessionToken: token } = await buildApp({ port: 4398, host: '127.0.0.1' }));
   });
 
-  it('sin usuarios: quien abre el panel primero crea el admin (como Ghost), y luego ya no', async () => {
+  it('no users: whoever opens the panel first creates the admin (like Ghost), and then nobody else can', async () => {
     const first = await app.inject({ method: 'GET', url: '/ideas', headers: { accept: 'text/html' } });
     expect(first.headers.location).toBe('/setup-password');
     expect((await app.inject({ method: 'GET', url: '/setup-password' })).body).toContain('name="repeat"');
@@ -50,7 +50,7 @@ describe('login con usuarios, roles y 2FA', () => {
     expect((await app.inject({ method: 'GET', url: `/?t=${token}`, headers: { accept: 'text/html' } })).headers.location).toMatch(/^\/login/);
   });
 
-  it('sin sesión: HTML va al login con next, el resto 401', async () => {
+  it('no session: HTML goes to login with next, everything else 401', async () => {
     const html = await app.inject({ method: 'GET', url: '/ideas?x=1', headers: { accept: 'text/html' } });
     expect(html.headers.location).toBe('/login?next=%2Fideas%3Fx%3D1');
     expect((await app.inject({ method: 'GET', url: '/api/posts' })).statusCode).toBe(401);
@@ -58,7 +58,7 @@ describe('login con usuarios, roles y 2FA', () => {
     expect((await app.inject({ method: 'GET', url: '/app.css' })).statusCode).not.toBe(401);
   });
 
-  it('usuario y contraseña correctos → sesión y vuelve a next (nunca a otro sitio)', async () => {
+  it('correct username and password → session and back to next (never another site)', async () => {
     expect((await login('ana', 'mala')).statusCode).toBe(401);
     expect((await login('nadie')).statusCode).toBe(401);
     const res = await app.inject({ method: 'POST', url: '/login', headers: { host: HOST, 'content-type': FORM }, payload: form({ username: 'Ana', password: PW, next: '//evil.com' }) });
@@ -72,7 +72,7 @@ describe('login con usuarios, roles y 2FA', () => {
     expect((await app.inject({ method: 'GET', url: '/api/posts', headers: { cookie } })).statusCode).toBe(401);
   });
 
-  it('invitación de editor: un solo uso, y el editor no entra en Configuración', async () => {
+  it('editor invite: single use, and the editor cannot open Settings', async () => {
     const created = await post('/settings/users/invite', admin, { role: 'editor' });
     const link = created.body.match(/\/invite\/([\w-]+)/)![1]!;
     expect((await app.inject({ method: 'GET', url: `/invite/${link}` })).statusCode).toBe(200);
@@ -103,7 +103,7 @@ describe('login con usuarios, roles y 2FA', () => {
     expect(settings.body).toContain('luis');
   });
 
-  it('propietario: no se le degrada ni elimina; un admin solo gestiona editores; se transfiere con contraseña', async () => {
+  it('owner: cannot be demoted or deleted; an admin only manages editors; transferred with password', async () => {
     const ana = auth.findUser('ana')!;
     const luis = auth.findUser('luis')!;
     expect(() => auth.setRole(ana.id, 'editor')).toThrow(auth.AuthError);
@@ -132,7 +132,7 @@ describe('login con usuarios, roles y 2FA', () => {
     auth.setRole(luis.id, 'editor');
   });
 
-  it('enlace para nueva contraseña: cambia la del usuario y cierra sus sesiones', async () => {
+  it('password reset link: changes the password of that user and closes their sessions', async () => {
     const luis = auth.findUser('luis')!;
     const before = cookieOf(await login('luis'));
     const res = await post(`/settings/users/${luis.id}/reset-password`, admin);
@@ -145,7 +145,7 @@ describe('login con usuarios, roles y 2FA', () => {
     expect(auth.findUser('luis')?.role).toBe('editor');
   });
 
-  it('con 2FA: pide el código; un código de recuperación vale una sola vez', async () => {
+  it('with 2FA: asks for the code; a recovery code works only once', async () => {
     const ana = auth.findUser('ana')!;
     const secret = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP';
     const codes = auth.enableTotp(ana.id, secret);
@@ -174,7 +174,7 @@ describe('login con usuarios, roles y 2FA', () => {
     auth.clearFailures(auth.loginKey('ana'));
   });
 
-  it('enlace de un solo uso (abrir el navegador) entra como el primer admin', async () => {
+  it('single-use link (open browser) signs in as the first admin', async () => {
     const code = issueOneTimeLogin();
     const first = await app.inject({ method: 'GET', url: `/jobs?once=${code}` });
     expect(first.headers.location).toBe('/jobs');
@@ -184,7 +184,7 @@ describe('login con usuarios, roles y 2FA', () => {
     expect(second.headers.location).toMatch(/^\/login/);
   });
 
-  it('tras 5 fallos bloquea esa cuenta (no las demás), incluso con la contraseña buena', async () => {
+  it('after 5 failures locks that account (not others), even with the right password', async () => {
     for (let i = 0; i < 5; i++) await login('ana', 'mal');
     expect((await login('ana')).statusCode).toBe(429);
     expect((await login('luis', 'otra frase todavía más larga')).statusCode).toBe(302);

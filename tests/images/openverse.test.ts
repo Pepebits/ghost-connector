@@ -10,13 +10,13 @@ const img = {
 };
 
 describe('images/openverse', () => {
-  it('atribucion TASL: titulo, autor, fuente y licencia enlazada', () => {
+  it('TASL attribution: title, author, source and linked license', () => {
     expect(openverseCredit(img)).toBe(
       '<a href="https://example.com/photo">&quot;Laptop Code&quot;</a> by <a href="https://example.com/u">Matthew Henry</a> via Openverse, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>',
     );
   });
 
-  it('escapa titulo y autor (los escribe cualquiera) y nunca enlaza javascript:', () => {
+  it('escapes title and author (anyone can write them) and never links javascript:', () => {
     const credit = openverseCredit({ ...img, title: '<img src=x onerror=alert(1)>', creator: 'a"b', creator_url: 'javascript:alert(1)' });
     expect(credit).not.toContain('<img');
     expect(credit).not.toContain('javascript:');
@@ -24,13 +24,13 @@ describe('images/openverse', () => {
     expect(creditLink('x', 'data:text/html,hi')).toBe('x');
   });
 
-  it('sin titulo ni autor sigue citando la licencia', () => {
+  it('still cites the license without title or author', () => {
     expect(openverseCredit({ ...img, title: null, creator: null, license: 'cc0', license_version: '1.0' })).toMatch(/Image.*via Openverse.*CC0 1\.0/);
   });
 });
 
-describe('images: orden de las fuentes', () => {
-  it('IMAGE_SOURCES_ORDER valida nombres conocidos y sin repetidos', async () => {
+describe('images: source order', () => {
+  it('IMAGE_SOURCES_ORDER accepts known names without repeats', async () => {
     const { validateEnv } = await import('../../src/config.js');
     const base = { ...process.env };
     expect(validateEnv({ ...base, IMAGE_SOURCES_ORDER: 'openverse,unsplash' }).ok).toBe(true);
@@ -38,7 +38,7 @@ describe('images: orden de las fuentes', () => {
     expect(validateEnv({ ...base, IMAGE_SOURCES_ORDER: 'pexels,pexels' }).ok).toBe(false);
   });
 
-  it('el StockPhotoProvider prueba las fuentes en el orden configurado', async () => {
+  it('StockPhotoProvider tries sources in the configured order', async () => {
     const { StockPhotoProvider } = await import('../../src/images/stock.provider.js');
     const calls: string[] = [];
     const fake = (name: string, hit: boolean) => ({
@@ -56,15 +56,15 @@ describe('images: orden de las fuentes', () => {
   });
 });
 
-describe('images/openverse: autenticacion', () => {
-  it('lee la cuota restante de cualquier modelo de limite', async () => {
+describe('images/openverse: authentication', () => {
+  it('reads the remaining quota from any rate-limit model', async () => {
     const { remainingFrom } = await import('../../src/images/openverse.provider.js');
     expect(remainingFrom(new Headers({ 'x-ratelimit-available-anon_sustained': '198' }))).toBe(198);
     expect(remainingFrom(new Headers({ 'x-ratelimit-available-standard_sustained': '9000' }))).toBe(9000);
     expect(remainingFrom(new Headers({}))).toBeNull();
   });
 
-  it('sin credenciales no pide token (busqueda anonima)', async () => {
+  it('does not request a token without credentials (anonymous search)', async () => {
     const { openverseAuthHeaders } = await import('../../src/images/openverseAuth.js');
     const { reloadConfig } = await import('../../src/config.js');
     const saved = { id: process.env.OPENVERSE_CLIENT_ID, secret: process.env.OPENVERSE_CLIENT_SECRET };
@@ -81,14 +81,14 @@ describe('images/openverse: autenticacion', () => {
     }
   });
 
-  it('un guardado parcial no toca los booleanos (no desactiva Openverse al registrarse)', async () => {
+  it('a partial save leaves booleans alone (registering does not disable Openverse)', async () => {
     const { resolveUpdates } = await import('../../src/settings/envFile.js');
     expect(resolveUpdates({ OPENVERSE_CLIENT_ID: 'id', OPENVERSE_CLIENT_SECRET: 's' })).toEqual({ OPENVERSE_CLIENT_ID: 'id', OPENVERSE_CLIENT_SECRET: 's' });
   });
 });
 
-describe('images/openverse: errores', () => {
-  it('muestra los errores por campo que Openverse devuelve en la raiz', async () => {
+describe('images/openverse: errors', () => {
+  it('shows the per-field errors Openverse returns at the root', async () => {
     const { detail } = await import('../../src/images/openverseAuth.js');
     expect(detail({ email: ['Enter a valid email address.'] })).toBe('email: Enter a valid email address.');
     expect(detail({ name: ['already exists.'], email: ['x'] })).toBe('nombre: already exists.; email: x');

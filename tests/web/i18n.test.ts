@@ -8,12 +8,12 @@ import { createUser, findUser } from '../../src/auth/store.js';
 import { buildApp } from '../../src/web/server.js';
 
 describe('i18n: t()', () => {
-  it('cae al ingles si el idioma no tiene la clave, y a la clave si nadie la tiene', () => {
+  it('falls back to English if the language lacks the key, and to the key if nobody has it', () => {
     expect(t('settings.title', undefined, 'xx')).toBe('Settings');
     expect(t('settings.no.such.key')).toBe('settings.no.such.key');
   });
 
-  it('plurales en ingles y en espanol', () => {
+  it('plurals in English and Spanish', () => {
     expect(t('settings.cost.runs', { count: 1 }, 'en')).toBe('in 1 run');
     expect(t('settings.cost.runs', { count: 3 }, 'en')).toBe('in 3 runs');
     expect(t('settings.cost.runs', { count: 1 }, 'es')).toBe('en 1 ejecución');
@@ -45,13 +45,13 @@ describe('POST /settings/language', () => {
     reloadConfig();
   });
 
-  it('rechaza un idioma desconocido sin tocar el .env', async () => {
+  it('rejects an unknown language without touching .env', async () => {
     const res = await app.inject({ method: 'POST', url: '/settings/language', headers: headers(), payload: 'lang=xx' });
     expect(res.statusCode).toBe(400);
     expect(readFileSync(envFile, 'utf8')).toBe('UI_LANGUAGE=en\n');
   });
 
-  it('cambia a espanol, vuelve al Referer y la pagina sale en espanol', async () => {
+  it('switches to Spanish, returns to the Referer and the page renders in Spanish', async () => {
     const res = await app.inject({
       method: 'POST',
       url: '/settings/language',

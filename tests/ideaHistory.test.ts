@@ -4,8 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { getConfig } from '../src/config.js';
 import { dismissIdea, ideaId, loadIdeaHistory, markIdeaUsed, restoreIdea } from '../src/orchestrator/ideas.js';
 
-describe('historial de ideas', () => {
-  it('descartar, recuperar y marcar como usada por id estable', () => {
+describe('idea history', () => {
+  it('dismisses, restores and marks as used by stable id', () => {
     const dir = getConfig().DATA_DIR;
     mkdirSync(dir, { recursive: true });
     const ideas = [{ title: 'Riego por goteo casero', topic: 't', why: 'w', related: [], query: '' }];

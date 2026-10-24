@@ -35,7 +35,7 @@ describe('research/searchConsole', () => {
 });
 
 describe('bing webmaster', () => {
-  it('convierte GetQueryStats: solo el periodo pedido y posiciones validas', async () => {
+  it('converts GetQueryStats: only the requested period and valid positions', async () => {
     const { bingRows } = await import('../src/research/bingWebmaster.js');
     const now = Date.UTC(2026, 9, 13);
     const day = 86400_000;
@@ -51,7 +51,7 @@ describe('bing webmaster', () => {
     expect(rows).toEqual([{ query: 'riego por goteo', page: '', clicks: 1, impressions: 40, position: 11, source: 'bing' }]);
   });
 
-  it('suma Google y Bing en la misma busqueda y conserva la pagina de Google', async () => {
+  it('merges Google and Bing for the same query and keeps the Google page', async () => {
     const { opportunities } = await import('../src/research/searchConsole.js');
     const list = opportunities([
       { query: 'Riego por goteo', page: 'https://blog.test/riego/', clicks: 0, impressions: 30, position: 10, source: 'google' },
@@ -64,7 +64,7 @@ describe('bing webmaster', () => {
 });
 
 describe('lowCtr', () => {
-  it('marca primera pagina con menos de la mitad del CTR habitual, solo Google con pagina', async () => {
+  it('flags first-page results with under half the usual CTR, Google with a page only', async () => {
     const { lowCtr } = await import('../src/research/searchConsole.js');
     const list = lowCtr([
       { query: 'poda tomates', page: 'https://blog.test/poda/', clicks: 2, impressions: 200, position: 2, source: 'google' },

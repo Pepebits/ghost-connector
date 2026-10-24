@@ -13,12 +13,12 @@ vi.mock('../../src/agents/snippet.agent.js', () => ({
 const { applySnippet, bareUrl, loadSnippet, refreshFollowUps, restoreSnippet, slugFromUrl, suggestForPage } = await import('../../src/orchestrator/snippet.js');
 
 describe('orchestrator/snippet', () => {
-  it('saca el slug de la URL', () => {
+  it('extracts the slug from the URL', () => {
     expect(slugFromUrl('https://blog.test/poda-tomates/?utm=x')).toBe('poda-tomates');
     expect(slugFromUrl('nope')).toBeNull();
   });
 
-  it('propone, aplica solo meta_title/meta_description sin status y restaura', async () => {
+  it('proposes, applies only meta_title/meta_description without status, and restores', async () => {
     const plan = await suggestForPage({ page: post.url, query: 'podar tomates', position: 3, ctr: 0.01 });
     expect(plan.options[0]!.meta_title).toBe('Cómo podar tomates');
     expect(await applySnippet('p1', { meta_title: 'Nuevo', meta_description: 'Desc nueva' })).toEqual({ status: 'applied' });
@@ -27,7 +27,7 @@ describe('orchestrator/snippet', () => {
     expect(post).toMatchObject({ meta_title: 'Viejo', meta_description: 'Desc vieja' });
   });
 
-  it('no sobrescribe si se cambiaron en Ghost entre medias', async () => {
+  it('does not overwrite if they were changed in Ghost meanwhile', async () => {
     await suggestForPage({ page: post.url, query: 'podar tomates', position: 3, ctr: 0.01 });
     post.meta_title = 'Cambiado a mano';
     edit.mockClear();
@@ -35,7 +35,7 @@ describe('orchestrator/snippet', () => {
     expect(edit).not.toHaveBeenCalled();
   });
 
-  it('seguimiento: CTR de la busqueda desde el dia despues de aplicar, solo con dias suficientes', async () => {
+  it('follow-up: query CTR from the day after applying, only with enough days', async () => {
     post.meta_title = 'Viejo';
     await suggestForPage({ page: post.url, query: 'podar tomates', position: 3, ctr: 0.01 });
     await applySnippet('p1', { meta_title: 'Nuevo', meta_description: 'D' });
@@ -44,7 +44,7 @@ describe('orchestrator/snippet', () => {
       { query: 'otra', page: post.url, clicks: 50, impressions: 60, position: 1 },
     ]);
     await refreshFollowUps(fetch);
-    expect(fetch).not.toHaveBeenCalled(); // recien aplicado: aun no
+    expect(fetch).not.toHaveBeenCalled(); // just applied: not yet
     vi.useFakeTimers({ now: Date.now() + 10 * 86400_000, toFake: ['Date'] });
     await refreshFollowUps(fetch);
     vi.useRealTimers();
@@ -52,12 +52,12 @@ describe('orchestrator/snippet', () => {
     expect(loadSnippet('p1')?.followUp).toMatchObject({ impressions: 100, clicks: 6, ctr: 0.06, position: 3 });
   });
 
-  it('no acepta una URL que no es la del post (p. ej. /tag/poda-tomates/)', async () => {
+  it('rejects a URL that does not belong to the post (e.g. /tag/poda-tomates/)', async () => {
     await expect(suggestForPage({ page: 'https://blog.test/tag/poda-tomates/', query: 'q', position: 3, ctr: 0 })).rejects.toThrow(/not the URL/);
     expect(bareUrl('http://www.Blog.test/poda-tomates/?x=1')).toBe(bareUrl('https://blog.test/poda-tomates'));
   });
 
-  it('el seguimiento filtra por la pagina tal como la da Search Console', async () => {
+  it('the follow-up filters by the page exactly as Search Console reports it', async () => {
     post.meta_title = 'Viejo';
     post.meta_description = 'Desc vieja';
     await suggestForPage({ page: 'http://www.blog.test/poda-tomates', query: 'podar tomates', position: 3, ctr: 0.01 });

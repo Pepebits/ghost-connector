@@ -31,12 +31,12 @@ function plan(): RunArtifact {
 }
 
 describe('orchestrator/fixQuality', () => {
-  it('solo manda a la IA lo que se arregla en el texto (no pendientes ni imagen)', () => {
+  it('only sends the AI what is fixable in the text (no pending markers or image)', () => {
     const problems = fixableProblems(plan());
     expect(problems.map((p) => p.split(':')[0])).toEqual(['Length', 'Structure']);
   });
 
-  it('corrige sobre el texto del plan, lo guarda y suma el coste', async () => {
+  it('fixes the plan text, saves it and adds the cost', async () => {
     const { artifact } = await fixPlanQuality(plan());
     expect(calls[0]!.markdown).toContain('Texto corto.');
     expect(artifact.writer!.title).toBe('Huerto urbano en el balcón');

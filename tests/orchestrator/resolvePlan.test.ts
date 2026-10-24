@@ -30,7 +30,7 @@ function plan(answers?: RunArtifact['answers']): RunArtifact {
 }
 
 describe('orchestrator/resolvePlan', () => {
-  it('guarda la respuesta, suma el coste y conserva la pregunta de seguimiento', async () => {
+  it('saves the answer, adds the cost and keeps the follow-up question', async () => {
     await resolvePlan(plan(), [{ question: '¿cómo empezó Lucía?', answer: 'Fundó la empresa en Valencia; el equipo es pequeño' }]);
     const saved = await findLatestArtifact('post-res-1');
     expect(saved?.answers).toEqual([expect.objectContaining({ question: '¿cómo empezó Lucía?', answer: 'Fundó la empresa en Valencia; el equipo es pequeño' })]);
@@ -38,7 +38,7 @@ describe('orchestrator/resolvePlan', () => {
     expect(saved?.cost.inputTokens).toBe(10);
   });
 
-  it('las correcciones llegan al resolver con la respuesta anterior y reemplazan la guardada', async () => {
+  it('corrections reach the resolver with the previous answer and replace the saved one', async () => {
     calls.length = 0;
     const p = plan([{ question: '¿cómo empezó Lucía?', answer: 'En Valencia', at: '2026-01-01T00:00:00.000Z' }]);
     await resolvePlan(p, [], [{ question: '¿cómo empezó Lucía?', answer: 'En Alicante' }]);
@@ -46,7 +46,7 @@ describe('orchestrator/resolvePlan', () => {
     expect((await findLatestArtifact('post-res-1'))?.answers?.[0]?.answer).toBe('En Alicante');
   });
 
-  it('una correccion sin cambios no se envia', async () => {
+  it('an unchanged correction is not sent', async () => {
     calls.length = 0;
     await resolvePlan(plan([{ question: 'q', answer: 'igual', at: '' }]), [], [{ question: 'q', answer: 'igual' }]);
     expect(calls[0]).toMatchObject({ corrections: [] });

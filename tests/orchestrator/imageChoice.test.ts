@@ -26,7 +26,7 @@ function plan(): RunArtifact {
 }
 
 describe('orchestrator/imageChoice', () => {
-  it('elegir descarga en local (sin Ghost) y propone el alt del agente', async () => {
+  it('choosing downloads locally (no Ghost) and proposes the alt from the agent', async () => {
     const chosen = await choosePlanImage(plan(), 0);
     expect(chosen.imageChoice).toMatchObject({ kind: 'option', alt: 'Alt del agente', captionText: '' });
     const file = chosen.imageChoice!.kind === 'option' ? chosen.imageChoice!.localFile : '';
@@ -34,14 +34,14 @@ describe('orchestrator/imageChoice', () => {
     expect(download).toHaveBeenCalledOnce();
   });
 
-  it('el pie del editor se escapa y la atribucion va siempre detras', async () => {
+  it('the caption from the editor is escaped and the attribution always goes after it', async () => {
     const chosen = await choosePlanImage(plan(), 0);
     const edited = await editPlanImageText(chosen, 'Equipo trabajando', 'Oficina <b>nueva</b>');
     expect(chosenCaption(edited.imageChoice as never, 'es')).toBe('Oficina &lt;b&gt;nueva&lt;/b&gt; · Foto de Ana en Unsplash');
     expect((await findLatestArtifact('post-img-1'))?.imageChoice).toMatchObject({ alt: 'Equipo trabajando' });
   });
 
-  it('"sin imagen" borra la copia local', async () => {
+  it('"no image" deletes the local copy', async () => {
     const chosen = await choosePlanImage(plan(), 0);
     const file = chosen.imageChoice!.kind === 'option' ? chosen.imageChoice!.localFile : '';
     const none = await skipPlanImage(chosen);
@@ -49,12 +49,12 @@ describe('orchestrator/imageChoice', () => {
     expect(existsSync(localImagePath(file))).toBe(false);
   });
 
-  it('no sirve rutas fuera de la carpeta de imagenes', () => {
+  it('does not serve paths outside the images folder', () => {
     expect(() => localImagePath('../../etc/passwd')).toThrow();
     expect(() => localImagePath('runs/x.json')).toThrow();
   });
 
-  it('un indice que no existe falla', async () => {
+  it('a nonexistent index fails', async () => {
     await expect(choosePlanImage(plan(), 5)).rejects.toThrow(/no longer in the list/);
   });
 });

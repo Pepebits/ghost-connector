@@ -9,7 +9,7 @@ const FORM = 'application/x-www-form-urlencoded';
 const PW = 'una frase bien larga';
 const POST = '6a11e93c0000000000000001';
 
-describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => {
+describe('teamwork: activity, assignments, notes and presence', () => {
   let app: Awaited<ReturnType<typeof buildApp>>['app'];
   let ana: string;
   let luis: string;
@@ -30,7 +30,7 @@ describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => 
     luis = await login('luis');
   });
 
-  it('el registro guarda accesos y fallos, y solo lo ve un admin', async () => {
+  it('the log records sign-ins and failures, and only an admin sees it', async () => {
     await login('ana', 'mala');
     const rows = team.listActivity({ limit: 10 });
     expect(rows.some((r) => r.action === 'login' && r.actor === 'luis')).toBe(true);
@@ -44,7 +44,7 @@ describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => 
     expect((await app.inject({ method: 'GET', url: '/settings/activity', headers: { cookie: luis } })).statusCode).toBe(403);
   });
 
-  it('asignar un post: queda en el registro y aparece en «Míos»', async () => {
+  it('assigning a post: logged and shown under "Mine"', async () => {
     expect((await post(`/posts/${POST}/assign`, ana, { username: 'nadie' })).statusCode).toBe(400);
     expect((await post(`/posts/${POST}/assign`, ana, { username: 'LUIS' })).headers.location).toBe(`/posts/${POST}`);
     expect(team.getAssignment(POST)).toMatchObject({ username: 'luis', assignedBy: 'ana' });
@@ -55,7 +55,7 @@ describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => 
     expect(team.getAssignment(POST)).toBeNull();
   });
 
-  it('notas: cada uno borra las suyas; un admin, cualquiera', async () => {
+  it('notes: each user deletes their own; an admin, any', async () => {
     await post(`/posts/${POST}/notes`, luis, { text: '  Falta revisar las cifras  ' });
     await post(`/posts/${POST}/notes`, ana, { text: '   ' }); // empty: ignored
     const [note] = team.listNotes(POST);
@@ -69,7 +69,7 @@ describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => 
     expect(team.listNotes(POST).map((n) => n.author)).toEqual(['ana']);
   });
 
-  it('presencia: avisa de quién más tiene el post abierto, y caduca', async () => {
+  it('presence: shows who else has the post open, and expires', async () => {
     const first = await app.inject({ method: 'POST', url: `/api/posts/${POST}/presence`, headers: { host: HOST, cookie: ana } });
     expect(first.json().html).toBe('');
     const second = await app.inject({ method: 'POST', url: `/api/posts/${POST}/presence`, headers: { host: HOST, cookie: luis } });
@@ -78,7 +78,7 @@ describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => 
     expect(team.othersOnPost(POST, 'ana', Date.now() + team.PRESENCE_MS + 1)).toEqual([]);
   });
 
-  it('borrar a un usuario libera sus posts, pero sus notas conservan el nombre', async () => {
+  it('deleting a user frees their posts, but their notes keep the name', async () => {
     const tmp = await auth.createUser('temporal', PW, 'editor');
     runWithUser(tmp, () => team.addNote(POST, 'Nota de temporal'));
     team.assignPost(POST, 'temporal');
@@ -87,7 +87,7 @@ describe('trabajo en equipo: actividad, asignaciones, notas y presencia', () => 
     expect(team.listNotes(POST).some((n) => n.author === 'temporal')).toBe(true);
   });
 
-  it('cambiar la configuración guarda qué cambió, nunca el valor', () => {
+  it('changing settings logs what changed, never the value', () => {
     runWithUser(auth.findUser('ana'), () => team.logActivity('settingsSaved', { detail: 'AI_API_KEY' }));
     const row = team.listActivity({ limit: 1 })[0]!;
     expect(row).toMatchObject({ actor: 'ana', action: 'settingsSaved', detail: 'AI_API_KEY' });

@@ -25,7 +25,7 @@ function makePlan(): RunArtifact {
 }
 
 describe('orchestrator/reviewPlan', () => {
-  it('rechazar la entradilla y aceptar la seccion nueva guarda la mezcla y registra las decisiones', async () => {
+  it('rejecting the lede and accepting the new section saves the merge and records the decisions', async () => {
     const plan = makePlan();
     // Hunks: [original lede -> rewritten] and [new section added]
     await applyPlanReview(plan, markdownFingerprint(plan.writer!.markdown), [false, true]);
@@ -36,7 +36,7 @@ describe('orchestrator/reviewPlan', () => {
     expect(getReviewStats().find((s) => s.category === 'modified:intro')?.rejected).toBeGreaterThanOrEqual(1);
   });
 
-  it('rechaza una revision hecha sobre otra version del plan', async () => {
+  it('rejects a review made against another plan version', async () => {
     await expect(applyPlanReview(makePlan(), 'huella-vieja', [true, true])).rejects.toBeInstanceOf(StaleReviewError);
   });
 });

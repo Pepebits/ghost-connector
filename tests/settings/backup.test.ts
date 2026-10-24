@@ -14,7 +14,7 @@ async function toBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
 }
 
 describe('settings/backup', () => {
-  it('genera un tar.gz que tar sabe abrir, con la base y los archivos, sin .env por defecto', async () => {
+  it('builds a tar.gz that tar can open, with the database and files, without .env by default', async () => {
     const dir = getConfig().DATA_DIR;
     getDb();
     mkdirSync(join(dir, 'snippets'), { recursive: true });
@@ -36,13 +36,13 @@ describe('settings/backup', () => {
     expect(readFileSync(join(out, 'snippets', 'p1.json'), 'utf8')).toBe('{"ok":true}');
   });
 
-  it('las rutas largas usan el prefijo de ustar', () => {
+  it('long paths use the ustar prefix', () => {
     const h = tarHeader(`${'a'.repeat(120)}/file.json`, 3, new Date(0));
     expect(h.toString('utf8', 0, 9)).toBe('file.json');
     expect(h.toString('utf8', 345, 350)).toBe('aaaaa');
   });
 
-  it('nombres multibyte: el corte se calcula en bytes', () => {
+  it('multibyte names: the split is computed in bytes', () => {
     const name = `${'ñ'.repeat(70)}/${'á'.repeat(45)}.json`; // 140 + 1 + 95 bytes
     const h = tarHeader(name, 1, new Date(0));
     expect(h.subarray(0, 100).toString('utf8').replace(/\0+$/, '')).toBe(`${'á'.repeat(45)}.json`);
@@ -50,7 +50,7 @@ describe('settings/backup', () => {
     expect(() => tarHeader(`${'ñ'.repeat(90)}/x`, 1, new Date(0))).toThrow(/too long/);
   });
 
-  it('si se cancela la descarga no se queda colgado ni deja la copia temporal', async () => {
+  it('a cancelled download neither hangs nor leaves the temp copy behind', async () => {
     const { readdirSync } = await import('node:fs');
     const before = readdirSync(tmpdir()).filter((f) => f.startsWith('gc-backup-')).length;
     const stream = createBackup();

@@ -23,8 +23,8 @@ function tarOf(files: Record<string, string>): Buffer {
   return gzipSync(Buffer.concat(parts));
 }
 
-describe('exportar / importar el espacio de trabajo', () => {
-  it('exporta lo propio del panel y nunca usuarios, 2FA ni claves', async () => {
+describe('workspace export / import', () => {
+  it('exports the panel data and never users, 2FA or keys', async () => {
     const ana = await createUser('ana', 'una frase bien larga', 'admin');
     const dir = getConfig().DATA_DIR;
     mkdirSync(join(dir, RUN), { recursive: true });
@@ -42,7 +42,7 @@ describe('exportar / importar el espacio de trabajo', () => {
     expect(JSON.parse(files.get('settings.json')!.toString())).not.toHaveProperty('GHOST_API_URL');
   });
 
-  it('importa con vista previa y solo lo marcado; se suma, no borra', async () => {
+  it('imports with a preview and only what is ticked; merges, never deletes', async () => {
     const ana = (await import('../../src/auth/store.js')).findUser('ana')!;
     const exported = runWithUser(ana, () => createExport());
     const dir = getConfig().DATA_DIR;
@@ -67,7 +67,7 @@ describe('exportar / importar el espacio de trabajo', () => {
     expect(listNotes(POST)).toHaveLength(1);
   });
 
-  it('rechaza lo que no es una exportación y nunca escribe fuera de la carpeta de datos', () => {
+  it('rejects anything that is not an export and never writes outside the data folder', () => {
     expect(() => stageImport(Buffer.from('hola'))).toThrow(ImportError);
     expect(() => stageImport(tarOf({ 'otra-cosa.json': '{}' }))).toThrow(ImportError);
     const manifest = JSON.stringify({ format: 'ghost-connector-export', version: 1, exportedAt: new Date().toISOString(), exportedBy: null, site: 'https://otro.example' });

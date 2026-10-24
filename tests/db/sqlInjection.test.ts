@@ -5,8 +5,8 @@ import { getReviewStats, listApplyAttempts, recordReviewDecisions } from '../../
 
 const PAYLOAD = "x'); DROP TABLE jobs; --";
 
-describe('db: inyeccion SQL', () => {
-  it('los valores van como parametros: un payload se guarda como texto y no ejecuta nada', () => {
+describe('db: SQL injection', () => {
+  it('values are bound as parameters: a payload is stored as text and executes nothing', () => {
     recordReviewDecisions({ postId: PAYLOAD, runId: PAYLOAD, decisions: [{ category: PAYLOAD, accepted: false }] });
     const tables = getDb().prepare(`SELECT name FROM sqlite_master WHERE type='table' AND name='jobs'`).all();
     expect(tables).toHaveLength(1);
@@ -14,7 +14,7 @@ describe('db: inyeccion SQL', () => {
     expect(listApplyAttempts(PAYLOAD)).toEqual([]);
   });
 
-  it('ensureColumn rechaza todo lo que no sea un identificador y un tipo conocido', () => {
+  it('ensureColumn rejects anything but an identifier and a known type', () => {
     const db = new DatabaseSync(':memory:');
     db.exec('CREATE TABLE t (id INTEGER)');
     expect(() => ensureColumn(db, 't; DROP TABLE t', 'c', 'TEXT')).toThrow();
@@ -25,8 +25,8 @@ describe('db: inyeccion SQL', () => {
   });
 });
 
-describe('db/jobs: filtros', () => {
-  it('filtra por estado y tipo, y los ids raros solo son datos', async () => {
+describe('db/jobs: filters', () => {
+  it('filters by status and type, and odd ids are just data', async () => {
     const { createJob, setJobState, listJobs, countJobEventsByLevel, appendJobEvent } = await import('../../src/db/jobs.js');
     createJob({ id: 'job-a', type: 'plan', params: {}, total: 1 });
     createJob({ id: 'job-b', type: 'sync', params: {}, total: 0 });
@@ -39,8 +39,8 @@ describe('db/jobs: filtros', () => {
   });
 });
 
-describe('db/jobs: borrar historial', () => {
-  it('borra los terminados y su log, y conserva los que estan en curso', async () => {
+describe('db/jobs: clearing history', () => {
+  it('deletes finished jobs and their log, and keeps running ones', async () => {
     const { createJob, setJobState, getJob, deleteFinishedJobs, appendJobEvent, listJobEvents } = await import('../../src/db/jobs.js');
     createJob({ id: 'del-done', type: 'plan', params: {}, total: 1 });
     setJobState('del-done', 'done');

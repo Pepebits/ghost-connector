@@ -54,18 +54,18 @@ function makeArtifact(overrides: Partial<RunArtifact> = {}): RunArtifact {
 }
 
 describe('state/postState computePostState', () => {
-  it('never-planned: sin artefacto local y sin tag #ai-processed', () => {
+  it('never-planned: no local artifact and no #ai-processed tag', () => {
     const state = computePostState(makeDraft(), null);
     expect(state.kind).toBe('never-planned');
   });
 
-  it('applied (inferido por el tag): sin artefacto, pero con #ai-processed', () => {
+  it('applied (inferred from the tag): no artifact, but has #ai-processed', () => {
     const draft = makeDraft({ tags: [{ id: 't1', name: '#ai-processed', slug: 'hash-ai-processed' }] });
     const state = computePostState(draft, null);
     expect(state.kind).toBe('applied');
   });
 
-  it('planned: hay un plan vigente (updated_at coincide con el snapshot)', () => {
+  it('planned: there is a current plan (updated_at matches the snapshot)', () => {
     const draft = makeDraft();
     const artifact = makeArtifact({ snapshot: draft, writer: makeWriter(), status: 'planned' });
     const state = computePostState(draft, artifact);
@@ -73,7 +73,7 @@ describe('state/postState computePostState', () => {
     expect(state.actions.canApply).toBe(true);
   });
 
-  it('plan-stale: el post cambio en Ghost desde que se genero el plan', () => {
+  it('plan-stale: the post changed in Ghost since the plan was generated', () => {
     const planSnapshot = makeDraft();
     const liveDraft = makeDraft({ updated_at: '2026-02-01T00:00:00.000Z' });
     const artifact = makeArtifact({ snapshot: planSnapshot, writer: makeWriter(), status: 'planned' });
@@ -81,7 +81,7 @@ describe('state/postState computePostState', () => {
     expect(state.kind).toBe('plan-stale');
   });
 
-  it('has-pending: aplicado pero el contenido VIVO todavia tiene [[PENDING:]]', () => {
+  it('has-pending: applied but the LIVE content still has [[PENDING:]]', () => {
     const draft = makeDraft({ html: '<p>[[PENDING: falta algo]]</p>' });
     const artifact = makeArtifact({ snapshot: draft, writer: makeWriter(), status: 'applied' });
     const state = computePostState(draft, artifact);
@@ -90,21 +90,21 @@ describe('state/postState computePostState', () => {
     expect(state.actions.canResolve).toBe(true);
   });
 
-  it('blocked: el ultimo intento de apply quedo en conflict', () => {
+  it('blocked: the last apply attempt ended in conflict', () => {
     const draft = makeDraft();
     const artifact = makeArtifact({ snapshot: draft, writer: makeWriter(), status: 'conflict' });
     const state = computePostState(draft, artifact);
     expect(state.kind).toBe('blocked');
   });
 
-  it('failed: el writer fallo (sin WriterOutput)', () => {
+  it('failed: the writer failed (no WriterOutput)', () => {
     const draft = makeDraft();
     const artifact = makeArtifact({ snapshot: draft, writer: null, status: 'failed' });
     const state = computePostState(draft, artifact);
     expect(state.kind).toBe('failed');
   });
 
-  it('applied-degraded: aplicado, sin pendientes vivos, pero el ultimo run tuvo errores', () => {
+  it('applied-degraded: applied, no live pending markers, but the last run had errors', () => {
     const draft = makeDraft();
     const artifact = makeArtifact({
       snapshot: draft,

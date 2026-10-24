@@ -19,7 +19,7 @@ const req = (over: Partial<LlmRequest> = {}): LlmRequest => ({
 });
 
 describe('agents/providers/anthropic', () => {
-  it('fuerza la herramienta, cachea el system prompt y lee la tool_use', async () => {
+  it('forces the tool, caches the system prompt and reads the tool_use', async () => {
     const { impl, calls } = fakeFetch(() =>
       Response.json({
         content: [{ type: 'tool_use', id: 'tu_1', name: 'submit_seo', input: { a: 'hola' } }],
@@ -36,7 +36,7 @@ describe('agents/providers/anthropic', () => {
     expect(res.usage).toEqual({ inputTokens: 100, outputTokens: 5, cacheHitTokens: 90, cacheMissTokens: 10 });
   });
 
-  it('streaming: acumula input_json_delta y avisa de cada trozo', async () => {
+  it('streaming: accumulates input_json_delta and reports each chunk', async () => {
     const events = [
       { type: 'message_start', message: { usage: { input_tokens: 20, output_tokens: 1 } } },
       { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'tu_2', name: 'submit_seo', input: {} } },
@@ -59,7 +59,7 @@ describe('agents/providers/anthropic', () => {
     expect(res.usage.outputTokens).toBe(7);
   });
 
-  it('el reintento de correccion va como tool_result con is_error', () => {
+  it('the correction retry is sent as tool_result with is_error', () => {
     const msgs = toAnthropicMessages([
       { role: 'user', text: 'hola' },
       { role: 'assistant', text: null, toolCall: { id: 't', name: 'submit_seo', arguments: '{"a":1}' } },
@@ -69,14 +69,14 @@ describe('agents/providers/anthropic', () => {
     expect(msgs[2]).toEqual({ role: 'user', content: [{ type: 'tool_result', tool_use_id: 't', content: 'a: Expected string', is_error: true }] });
   });
 
-  it('un error no reintentable se lanza con el mensaje de la API', async () => {
+  it('a non-retryable error is thrown with the API message', async () => {
     const { impl } = fakeFetch(() => Response.json({ error: { message: 'invalid x-api-key' } }, { status: 401 }));
     await expect(new AnthropicProvider({ apiKey: 'k', baseURL: 'https://api.anthropic.com', fetchImpl: impl }).complete(req())).rejects.toThrow(/401: invalid x-api-key/);
   });
 });
 
-describe('agents: modelos y precios', () => {
-  it('cada agente usa su modelo si lo tiene, si no AI_MODEL', async () => {
+describe('agents: models and prices', () => {
+  it('each agent uses its own model if set, otherwise AI_MODEL', async () => {
     const { modelFor } = await import('../../src/agents/runner.js');
     const { getConfig } = await import('../../src/config.js');
     const cfg = { ...getConfig(), AI_MODEL: 'base', AI_MODEL_SEO: 'barato' };
@@ -84,7 +84,7 @@ describe('agents: modelos y precios', () => {
     expect(modelFor('writer', cfg)).toBe('base');
   });
 
-  it('AI_PRICES: formato y precios', async () => {
+  it('AI_PRICES: format and prices', async () => {
     const { parsePrices } = await import('../../src/config.js');
     expect(parsePrices('gpt-4o-mini=0.15/0.6, claude-x = 3/15')?.get('claude-x')).toEqual({ input: 3, output: 15 });
     expect(parsePrices('')?.size).toBe(0);
@@ -94,7 +94,7 @@ describe('agents: modelos y precios', () => {
     expect(costUsd('modelo-sin-precio', 1000, 1000)).toBeNull();
   });
 
-  it('valores por defecto segun el proveedor', async () => {
+  it('defaults per provider', async () => {
     const { validateEnv } = await import('../../src/config.js');
     const base = { ...process.env, AI_MODEL: '', AI_BASE_URL: '' };
     const anth = validateEnv({ ...base, AI_PROVIDER: 'anthropic' });
@@ -104,8 +104,8 @@ describe('agents: modelos y precios', () => {
   });
 });
 
-describe('agents/providers: DeepSeek por URL', () => {
-  it('los ajustes de DeepSeek se aplican por el servidor, no solo por AI_PROVIDER', async () => {
+describe('agents/providers: DeepSeek by URL', () => {
+  it('DeepSeek settings apply based on the server, not just AI_PROVIDER', async () => {
     const { isDeepSeek } = await import('../../src/agents/providers/index.js');
     expect(isDeepSeek('openai-compatible', 'https://api.deepseek.com/beta')).toBe(true);
     expect(isDeepSeek('deepseek', '')).toBe(true);

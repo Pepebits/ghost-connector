@@ -1,26 +1,26 @@
 import { describe, expect, it } from 'vitest';
 import { escapeHtml, html, raw } from '../../src/web/html.js';
 
-describe('web/html (escape por defecto)', () => {
-  it('escapa una interpolacion normal', () => {
+describe('web/html (escape by default)', () => {
+  it('escapes a normal interpolation', () => {
     const evil = '<script>alert(1)</script>';
     expect(html`<div>${evil}</div>`).toBe('<div>&lt;script&gt;alert(1)&lt;/script&gt;</div>');
   });
 
-  it('no escapa contenido envuelto en raw()', () => {
+  it('does not escape content wrapped in raw()', () => {
     const safe = raw('<b>bold</b>');
     expect(html`<div>${safe}</div>`).toBe('<div><b>bold</b></div>');
   });
 
-  it('escapa comillas dobles y simples', () => {
+  it('escapes double and single quotes', () => {
     expect(escapeHtml(`"quo'te"`)).toBe('&quot;quo&#39;te&quot;');
   });
 
-  it('trata null/undefined/false como cadena vacia', () => {
+  it('treats null/undefined/false as an empty string', () => {
     expect(html`<span>${null}${undefined}${false}</span>`).toBe('<span></span>');
   });
 
-  it('escapa cada elemento de un array de valores', () => {
+  it('escapes each element of an array of values', () => {
     expect(html`<ul>${['<a>', '<b>']}</ul>`).toBe('<ul>&lt;a&gt;&lt;b&gt;</ul>');
   });
 });

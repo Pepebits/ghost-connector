@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildUserPrompt } from '../../src/agents/ideas.agent.js';
 
 describe('agents/ideas prompt', () => {
-  it('incluye extractos solo de los posts recientes, en una linea y recortados', () => {
+  it('includes excerpts only from recent posts, on one line and trimmed', () => {
     const posts = Array.from({ length: 62 }, (_, i) => ({ title: `Post ${i}`, excerpt: `Linea\nsegunda ${'x'.repeat(300)}` }));
     const text = buildUserPrompt({ posts, queries: [], drafts: ['Borrador A'], avoid: ['Idea vieja'] });
     expect(text).toContain('- Post 0 — Linea segunda x');

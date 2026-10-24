@@ -9,11 +9,11 @@ const s = (id: string, kind: PostStateKind, updatedAt = '2026-01-01'): PostSumma
 describe('state/reviewQueue', () => {
   const all = [s('a', 'applied'), s('b', 'failed'), s('c', 'planned'), s('d', 'never-planned'), s('e', 'has-pending')];
 
-  it('solo lo que necesita decision, por prioridad', () => {
+  it('only what needs a decision, by priority', () => {
     expect(reviewQueue(all).map((x) => x.id)).toEqual(['c', 'e', 'b']);
   });
 
-  it('siguiente de la bandeja, dando la vuelta al final', () => {
+  it('next in the inbox, wrapping around at the end', () => {
     expect(nextInQueue(all, 'c')?.id).toBe('e');
     expect(nextInQueue(all, 'b')?.id).toBe('c');
     expect(nextInQueue(all, 'a')?.id).toBe('c');

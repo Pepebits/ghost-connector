@@ -3,7 +3,7 @@ import { isDue, pickNeverPlanned } from '../src/jobs/scheduler.js';
 
 describe('jobs/scheduler', () => {
   const at = (h: number, m: number) => new Date(2026, 9, 13, h, m);
-  it('toca una vez al dia, desde la hora indicada', () => {
+  it('fires once a day, from the configured hour', () => {
     expect(isDue('07:00', undefined, at(6, 59))).toBe(false);
     expect(isDue('07:00', undefined, at(7, 0))).toBe(true);
     expect(isDue('07:00', '2026-10-13', at(9, 0))).toBe(false);
@@ -11,7 +11,7 @@ describe('jobs/scheduler', () => {
     expect(isDue('', undefined, at(9, 0))).toBe(false);
     expect(isDue('7h', undefined, at(9, 0))).toBe(false);
   });
-  it('elige solo borradores nunca planificados, los mas antiguos, con tope', () => {
+  it('picks only never-planned drafts, oldest first, capped', () => {
     const drafts = [
       { id: 'a', updated_at: '2026-10-03', k: 'never-planned' },
       { id: 'b', updated_at: '2026-10-01', k: 'never-planned' },
@@ -22,8 +22,8 @@ describe('jobs/scheduler', () => {
   });
 });
 
-describe('aviso de la planificacion automatica', () => {
-  it('se muestra 20 h, no si no hubo nada nuevo ni si se descarto', async () => {
+describe('auto-plan notice', () => {
+  it('shows for 20 h, not when there was nothing new or it was dismissed', async () => {
     const { setMeta } = await import('../src/db/repo.js');
     const { autoPlanNotice, dismissAutoPlanNotice } = await import('../src/jobs/scheduler.js');
     const at = '2026-10-24T07:00:00.000Z';
@@ -39,7 +39,7 @@ describe('aviso de la planificacion automatica', () => {
 });
 
 describe('runAutoPlan', () => {
-  it('si Ghost falla no marca el dia (se reintenta)', async () => {
+  it('does not mark the day if Ghost fails (it retries)', async () => {
     vi.resetModules();
     vi.doMock('../src/ghost/posts.js', () => ({ listDrafts: async () => { throw new Error('ECONNRESET'); } }));
     const { getMeta, setMeta } = await import('../src/db/repo.js');
