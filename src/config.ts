@@ -23,7 +23,8 @@ export function resolveAppHome(env: NodeJS.ProcessEnv = process.env, cwd = proce
 }
 
 export const APP_HOME = resolveAppHome();
-loadDotenv({ path: APP_HOME.envFile });
+// quiet: dotenv 17+ prints "injected env" on every load, which would clutter every command and log.
+loadDotenv({ path: APP_HOME.envFile, quiet: true });
 
 /** The config file it reads (and that the Settings page edits). */
 export function envFilePath(): string {
