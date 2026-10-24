@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('settings/envFile', () => {
-  it('un secreto vacio se conserva; clear_ borra un secreto opcional; solo claves conocidas', () => {
+  it('an empty secret is kept; clear_ removes an optional secret; known keys only', () => {
     const u = resolveUpdates({ AI_API_KEY: '', AI_MODEL: ' m ', clear_PEXELS_API_KEY: 'on', NODE_OPTIONS: '--evil' });
     expect(u).toEqual({ AI_MODEL: 'm', PEXELS_API_KEY: '' });
     // Unchecked boxes only count as "false" in the full form.
@@ -30,17 +30,31 @@ describe('settings/envFile', () => {
     expect(resolveUpdates({ __group: 'ai', AI_MODEL_SEO: '' })).toMatchObject({ AI_MODEL_SEO: '' });
   });
 
-  it('rechaza saltos de linea (inyeccion de variables en el .env)', () => {
+  it('rejects line breaks (variable injection into .env)', () => {
     expect(() => resolveUpdates({ AI_MODEL: 'x\nGHOST_API_URL=https://evil' })).toThrow(EnvValidationError);
   });
 
-  it('reescribe conservando comentarios y orden, quita los alias antiguos y entrecomilla', () => {
+  it('rewrites keeping comments and order, drops legacy aliases and quotes values', () => {
     const before = '# Ghost\nGHOST_API_URL=https://a.test\n\n# IA\nDEEPSEEK_API_KEY=old\nLOG_LEVEL=info\n';
     const after = rewriteEnv(before, { GHOST_API_URL: 'https://b.test', AI_API_KEY: 'new', SITE_CONTEXT: 'Blog "tech", en español' });
     expect(after).toBe('# Ghost\nGHOST_API_URL=https://b.test\n\n# IA\nLOG_LEVEL=info\nAI_API_KEY=new\nSITE_CONTEXT="Blog \\"tech\\", en español"\n');
   });
 
-  it('no escribe nada si la validacion falla', () => {
+  it('uncomments a commented-out key in place (as in .env.example); the active line wins', () => {
+    const before = '# Per agent (empty = AI_MODEL).\n# AI_MODEL_WRITER=\n# AI_MODEL_SEO=\n# Empty = defaults\n# LOG_LEVEL=info\nLOG_LEVEL=warn\n';
+    const after = rewriteEnv(before, { AI_MODEL_WRITER: 'claude-opus-5-5', LOG_LEVEL: 'debug' });
+    expect(after).toBe('# Per agent (empty = AI_MODEL).\nAI_MODEL_WRITER=claude-opus-5-5\n# AI_MODEL_SEO=\n# Empty = defaults\n# LOG_LEVEL=info\nLOG_LEVEL=debug\n');
+  });
+
+  it('handles "#KEY=" without a space, a line pasted twice, and drops duplicate active lines', () => {
+    expect(rewriteEnv('#AI_MODEL_WRITER=\n', { AI_MODEL_WRITER: 'x' })).toBe('AI_MODEL_WRITER=x\n');
+    expect(rewriteEnv('#AI_MODEL_WRITER=#AI_MODEL_WRITER=\n', { AI_MODEL_WRITER: 'x' })).toBe('AI_MODEL_WRITER=x\n');
+    expect(rewriteEnv('AI_MODEL=a\n# note\nAI_MODEL=b\n# AI_MODEL=c\n', { AI_MODEL: 'new' })).toBe('AI_MODEL=new\n# note\n# AI_MODEL=c\n');
+    // Keys not being saved are left exactly as they are, duplicates included.
+    expect(rewriteEnv('LOG_LEVEL=info\nLOG_LEVEL=warn\n', { AI_MODEL: 'x' })).toBe('LOG_LEVEL=info\nLOG_LEVEL=warn\nAI_MODEL=x\n');
+  });
+
+  it('writes nothing if validation fails', () => {
     const dir = mkdtempSync(join(tmpdir(), 'gc-env-'));
     const path = join(dir, '.env');
     writeFileSync(path, 'AI_MODEL=a\n');
@@ -49,7 +63,7 @@ describe('settings/envFile', () => {
     expect(readFileSync(path, 'utf8')).toBe('AI_MODEL=a\n');
   });
 
-  it('guarda con permisos 0600 y recarga la config en caliente', () => {
+  it('saves with 0600 permissions and hot-reloads the config', () => {
     const dir = mkdtempSync(join(tmpdir(), 'gc-env-'));
     const path = join(dir, '.env');
     writeFileSync(path, 'AI_MODEL=a\n', { mode: 0o644 });
@@ -64,7 +78,7 @@ describe('settings/envFile', () => {
 });
 
 describe('settings/connectionTest', () => {
-  it('no envia la clave guardada a un host distinto del guardado', async () => {
+  it('does not send the saved key to a host other than the saved one', async () => {
     const { testConnection } = await import('../../src/settings/connectionTest.js');
     const ghost = await testConnection('ghost', { GHOST_API_URL: 'https://otro-sitio.test', GHOST_ADMIN_API_KEY: '' });
     expect(ghost.ok).toBe(false);

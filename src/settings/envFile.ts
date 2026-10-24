@@ -156,12 +156,24 @@ export function rewriteEnv(content: string, updates: Record<string, string>): st
   const legacy = new Set(['DEEPSEEK_API_KEY', 'DEEPSEEK_MODEL', 'DEEPSEEK_BASE_URL', 'DEEPSEEK_MAX_TOKENS']);
   const touchesAi = Object.keys(updates).some((k) => k.startsWith('AI_'));
   const out: string[] = [];
-  for (const line of content.split('\n')) {
-    const m = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=/.exec(line);
-    const key = m?.[1];
+  const lines = content.split('\n');
+  const assignment = /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=/;
+  // `# KEY=…` as in .env.example: a key set from the panel is uncommented in
+  // place (next to its explanation) instead of appended at the end, unless the
+  // file also has an active KEY= line, which wins.
+  const commented = /^\s*#\s*([A-Z][A-Z0-9_]*)=/;
+  const active = new Set(lines.map((l) => assignment.exec(l)?.[1]).filter(Boolean));
+  const written = new Set<string>();
+  for (const line of lines) {
+    const m = assignment.exec(line);
+    const key = m?.[1] ?? ((c) => (c && !active.has(c) ? c : undefined))(commented.exec(line)?.[1]);
     if (key && pending.has(key)) {
       out.push(`${key}=${quote(pending.get(key)!)}`);
       pending.delete(key);
+      written.add(key);
+    } else if (m && key && written.has(key)) {
+      // A second active KEY= (pasted twice) would override the value just saved: dropped.
+      continue;
     } else if (key && touchesAi && legacy.has(key)) {
       continue;
     } else {
