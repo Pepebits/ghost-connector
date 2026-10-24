@@ -158,11 +158,13 @@ docker compose run --rm ghost-connector setup                  # step by step
 docker compose up -d                                           # http://127.0.0.1:4300
 ```
 
-- 📦 Prebuilt images (amd64 and arm64) on [Docker Hub](https://hub.docker.com/r/pepebits/ghost-connector) and GHCR: `docker pull pepebits/ghost-connector`. The `docker-compose.yml` builds from source; to use the published image instead, replace its `build: .` with `image: pepebits/ghost-connector:latest`.
+- 📦 Prebuilt images (Alpine, non-root, scanned for vulnerabilities on every release; amd64 and arm64) on [Docker Hub](https://hub.docker.com/r/pepebits/ghost-connector) and GHCR: `docker pull pepebits/ghost-connector`. The `docker-compose.yml` builds from source; to use the published image instead, replace its `build: .` with `image: pepebits/ghost-connector:latest`.
 - 📁 Config and data live in `ghost-data/` (`config.env` and `data/`). Create it yourself before the first start: if Docker creates it, it belongs to root and the container (uid 1000) can't write to it (fix: `sudo chown -R 1000:1000 ghost-data`).
 - 🔌 Another port: `GC_PORT=8080 PUBLIC_URL=http://127.0.0.1:8080 docker compose up -d`.
+- 🛡️ Running it with plain `docker run`, publish it only on localhost: `-p 127.0.0.1:4300:4300` (a bare `-p 4300:4300` exposes it to your whole network).
 - 🕰️ Set `TZ` in a `.env` next to `docker-compose.yml` for the nightly plan (default `Europe/Madrid`).
 - ⌨️ Any CLI command: `docker compose run --rm ghost-connector list`.
+- 🔄 **Keep it updated**: new images come out with every release, including patch releases that only pick up security fixes from the base image. With the published image, `docker compose pull && docker compose up -d` (or rebuild with `docker compose up -d --build`); follow `latest` or `X.Y` rather than an exact version to get those patches.
 
 > [!WARNING]
 > Like Ghost, **until the first user exists, whoever opens the panel becomes the owner.** Create it right after the first start, before sharing or exposing the URL.

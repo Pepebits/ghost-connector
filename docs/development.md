@@ -138,3 +138,20 @@ is unaffected. GHCR uses the workflow's own token. To try it or
 re-announce a release, run the workflow by hand (*Actions → Release → Run
 workflow*) with `dry_run` on, which only prints the message, or with
 `chat: test`.
+
+## Keeping it secure and up to date
+
+Images go stale even when the code doesn't change: new vulnerabilities are
+found in the base image (Alpine, Node) and in dependencies every week.
+Three automations keep up with that:
+
+| What | Where | When |
+|---|---|---|
+| **Dependabot** proposes updates: npm dependencies (minor and patch grouped), the Node base image (pinned by digest in the `Dockerfile`, Node 24 only) and the GitHub Actions (pinned by SHA) | `.github/dependabot.yml` | Mondays |
+| **CI** type-checks, tests, builds, checks that the image starts and scans it with Trivy; a Dependabot PR can only be merged when it's green | `.github/workflows/ci.yml` | Every PR and push to `main` |
+| **Image scan** of the published `pepebits/ghost-connector:latest`; if a HIGH/CRITICAL vulnerability with a fix shows up, it opens (or updates) an issue labelled `security` | `.github/workflows/image-scan.yml` | Mondays, or by hand |
+
+When that issue appears: merge the pending Dependabot PRs and cut a patch
+release (`git tag -a v1.2.1`). The release rebuilds the image from scratch
+with the OS updates, scans it again (it isn't published if anything fixable
+is left) and publishes it with an SBOM and a build provenance attestation.
