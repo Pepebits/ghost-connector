@@ -86,10 +86,11 @@ export { envFilePath };
 export type EnvSubmission = Record<string, string | undefined>;
 
 /**
- * Owner only: the keys, and where they are sent. Changing an endpoint would
- * be enough to make the panel hand a key to another server.
+ * Owner only: the keys, where they are sent (changing an endpoint would be
+ * enough to make the panel hand a key to another server) and what bounds the
+ * spend on the owner's AI account (daily cap and prices).
  */
-export const OWNER_ONLY_KEYS = new Set(['GHOST_API_URL', 'AI_PROVIDER', 'AI_BASE_URL']);
+export const OWNER_ONLY_KEYS = new Set(['GHOST_API_URL', 'AI_PROVIDER', 'AI_BASE_URL', 'AI_DAILY_BUDGET_USD', 'AI_PRICES']);
 export const isOwnerOnlyField = (f: { key: string; secret?: boolean }) => !!f.secret || OWNER_ONLY_KEYS.has(f.key);
 
 export class EnvValidationError extends Error {
@@ -141,9 +142,18 @@ export function mergedEnv(updates: Record<string, string>): NodeJS.ProcessEnv {
   return env;
 }
 
-function quote(value: string): string {
+/**
+ * A value as dotenv reads it back unchanged. dotenv has no escapes (apart from
+ * \n in double quotes), so the quote style is picked to fit the value:
+ * single quotes are fully literal, then double quotes, then backticks.
+ */
+export function quote(value: string, key = '?'): string {
+  if (/[\r\n\0]/.test(value)) throw new EnvValidationError([{ key, message: t('settings.errors.newline') }]);
   if (value === '' || /^[A-Za-z0-9_.:/@+,=-]+$/.test(value)) return value;
-  return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  if (!value.includes("'")) return `'${value}'`;
+  if (!value.includes('"') && !value.includes('\\')) return `"${value}"`;
+  if (!value.includes('`')) return `\`${value}\``;
+  throw new EnvValidationError([{ key, message: t('settings.errors.quotes') }]);
 }
 
 /**
@@ -168,7 +178,7 @@ export function rewriteEnv(content: string, updates: Record<string, string>): st
     const m = assignment.exec(line);
     const key = m?.[1] ?? ((c) => (c && !active.has(c) ? c : undefined))(commented.exec(line)?.[1]);
     if (key && pending.has(key)) {
-      out.push(`${key}=${quote(pending.get(key)!)}`);
+      out.push(`${key}=${quote(pending.get(key)!, key)}`);
       pending.delete(key);
       written.add(key);
     } else if (m && key && written.has(key)) {
@@ -181,7 +191,7 @@ export function rewriteEnv(content: string, updates: Record<string, string>): st
     }
   }
   while (out.length > 0 && out.at(-1) === '') out.pop();
-  for (const [k, v] of pending) out.push(`${k}=${quote(v)}`);
+  for (const [k, v] of pending) out.push(`${k}=${quote(v, k)}`);
   return `${out.join('\n')}\n`;
 }
 

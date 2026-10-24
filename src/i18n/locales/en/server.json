@@ -30,5 +30,6 @@
   "snippetFailed": "Could not propose the title: {error}",
   "runningSetup": "First time: open the panel to create the first user, the admin. Do it now: until then, whoever gets there first takes the account.",
   "opened": "The browser was opened, already logged in (one-time link).",
-  "unknownUser": "No such user."
+  "unknownUser": "No such user.",
+  "badId": "Invalid id."
 }

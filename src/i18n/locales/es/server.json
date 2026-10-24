@@ -30,5 +30,6 @@
   "snippetFailed": "No se pudo proponer el título: {error}",
   "runningSetup": "Primera vez: abre el panel para crear el primer usuario, el admin. Hazlo ya: hasta entonces, quien llegue primero se queda con la cuenta.",
   "opened": "Se ha abierto el navegador con la sesión iniciada (enlace de un solo uso).",
-  "unknownUser": "Ese usuario no existe."
+  "unknownUser": "Ese usuario no existe.",
+  "badId": "Identificador no válido."
 }

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { availableLocales, clientMessages, currentLocale, localeName, t } from '../../i18n/index.js';
-import { currentUser, isAdminRole } from '../../auth/context.js';
+import { cspNonce, currentUser, isAdminRole } from '../../auth/context.js';
 import { html, raw } from '../html.js';
 
 /**
@@ -51,6 +51,7 @@ window.gcToggleTheme=function(){gcSetTheme(document.documentElement.classList.co
 mq.addEventListener('change',apply);
 apply();
 document.addEventListener('DOMContentLoaded',sync);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-theme-choice]');if(b)gcSetTheme(b.getAttribute('data-theme-choice'));});
 })();`;
 
 export type NavSection = 'dashboard' | 'ideas' | 'jobs' | 'settings';
@@ -108,8 +109,8 @@ export function layout(opts: { title: string; bodyHtml: string; section?: NavSec
 <meta name="description" content="${t('common.metaDescription')}" />
 <meta name="robots" content="noindex, nofollow" />
 <title>${opts.title} · Ghost Connector</title>
-<script>${raw(THEME_SCRIPT)}</script>
-<script>${raw(clientI18n())}</script>
+<script nonce="${cspNonce()}">${raw(THEME_SCRIPT)}</script>
+<script nonce="${cspNonce()}">${raw(clientI18n())}</script>
 <link rel="stylesheet" href="/app.css" />
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <script src="/ui.js" defer></script>
@@ -122,13 +123,13 @@ export function layout(opts: { title: string; bodyHtml: string; section?: NavSec
   <a href="/" class="brand-link mr-2 inline-flex items-center gap-2 font-bold text-fg hover:no-underline">${raw(LOGO)}Ghost Connector</a>
   ${opts.bare ? '' : raw(html`<nav aria-label="${t('common.nav.label')}" class="flex items-center gap-1">${raw(navLinks)}</nav>`)}
   <div class="ml-auto flex items-center gap-2">
-    ${opts.bare ? '' : raw(html`<button type="button" onclick="gcOpenPalette()" class="btn btn-ghost btn-sm" title="${t('common.search.title')}">
+    ${opts.bare ? '' : raw(html`<button type="button" data-open-palette class="btn btn-ghost btn-sm" title="${t('common.search.title')}">
       ${t('common.search.button')} <kbd>⌘K</kbd>
     </button>`)}
     <div id="gc-theme" class="theme-switch" role="group" aria-label="${t('common.theme.label')}">
-      <button type="button" class="theme-btn" data-theme-choice="auto" aria-pressed="false" title="${t('common.theme.label')}: ${t('common.theme.auto')}" onclick="gcSetTheme('auto')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="sr-only">${t('common.theme.auto')}</span></button>
-      <button type="button" class="theme-btn" data-theme-choice="light" aria-pressed="false" title="${t('common.theme.label')}: ${t('common.theme.light')}" onclick="gcSetTheme('light')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="sr-only">${t('common.theme.light')}</span></button>
-      <button type="button" class="theme-btn" data-theme-choice="dark" aria-pressed="false" title="${t('common.theme.label')}: ${t('common.theme.dark')}" onclick="gcSetTheme('dark')"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="sr-only">${t('common.theme.dark')}</span></button>
+      <button type="button" class="theme-btn" data-theme-choice="auto" aria-pressed="false" title="${t('common.theme.label')}: ${t('common.theme.auto')}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span class="sr-only">${t('common.theme.auto')}</span></button>
+      <button type="button" class="theme-btn" data-theme-choice="light" aria-pressed="false" title="${t('common.theme.label')}: ${t('common.theme.light')}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="sr-only">${t('common.theme.light')}</span></button>
+      <button type="button" class="theme-btn" data-theme-choice="dark" aria-pressed="false" title="${t('common.theme.label')}: ${t('common.theme.dark')}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="sr-only">${t('common.theme.dark')}</span></button>
     </div>
     ${opts.bare ? '' : raw(user ? userMenu(user) : html`<form method="post" action="/logout" class="m-0"><button type="submit" class="btn btn-ghost btn-sm">${t('auth.logout')}</button></form>`)}
   </div>

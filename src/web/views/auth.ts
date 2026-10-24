@@ -29,11 +29,11 @@ const newPasswordFields = (min: number, autofocus = false) =>
 
 export const roleBadge = (role: Role) => html`<span class="badge ${role === 'owner' ? 'badge-ok' : role === 'admin' ? 'badge-info' : 'badge-neutral'}">${t(`auth.roles.${role}`)}</span>`;
 
-/** Who may manage whom: the owner, everyone but themself; an admin, only editors. */
+/** Who may manage whom: the owner, everyone but themself; an admin, only editors; an editor, nobody. */
 export const canManage = (me: AuthUser, target: { id: number; role: Role }) =>
-  target.id !== me.id && target.role !== 'owner' && (me.role === 'owner' || target.role === 'editor');
+  (me.role === 'owner' || me.role === 'admin') && target.id !== me.id && target.role !== 'owner' && (me.role === 'owner' || target.role === 'editor');
 
-export function loginPage(o: { next?: string; username?: string; error?: string }): string {
+export function loginPage(o: { next?: string; username?: string; error?: string; notice?: string }): string {
   const inner = html`<form method="post" action="/login" class="grid gap-4" data-busy="${t('auth.login.busy')}">
     <input type="hidden" name="next" value="${o.next ?? '/'}">
     ${raw(usernameField(o.username, o.username ? '' : 'autofocus'))}
@@ -41,7 +41,7 @@ export function loginPage(o: { next?: string; username?: string; error?: string 
     <div><button type="submit" class="btn">${t('auth.login.submit')}</button></div>
   </form>
   <p class="!mb-0 mt-4 text-xs text-muted">${t('auth.login.forgot')}</p>`;
-  return layout({ title: t('auth.login.title'), bare: true, bodyHtml: card(t('auth.login.title'), t('auth.login.intro'), inner, o.error) });
+  return layout({ title: t('auth.login.title'), bare: true, bodyHtml: card(t('auth.login.title'), t('auth.login.intro'), (o.notice ? flash(o.notice) : '') + inner, o.error) });
 }
 
 export function twoFactorPage(o: { error?: string }): string {
@@ -86,7 +86,7 @@ export function inviteLinkPage(o: { url: string; invite: { role: Role; username?
     ${raw(flash(t('auth.users.linkOnce', { days: o.days }), 'warn'))}
     <div class="card max-w-2xl p-4">
       <label for="invite-url" class="block text-sm font-medium">${t('auth.users.link')}</label>
-      <input id="invite-url" type="text" readonly value="${o.url}" class="mt-2 block w-full font-mono text-sm" onfocus="this.select()">
+      <input id="invite-url" type="text" readonly value="${o.url}" class="mt-2 block w-full font-mono text-sm" data-select-on-focus>
       <p class="!mb-0 mt-2 text-xs text-muted">${t('auth.users.linkHelp')}</p>
     </div>
     <p class="mt-4"><a class="btn" href="/settings#s-users">${t('auth.recovery.done')}</a></p>`;

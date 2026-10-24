@@ -90,3 +90,8 @@
     }
   });
 })();
+
+// Read-only fields to copy (invite links): select everything on focus.
+document.addEventListener('focusin', (e) => {
+  if (e.target.matches && e.target.matches('[data-select-on-focus]')) e.target.select();
+});

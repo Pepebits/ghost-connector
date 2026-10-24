@@ -16,6 +16,9 @@ import { listAllArtifacts, listArtifacts, loadArtifact, newRunId, saveArtifact }
 import { readPostSummaries, syncPostStates, type PostSummary } from './state/postState.js';
 import { extractPendingQuestions } from './util/pending.js';
 
+// Everything this tool writes (data, plans, images, backups, .env) is private to its user.
+process.umask(0o077);
+
 const program = new Command();
 program
   .name('ghost-connector')

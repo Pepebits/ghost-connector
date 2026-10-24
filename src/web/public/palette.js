@@ -217,3 +217,8 @@
 
   window.gcOpenPalette = open;
 })();
+
+// The header's search button (no inline onclick: the CSP forbids it).
+document.addEventListener('click', (e) => {
+  if (e.target.closest && e.target.closest('[data-open-palette]')) window.gcOpenPalette();
+});

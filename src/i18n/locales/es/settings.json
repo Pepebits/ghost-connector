@@ -348,7 +348,8 @@
     "ovDescriptionMsg": "obligatoria",
     "ovEmailMsg": "no es un correo válido",
     "ovExists": "ya hay credenciales. Marca \"sustituir\" para registrar otra aplicación",
-    "ovNotSaved": "registrada, pero no se pudo escribir el .env ({error}). Copia ahora OPENVERSE_CLIENT_ID={id} y OPENVERSE_CLIENT_SECRET={secret} en tu .env: no se pueden recuperar"
+    "ovNotSaved": "registrada, pero no se pudo escribir el .env ({error}). Copia ahora OPENVERSE_CLIENT_ID={id} y OPENVERSE_CLIENT_SECRET={secret} en tu .env: no se pueden recuperar",
+    "quotes": "No puede llevar a la vez comillas simples, dobles y acentos graves (`)."
   },
   "nav": {
     "label": "Secciones"

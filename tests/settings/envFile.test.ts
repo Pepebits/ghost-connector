@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { getConfig } from '../../src/config.js';
-import { EnvValidationError, resolveUpdates, rewriteEnv, saveEnv } from '../../src/settings/envFile.js';
+import { parse } from 'dotenv';
+import { EnvValidationError, quote, resolveUpdates, rewriteEnv, saveEnv } from '../../src/settings/envFile.js';
 
 const snapshot = { ...process.env };
 afterEach(() => {
@@ -37,13 +38,22 @@ describe('settings/envFile', () => {
   it('rewrites keeping comments and order, drops legacy aliases and quotes values', () => {
     const before = '# Ghost\nGHOST_API_URL=https://a.test\n\n# IA\nDEEPSEEK_API_KEY=old\nLOG_LEVEL=info\n';
     const after = rewriteEnv(before, { GHOST_API_URL: 'https://b.test', AI_API_KEY: 'new', SITE_CONTEXT: 'Blog "tech", en español' });
-    expect(after).toBe('# Ghost\nGHOST_API_URL=https://b.test\n\n# IA\nLOG_LEVEL=info\nAI_API_KEY=new\nSITE_CONTEXT="Blog \\"tech\\", en español"\n');
+    expect(after).toBe('# Ghost\nGHOST_API_URL=https://b.test\n\n# IA\nLOG_LEVEL=info\nAI_API_KEY=new\nSITE_CONTEXT=\'Blog "tech", en español\'\n');
   });
 
   it('uncomments a commented-out key in place (as in .env.example); the active line wins', () => {
     const before = '# Per agent (empty = AI_MODEL).\n# AI_MODEL_WRITER=\n# AI_MODEL_SEO=\n# Empty = defaults\n# LOG_LEVEL=info\nLOG_LEVEL=warn\n';
     const after = rewriteEnv(before, { AI_MODEL_WRITER: 'claude-opus-5-5', LOG_LEVEL: 'debug' });
     expect(after).toBe('# Per agent (empty = AI_MODEL).\nAI_MODEL_WRITER=claude-opus-5-5\n# AI_MODEL_SEO=\n# Empty = defaults\n# LOG_LEVEL=info\nLOG_LEVEL=debug\n');
+  });
+
+  it('writes values that dotenv reads back exactly, and refuses what it cannot', () => {
+    for (const v of ['plain', 'with space', 'Blog "tech", en español', "it's", `both ' and "`, 'back\\slash "q"', 'x"\\nWEB_SESSION_TOKEN=pwn']) {
+      const line = `K=${quote(v)}`;
+      expect(parse(line).K, v).toBe(v);
+    }
+    expect(() => quote('a\nB=1')).toThrow(EnvValidationError);
+    expect(() => quote(`' " \``)).toThrow(EnvValidationError);
   });
 
   it('handles "#KEY=" without a space, a line pasted twice, and drops duplicate active lines', () => {

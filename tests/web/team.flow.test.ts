@@ -35,7 +35,7 @@ describe('teamwork: activity, assignments, notes and presence', () => {
     const rows = team.listActivity({ limit: 10 });
     expect(rows.some((r) => r.action === 'login' && r.actor === 'luis')).toBe(true);
     expect(rows.some((r) => r.action === 'loginFailed' && r.target === 'ana' && r.actor === null)).toBe(true);
-    auth.clearFailures(auth.loginKey('ana'));
+    auth.clearFailures('ana', '127.0.0.1');
 
     const page = await app.inject({ method: 'GET', url: '/settings/activity?actor=luis', headers: { cookie: ana } });
     expect(page.statusCode).toBe(200);

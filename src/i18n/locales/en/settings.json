@@ -348,7 +348,8 @@
     "ovDescriptionMsg": "required",
     "ovEmailMsg": "not a valid email",
     "ovExists": "credentials already exist. Check \"replace\" to register another app",
-    "ovNotSaved": "registered, but the .env couldn't be written ({error}). Copy OPENVERSE_CLIENT_ID={id} and OPENVERSE_CLIENT_SECRET={secret} into your .env now: they can't be recovered"
+    "ovNotSaved": "registered, but the .env couldn't be written ({error}). Copy OPENVERSE_CLIENT_ID={id} and OPENVERSE_CLIENT_SECRET={secret} into your .env now: they can't be recovered",
+    "quotes": "It can't contain single quotes, double quotes and backticks all at once."
   },
   "nav": {
     "label": "Sections"

@@ -18,10 +18,15 @@ export interface AuthUser {
   role: Role;
 }
 
-const als = new AsyncLocalStorage<{ user: AuthUser | null; actor: string | null }>();
+const als = new AsyncLocalStorage<{ user: AuthUser | null; actor: string | null; nonce?: string }>();
 
-export function runWithUser<T>(user: AuthUser | null, fn: () => T): T {
-  return als.run({ user, actor: user?.username ?? null }, fn);
+export function runWithUser<T>(user: AuthUser | null, fn: () => T, nonce?: string): T {
+  return als.run({ user, actor: user?.username ?? null, nonce: nonce ?? als.getStore()?.nonce }, fn);
+}
+
+/** This response's CSP nonce, for the few inline <script> tags (see web/server.ts). */
+export function cspNonce(): string {
+  return als.getStore()?.nonce ?? '';
 }
 
 /** Runs background work on behalf of a user (a job started by them). */

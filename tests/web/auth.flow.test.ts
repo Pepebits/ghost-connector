@@ -85,6 +85,11 @@ describe('login with users, roles and 2FA', () => {
     expect((await app.inject({ method: 'GET', url: `/invite/${link}` })).statusCode).toBe(404);
 
     expect((await app.inject({ method: 'GET', url: '/settings', headers: { cookie: editor, accept: 'text/html' } })).statusCode).toBe(403);
+    // Percent-encoded paths reach the same route: the guard must not be fooled by the URL text.
+    for (const url of ['/%73ettings', '/%73ettings/activity', '/api/%73ettings/ghost-tags', '/settings%2Factivity']) {
+      expect((await app.inject({ method: 'GET', url, headers: { cookie: editor } })).statusCode).not.toBe(200);
+    }
+    expect((await post('/%73ettings/users/invite', editor, { role: 'editor' })).statusCode).toBe(403);
     expect((await post('/settings/env', editor, { AI_MODEL: 'x' })).statusCode).toBe(403);
     expect((await post('/settings/users/invite', editor, { role: 'admin' })).statusCode).toBe(403);
     expect((await app.inject({ method: 'GET', url: '/api/settings/ghost-tags', headers: { cookie: editor } })).statusCode).toBe(403);
@@ -116,6 +121,8 @@ describe('login with users, roles and 2FA', () => {
     // An admin: settings yes, but not export/import, keys, endpoints nor other admins.
     expect((await app.inject({ method: 'GET', url: '/settings', headers: { cookie: luisCookie } })).statusCode).toBe(200);
     expect((await post('/settings/export', luisCookie)).statusCode).toBe(403);
+    expect((await post('/%73ettings/export', luisCookie)).statusCode).toBe(403);
+    expect((await post('/settings/%65xport', luisCookie)).statusCode).toBe(403);
     expect((await post('/settings/env', luisCookie, { __group: 'ai', AI_API_KEY: 'sk-robada' })).statusCode).toBe(403);
     expect((await post('/settings/env', luisCookie, { __group: 'ai', AI_BASE_URL: 'https://evil.example/v1' })).statusCode).toBe(403);
     expect((await post('/settings/users/invite', luisCookie, { role: 'admin' })).headers.location).toContain('users=owner');
@@ -124,7 +131,7 @@ describe('login with users, roles and 2FA', () => {
     // Transfer: wrong password does nothing; the right one swaps owner and admin.
     expect((await post(`/settings/users/${luis.id}/transfer`, admin, { password: 'mala' })).headers.location).toContain('badPassword');
     expect(auth.getUser(ana.id)?.role).toBe('owner');
-    auth.clearFailures(auth.loginKey('ana'));
+    auth.clearFailures('ana', '127.0.0.1');
     expect((await post(`/settings/users/${luis.id}/transfer`, admin, { password: PW })).headers.location).toContain('transferred');
     expect(auth.getUser(luis.id)?.role).toBe('owner');
     expect(auth.getUser(ana.id)?.role).toBe('admin');
@@ -171,7 +178,7 @@ describe('login with users, roles and 2FA', () => {
     expect(reuse.statusCode).toBe(401);
     expect(base32Decode(secret).length).toBe(20);
     auth.disableTotp(ana.id);
-    auth.clearFailures(auth.loginKey('ana'));
+    auth.clearFailures('ana', '127.0.0.1');
   });
 
   it('single-use link (open browser) signs in as the first admin', async () => {
@@ -188,6 +195,6 @@ describe('login with users, roles and 2FA', () => {
     for (let i = 0; i < 5; i++) await login('ana', 'mal');
     expect((await login('ana')).statusCode).toBe(429);
     expect((await login('luis', 'otra frase todavía más larga')).statusCode).toBe(302);
-    auth.clearFailures(auth.loginKey('ana'));
+    auth.clearFailures('ana', '127.0.0.1');
   });
 });

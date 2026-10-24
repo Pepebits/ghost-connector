@@ -93,7 +93,11 @@ const PENDING_COOKIE = 'gc_2fa';
 const PUBLIC_PATHS = ['/healthz', '/login', '/login/2fa'];
 const isStaticAsset = (url: string) => /^\/(?:vendor\/[^?]*|[\w.-]+\.(?:css|js|svg|png|ico|woff2?))(?:\?.*)?$/.test(url);
 /** Only local paths after login: never another site ("//evil.com", "https://…"). */
-const safeNext = (next: unknown) => (typeof next === 'string' && /^\/(?![/\\])/.test(next) ? next : '/');
+const safeNext = (next: unknown) => {
+  // Browsers drop tabs and newlines from URLs ("/\t/evil.com" → "//evil.com"): any control character is refused.
+  if (typeof next !== 'string' || /[\u0000-\u001f\u007f\\]/.test(next) || !/^\/(?!\/)/.test(next)) return '/';
+  return next;
+};
 /**
  * Admin only: settings (keys, prompts, export/import, language) and users. Editors
  * do everything else (plan, review, edit, apply, ideas, jobs) and their account.
@@ -105,6 +109,8 @@ const isOwnerPath = (path: string) => /^\/settings\/(?:export|import|openverse\/
 declare module 'fastify' {
   interface FastifyRequest {
     user?: auth.AuthUser;
+    /** Per-response nonce for the inline <script> tags (Content-Security-Policy). */
+    cspNonce?: string;
   }
 }
 
@@ -198,7 +204,12 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     allowedOrigins.add(publicUrl.origin);
   }
 
-  const app = Fastify({ loggerInstance: logger });
+  const app = Fastify({
+    loggerInstance: logger,
+    // Behind a proxy or tunnel (PUBLIC_URL), the client's address comes in X-Forwarded-For,
+    // trusted only from the local machine or a private network (cloudflared, nginx, Docker).
+    trustProxy: publicUrl ? ['loopback', 'uniquelocal', 'linklocal'] : false,
+  });
 
   await app.register(fastifyCookie);
   await app.register(fastifyFormbody);
@@ -209,6 +220,7 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   // browser could send a POST to this server (it couldn't READ the
   // response due to CORS, but the write would already have happened).
   app.addHook('onRequest', async (req, reply) => {
+    req.cspNonce = randomBytes(16).toString('base64');
     if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') return;
     const host = req.headers.host;
     if (!host || !allowedHosts.has(host)) {
@@ -220,6 +232,41 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
       await reply.code(403).send(t('server.originNotAllowed'));
       return;
     }
+    // Browsers that omit Origin still say where the request comes from.
+    const site = req.headers['sec-fetch-site'];
+    if (!origin && site && site !== 'same-origin' && site !== 'none') {
+      await reply.code(403).send(t('server.originNotAllowed'));
+      return;
+    }
+  });
+
+  // Ids in URLs are Ghost ids, run ids, tokens or slugs: never anything that could
+  // walk out of a folder once used in a file path ("..%2F..%2Fetc" decodes to "../../etc").
+  app.addHook('preValidation', async (req, reply) => {
+    const params = (req.params ?? {}) as Record<string, string>;
+    for (const v of Object.values(params)) {
+      if (typeof v === 'string' && !/^[\w.-]{1,200}$/.test(v)) return reply.code(400).type('text/plain').send(t('server.badId'));
+      if (typeof v === 'string' && v.includes('..')) return reply.code(400).type('text/plain').send(t('server.badId'));
+    }
+  });
+
+  // Login-type forms: at most 30 posts per client every 10 minutes, before
+  // any password is hashed (scrypt is slow on purpose: see auth/store.ts).
+  const AUTH_FORMS = /^\/(?:login(?:\/2fa)?|setup-password|invite\/[^/]+)$/;
+  const attempts = new Map<string, { count: number; reset: number }>();
+  app.addHook('onRequest', async (req, reply) => {
+    if (req.method !== 'POST' || !AUTH_FORMS.test(req.url.split('?')[0]!)) return;
+    const now = Date.now();
+    if (attempts.size > 10_000) for (const [k, v] of attempts) if (v.reset < now) attempts.delete(k);
+    const a = attempts.get(req.ip);
+    if (!a || a.reset < now) attempts.set(req.ip, { count: 1, reset: now + 10 * 60_000 });
+    else if (++a.count > 30) return reply.code(429).header('Retry-After', String(Math.ceil((a.reset - now) / 1000))).type('text/plain').send(t('auth.tooMany'));
+  });
+
+  // Too many password checks at once (see auth/store.ts): "busy, try again" instead of piling up.
+  app.setErrorHandler((err, _req, reply) => {
+    if (err instanceof auth.AuthBusyError) return reply.code(429).header('Retry-After', '5').type('text/plain').send(t('auth.busy'));
+    return reply.send(err);
   });
 
   // Auth: users (admin | editor) with a password (+ optional TOTP) → a
@@ -251,9 +298,13 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const user = auth.checkSession(req.cookies[SESSION_COOKIE]);
     if (user) {
       req.user = user;
-      const denied = (!isAdminRole(user.role) && isAdminPath(path) && 'auth.adminOnly') || (user.role !== 'owner' && isOwnerPath(path) && 'auth.ownerOnly');
+      // Checked against the route Fastify actually matched (its pattern, e.g.
+      // /settings/users/:id/role), never the raw URL: "/%73ettings" is decoded
+      // by the router and would otherwise slip past a check on the text.
+      const route = req.routeOptions.url ?? '';
+      const denied = (!isAdminRole(user.role) && isAdminPath(route) && 'auth.adminOnly') || (user.role !== 'owner' && isOwnerPath(route) && 'auth.ownerOnly');
       if (denied) {
-        if (wantsHtml(req)) return reply.code(403).type('text/html').send(runWithUser(user, () => errorPage({ status: 403, message: t(denied), back: { href: '/', label: t('common.nav.dashboard') } })));
+        if (wantsHtml(req)) return reply.code(403).type('text/html').send(runWithUser(user, () => errorPage({ status: 403, message: t(denied), back: { href: '/', label: t('common.nav.dashboard') } }), req.cspNonce));
         return reply.code(403).type('text/plain').send(t(denied));
       }
       return;
@@ -287,39 +338,44 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   });
 
   // Who is behind the request, for the views (header, nav) and authorship.
-  app.addHook('onRequest', (req, _reply, done) => runWithUser(req.user ?? null, done));
+  app.addHook('onRequest', (req, _reply, done) => runWithUser(req.user ?? null, done, req.cspNonce));
 
   app.get('/login', async (req, reply) => {
     if (auth.checkSession(req.cookies[SESSION_COOKIE])) return reply.redirect('/');
     const next = safeNext((req.query as { next?: string }).next);
-    return reply.type('text/html').send(loginPage({ next, error: auth.hasUsers() ? undefined : t('auth.login.noPassword') }));
+    return reply.type('text/html').send(loginPage({ next, error: auth.hasUsers() ? undefined : t('auth.login.noPassword'), notice: (req.query as { reset?: string }).reset === '1' ? t('auth.login.resetDone') : undefined }));
   });
 
   app.post('/login', async (req, reply) => {
     const body = req.body as { username?: string; password?: string; next?: string };
     const next = safeNext(body.next);
     const username = String(body.username ?? '').slice(0, 64);
-    const key = auth.loginKey(username);
-    const wait = auth.lockedFor(key);
+    const wait = auth.lockedFor(username, req.ip);
     if (wait > 0) return reply.code(429).type('text/html').send(loginPage({ next, username, error: t('auth.locked', { minutes: Math.ceil(wait / 60_000) }) }));
     const user = await auth.verifyLogin(username, body.password ?? '');
     if (!user) {
-      auth.recordFailure(key);
-      logActivity('loginFailed', { actor: null, target: username });
+      auth.recordFailure(username, req.ip);
+      // Only names that exist: a password typed into the username box must not end up in the log.
+      logActivity('loginFailed', { actor: null, target: auth.findUser(username)?.username ?? null, detail: auth.findUser(username) ? null : 'unknownUser' });
       return reply.code(401).type('text/html').send(loginPage({ next, username, error: t('auth.login.wrong') }));
     }
     if (auth.totpEnabled(user.id)) {
       const id = randomBytes(24).toString('base64url');
+      prunePending();
       pending2fa.set(id, { until: Date.now() + 5 * 60_000, next, userId: user.id });
       reply.setCookie(PENDING_COOKIE, id, { httpOnly: true, sameSite: 'strict', path: '/login', secure: secureCookie, maxAge: 300 });
       return reply.redirect('/login/2fa');
     }
-    auth.clearFailures(key);
+    auth.clearFailures(username, req.ip);
     startSession(req, reply, user);
     logActivity('login', { actor: user.username });
     return reply.redirect(next);
   });
 
+  const prunePending = () => {
+    const now = Date.now();
+    for (const [k, v] of pending2fa) if (v.until < now) pending2fa.delete(k);
+  };
   const pendingOf = (id: string | undefined) => {
     const p = id ? pending2fa.get(id) : undefined;
     if (!p || p.until < Date.now()) return null;
@@ -336,18 +392,17 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const p = pendingOf(id);
     const user = p ? auth.getUser(p.userId) : null;
     if (!p || !user) return reply.redirect('/login');
-    const key = auth.loginKey(user.username);
-    const wait = auth.lockedFor(key);
+    const wait = auth.lockedFor(user.username, req.ip);
     if (wait > 0) return reply.code(429).type('text/html').send(twoFactorPage({ error: t('auth.locked', { minutes: Math.ceil(wait / 60_000) }) }));
     const used = auth.verifySecondFactor(user.id, (req.body as { code?: string }).code ?? '');
     if (!used) {
-      auth.recordFailure(key);
+      auth.recordFailure(user.username, req.ip);
       logActivity('loginFailed', { actor: null, target: user.username, detail: '2fa' });
       return reply.code(401).type('text/html').send(twoFactorPage({ error: t('auth.twoFactor.wrong') }));
     }
     pending2fa.delete(id!);
     reply.clearCookie(PENDING_COOKIE, { path: '/login' });
-    auth.clearFailures(key);
+    auth.clearFailures(user.username, req.ip);
     startSession(req, reply, user);
     logActivity('login', { actor: user.username, detail: used === 'recovery' ? 'recovery' : '2fa' });
     return reply.redirect(used === 'recovery' ? '/account?sec=recoveryUsed' : p.next);
@@ -401,6 +456,16 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const { token } = req.params as { token: string };
     const invite = auth.findInvite(token);
     if (!invite) return reply.code(404).type('text/html').send(inviteGonePage());
+    if (invite.userId !== null) {
+      // A reset link is only as good as its maker's rights today: if they lost
+      // them (or the target changed role), the link is void.
+      const maker = invite.createdBy ? auth.findUser(invite.createdBy) : null;
+      const target = auth.getUser(invite.userId);
+      if (!maker || !target || !canManage(maker, target)) {
+        auth.revokeInvite(invite.id);
+        return reply.code(404).type('text/html').send(inviteGonePage());
+      }
+    }
     const b = req.body as { username?: string; password?: string; repeat?: string };
     const again = (error: string) => reply.code(422).type('text/html').send(invitePage({ token, invite, min: auth.MIN_PASSWORD, username: b.username, error }));
     const problem = passwordProblem(b.password, b.repeat);
@@ -412,9 +477,11 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
       if (err instanceof auth.AuthError) return err.code === 'notFound' ? reply.code(404).type('text/html').send(inviteGonePage()) : again(t(`auth.errors.${err.code}`));
       throw err;
     }
-    startSession(req, reply, user);
     logActivity(invite.userId !== null ? 'passwordReset' : 'userJoined', { actor: user.username, detail: invite.userId !== null ? null : invite.role });
-    return reply.redirect(auth.totpEnabled(user.id) ? '/' : '/account/2fa?first=1');
+    // With 2FA on, a new password is not enough to get in: log in normally (password + code).
+    if (auth.totpEnabled(user.id)) return reply.redirect('/login?reset=1');
+    startSession(req, reply, user);
+    return reply.redirect('/account/2fa?first=1');
   });
 
   // ---------- My account (every user) ----------
@@ -448,10 +515,9 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
 
   const secondFactorOk = (req: FastifyRequest) => {
     const u = me(req);
-    const key = auth.loginKey(u.username);
-    if (auth.lockedFor(key) > 0) return false;
+    if (auth.lockedFor(u.username, req.ip) > 0) return false;
     if (!auth.verifySecondFactor(u.id, (req.body as { code?: string }).code ?? '')) {
-      auth.recordFailure(key);
+      auth.recordFailure(u.username, req.ip);
       return false;
     }
     return true;
@@ -477,10 +543,9 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   app.post('/account/password', async (req, reply) => {
     const u = me(req);
     const b = req.body as { current?: string; password?: string; repeat?: string };
-    const key = auth.loginKey(u.username);
-    const wait = auth.lockedFor(key);
+    const wait = auth.lockedFor(u.username, req.ip);
     if (wait > 0 || !(await auth.verifyPassword(u.id, b.current ?? ''))) {
-      if (!wait) auth.recordFailure(key);
+      auth.recordFailure(u.username, req.ip);
       return reply.redirect('/account?sec=badPassword');
     }
     if (passwordProblem(b.password, b.repeat)) return reply.redirect('/account?sec=weakPassword');
@@ -571,9 +636,8 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const u = me(req);
     const target = auth.getUser(Number((req.params as { id: string }).id));
     if (u.role !== 'owner' || !target || target.id === u.id) return reply.redirect(usersBack('owner'));
-    const key = auth.loginKey(u.username);
-    if (auth.lockedFor(key) > 0 || !(await auth.verifyPassword(u.id, String((req.body as { password?: string }).password ?? '')))) {
-      auth.recordFailure(key);
+    if (auth.lockedFor(u.username, req.ip) > 0 || !(await auth.verifyPassword(u.id, String((req.body as { password?: string }).password ?? '')))) {
+      auth.recordFailure(u.username, req.ip);
       return reply.redirect(usersBack('badPassword'));
     }
     auth.transferOwnership(target.id);
@@ -582,14 +646,46 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   });
 
   app.post('/settings/invites/revoke', async (req, reply) => {
-    auth.revokeInvite(String((req.body as { id?: string }).id ?? ''));
+    const invite = auth.listInvites().find((i) => i.id === String((req.body as { id?: string }).id ?? ''));
+    if (!invite) return reply.redirect(usersBack('inviteRevoked'));
+    // Admin invites and links for admins are the owner's to manage (same rule as canManage).
+    const target = invite.userId !== null ? auth.getUser(invite.userId) : null;
+    if (me(req).role !== 'owner' && (invite.role !== 'editor' || (target && target.role !== 'editor'))) return reply.redirect(usersBack('owner'));
+    auth.revokeInvite(invite.id);
     logActivity('inviteRevoked');
     return reply.redirect(usersBack('inviteRevoked'));
   });
 
-  // A private panel: never in search results, even if its URL leaks.
-  app.addHook('onSend', async (_req, reply, payload) => {
+  // A private panel: never in search results, even if its URL leaks; never
+  // framed (clickjacking); only its own scripts run (the two inline ones carry
+  // this response's nonce), so an injection that slipped through can't execute.
+  const hsts = publicUrl?.protocol === 'https:';
+  app.addHook('onSend', async (req, reply, payload) => {
     reply.header('X-Robots-Tag', 'noindex, nofollow');
+    reply.header('X-Content-Type-Options', 'nosniff');
+    reply.header('X-Frame-Options', 'DENY');
+    reply.header('Referrer-Policy', 'same-origin');
+    reply.header('Cross-Origin-Opener-Policy', 'same-origin');
+    reply.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+    if (hsts) reply.header('Strict-Transport-Security', 'max-age=31536000');
+    if (!reply.hasHeader('Content-Security-Policy')) {
+      reply.header(
+        'Content-Security-Policy',
+        [
+          "default-src 'self'",
+          `script-src 'self' 'nonce-${req.cspNonce ?? ''}'`,
+          "style-src 'self' 'unsafe-inline'",
+          // Post images (Ghost, image sources) are shown in previews.
+          "img-src 'self' data: https:",
+          "font-src 'self' data:",
+          "connect-src 'self'",
+          "object-src 'none'",
+          "base-uri 'none'",
+          "form-action 'self'",
+          "frame-ancestors 'none'",
+        ].join('; '),
+      );
+    }
     return payload;
   });
 
@@ -931,8 +1027,11 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const artifact = latest?.imageChoice?.kind === 'option' ? latest : await planFor(id, IMAGE_ONLY_RUN);
     if (artifact?.imageChoice?.kind !== 'option') return reply.code(404).send();
     try {
+      // Only real image types: a plan (maybe imported) can't make this serve HTML.
+      const type = /^image\/(?:jpeg|png|webp|gif|avif)$/.test(artifact.imageChoice.contentType) ? artifact.imageChoice.contentType : null;
+      if (!type) return reply.code(415).send();
       const data = await readFile(localImagePath(artifact.imageChoice.localFile));
-      return reply.type(artifact.imageChoice.contentType).header('cache-control', 'private, max-age=3600').send(data);
+      return reply.type(type).header('cache-control', 'private, max-age=3600').header('content-security-policy', "default-src 'none'; sandbox").send(data);
     } catch {
       return reply.code(404).send();
     }
@@ -1306,20 +1405,23 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     return reply.type('application/gzip').header('Content-Disposition', `attachment; filename="${exportFileName()}"`).header('Cache-Control', 'no-store').send(file);
   });
 
-  // The file comes as the raw body (settings.js sends it with fetch), up to 100 MB.
-  app.addContentTypeParser(['application/gzip', 'application/octet-stream', 'application/x-gzip'], { parseAs: 'buffer', bodyLimit: 100 * 1024 * 1024 }, (_req, body, done) => done(null, body));
-
   const importError = (reply: FastifyReply, code: string) => reply.code(422).type('text/plain').send(t(`settings.transfer.errors.${code}`));
 
-  app.post('/settings/import', async (req, reply) => {
-    if (!Buffer.isBuffer(req.body) || !req.body.length) return importError(reply, 'notExport');
-    try {
-      const preview = stageImport(req.body);
-      return reply.redirect(`/settings/import/${preview.id}`);
-    } catch (err) {
-      if (err instanceof ImportError) return importError(reply, err.code);
-      throw err;
-    }
+  // The file comes as the raw body (settings.js sends it with fetch), up to 100 MB.
+  // Registered in its own scope: no other route accepts a 100 MB raw body.
+  await app.register(async (scope) => {
+    scope.addContentTypeParser(['application/gzip', 'application/octet-stream', 'application/x-gzip'], { parseAs: 'buffer', bodyLimit: 100 * 1024 * 1024 }, (_req, body, done) => done(null, body));
+
+    scope.post('/settings/import', async (req, reply) => {
+      if (!Buffer.isBuffer(req.body) || !req.body.length) return importError(reply, 'notExport');
+      try {
+        const preview = stageImport(req.body);
+        return reply.redirect(`/settings/import/${preview.id}`);
+      } catch (err) {
+        if (err instanceof ImportError) return importError(reply, err.code);
+        throw err;
+      }
+    });
   });
 
   app.get('/settings/import/:id', async (req, reply) => {

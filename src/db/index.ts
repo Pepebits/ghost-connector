@@ -1,5 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { getConfig } from '../config.js';
 import { logger } from '../logger.js';
@@ -211,6 +211,24 @@ const SCHEMA_STATEMENTS: string[] = [
 
 let db: DatabaseSync | null = null;
 
+/**
+ * The data folder holds 2FA secrets, password and session hashes, plans and
+ * images: only its owner may read it. Also fixes installs created before
+ * (the folder 755, the database 644).
+ */
+function restrictPermissions(dir: string): void {
+  try {
+    if ((statSync(dir).mode & 0o077) !== 0) chmodSync(dir, 0o700);
+    for (const f of ['index.db', 'index.db-wal', 'index.db-shm']) {
+      const p = join(dir, f);
+      if (existsSync(p) && (statSync(p).mode & 0o077) !== 0) chmodSync(p, 0o600);
+    }
+  } catch (err) {
+    // A volume we don't own (some Docker setups): warn, don't refuse to start.
+    logger.warn({ err: err instanceof Error ? err.message : String(err) }, 'Could not restrict the permissions of the data folder');
+  }
+}
+
 function dbPath(): string {
   return join(getConfig().DATA_DIR, 'index.db');
 }
@@ -243,10 +261,12 @@ export function ensureColumn(target: DatabaseSync, table: string, column: string
 
 export function getDb(): DatabaseSync {
   if (db) return db;
-  mkdirSync(getConfig().DATA_DIR, { recursive: true });
+  const dir = getConfig().DATA_DIR;
+  mkdirSync(dir, { recursive: true, mode: 0o700 });
   db = new DatabaseSync(dbPath());
   db.exec('PRAGMA journal_mode = WAL;');
   for (const stmt of SCHEMA_STATEMENTS) db.exec(stmt);
+  restrictPermissions(dir);
   ensureColumn(db, 'artifacts', 'tokens_in', 'INTEGER');
   ensureColumn(db, 'artifacts', 'tokens_out', 'INTEGER');
   ensureColumn(db, 'artifacts', 'cost_by_agent_json', 'TEXT');

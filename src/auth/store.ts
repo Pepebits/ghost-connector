@@ -1,5 +1,6 @@
 import { createHash, randomBytes, scrypt as scryptCb, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
+import pLimit from 'p-limit';
 import { getDb } from '../db/index.js';
 import type { AuthUser, Role } from './context.js';
 import { verifyTotp } from './totp.js';
@@ -14,8 +15,21 @@ export type { AuthUser, Role } from './context.js';
  * lives in the local SQLite; writes are NOT best-effort like the index ones.
  */
 
-const scrypt = promisify(scryptCb) as (pw: string, salt: Buffer, len: number, opts: { N: number; r: number; p: number; maxmem: number }) => Promise<Buffer>;
+const scryptRaw = promisify(scryptCb) as (pw: string, salt: Buffer, len: number, opts: { N: number; r: number; p: number; maxmem: number }) => Promise<Buffer>;
 const SCRYPT = { N: 1 << 15, r: 8, p: 1, maxmem: 64 * 1024 * 1024 };
+
+/**
+ * scrypt is slow and memory-hungry on purpose (~100 ms, 32 MB): at most a few
+ * at once, and a short queue. Past that the server answers "busy" instead of
+ * letting a flood of logins (even with made-up users) starve everything else.
+ */
+const hashing = pLimit(3);
+const MAX_QUEUED = 24;
+export class AuthBusyError extends Error {}
+const scrypt: typeof scryptRaw = (pw, salt, len, opts) => {
+  if (hashing.pendingCount >= MAX_QUEUED) return Promise.reject(new AuthBusyError('busy'));
+  return hashing(() => scryptRaw(pw, salt, len, opts));
+};
 export const MIN_PASSWORD = 10;
 export const SESSION_DAYS = 30;
 export const INVITE_DAYS = 7;
@@ -145,6 +159,7 @@ export function setRole(id: number, role: Exclude<Role, 'owner'>): void {
   if (r.role === 'owner') throw new AuthError('owner');
   if (r.role === 'admin' && role !== 'admin' && countAdmins() <= 1) throw new AuthError('lastAdmin');
   db().prepare('UPDATE users SET role = ? WHERE id = ?').run(role, id);
+  dropResetLinks(id);
 }
 
 export function deleteUser(id: number): void {
@@ -167,6 +182,8 @@ export function transferOwnership(toId: number): void {
   try {
     db().prepare("UPDATE users SET role = 'admin' WHERE role = 'owner'").run();
     db().prepare("UPDATE users SET role = 'owner' WHERE id = ?").run(toId);
+    // Links made under the old roles must not outlive them.
+    db().exec("DELETE FROM invites WHERE user_id IS NOT NULL");
     db().exec('COMMIT');
   } catch (err) {
     db().exec('ROLLBACK');
@@ -211,6 +228,12 @@ export function enableTotp(id: number, secret: string): string[] {
 
 export function disableTotp(id: number): void {
   db().prepare('UPDATE users SET totp_secret = NULL, totp_last = NULL, recovery_json = NULL WHERE id = ?').run(id);
+  dropResetLinks(id);
+}
+
+/** Pending "new password" links for a user, made void (role or 2FA changed). */
+function dropResetLinks(userId: number): void {
+  db().prepare('DELETE FROM invites WHERE user_id = ?').run(userId);
 }
 
 export function newRecoveryCodes(id: number): string[] {
@@ -379,30 +402,51 @@ export function countSessions(userId: number): number {
 
 // ---------- brute force ----------
 
+/**
+ * Two brakes, both before hashing anything:
+ * - per account AND client (IP): 5 free tries, then 1, 2, 4… minutes (max 1 h).
+ *   Someone guessing from one place can't lock the real user out elsewhere.
+ * - per account from anywhere: 25 tries, then 15, 30… minutes (max 4 h), so
+ *   rotating IPs doesn't give unlimited guesses either.
+ */
 const failures = new Map<string, { count: number; until: number; at: number }>();
+const PER_CLIENT = { free: 5, unitMs: 60_000, maxMs: 3600_000 };
+const PER_ACCOUNT = { free: 25, unitMs: 15 * 60_000, maxMs: 4 * 3600_000 };
 
-/** Key of the brake: per account (an IP can be spoofed behind a proxy). */
-export const loginKey = (username: string) => `login:${username.trim().toLowerCase()}`;
+const norm = (username: string) => username.trim().toLowerCase();
+const clientKey = (username: string, ip: string) => `c:${norm(username)}|${ip}`;
+const accountKey = (username: string) => `a:${norm(username)}`;
 
-/** Milliseconds this account still has to wait, 0 if it may try. */
-export function lockedFor(key: string, now = Date.now()): number {
+function lockOf(key: string, now: number): number {
   const f = failures.get(key);
   return f && f.until > now ? f.until - now : 0;
 }
 
-/** 5 free attempts, then a lock that doubles: 1, 2, 4… minutes (max 1 h). */
-export function recordFailure(key: string, now = Date.now()): void {
+/** Milliseconds this account still has to wait from this client, 0 if it may try. */
+export function lockedFor(username: string, ip: string, now = Date.now()): number {
+  return Math.max(lockOf(clientKey(username, ip), now), lockOf(accountKey(username), now));
+}
+
+function bump(key: string, rule: typeof PER_CLIENT, now: number): void {
+  const f = failures.get(key) ?? { count: 0, until: 0, at: now };
+  f.count += 1;
+  f.at = now;
+  if (f.count >= rule.free) f.until = now + Math.min(rule.maxMs, rule.unitMs * 2 ** (f.count - rule.free));
+  failures.set(key, f);
+}
+
+/** A failed attempt. While locked nothing is counted (the lock doesn't keep growing). */
+export function recordFailure(username: string, ip: string, now = Date.now()): void {
+  if (lockedFor(username, ip, now) > 0) return;
   if (failures.size > 5000) {
     // Made-up usernames shouldn't grow this forever: forget the stale ones.
     for (const [k, v] of failures) if (now - v.at > 3600_000 && v.until < now) failures.delete(k);
   }
-  const f = failures.get(key) ?? { count: 0, until: 0, at: now };
-  f.count += 1;
-  f.at = now;
-  if (f.count >= 5) f.until = now + Math.min(60, 2 ** (f.count - 5)) * 60_000;
-  failures.set(key, f);
+  bump(clientKey(username, ip), PER_CLIENT, now);
+  bump(accountKey(username), PER_ACCOUNT, now);
 }
 
-export function clearFailures(key: string): void {
-  failures.delete(key);
+export function clearFailures(username: string, ip: string): void {
+  failures.delete(clientKey(username, ip));
+  failures.delete(accountKey(username));
 }
