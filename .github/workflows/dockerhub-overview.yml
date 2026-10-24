@@ -1,12 +1,10 @@
-# Keeps the Docker Hub overview in sync with docs/dockerhub.md without a
-# release (releases update it too). Needs DOCKERHUB_TOKEN allowed to edit the
-# repository (read, write, delete).
+# Releases update the Docker Hub overview from docs/dockerhub.md, so it always
+# matches the published image. This runs it by hand (Actions → Docker Hub
+# overview → Run workflow), only to fix something without cutting a release.
+# Needs DOCKERHUB_TOKEN allowed to edit the repository (read, write, delete).
 name: Docker Hub overview
 
 on:
-  push:
-    branches: [main]
-    paths: [docs/dockerhub.md]
   workflow_dispatch:
 
 permissions:
