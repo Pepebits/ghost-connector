@@ -130,6 +130,11 @@ from the tag's message and announces it with
 In the notes, titled lists ("Added", "Fixed", "Security"…) become collapsible
 sections with their emoji.
 
+The release also writes the Docker Hub overview from `docs/dockerhub.md`
+(one text per Docker Hub repository, so it always matches the published
+image). To fix it without a release, run *Actions → Docker Hub overview*
+by hand.
+
 Secrets, usually at the organization: `DOCKERHUB_USERNAME` and
 `DOCKERHUB_TOKEN` (a Docker Hub access token with read/write) to publish, and
 `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` (`TELEGRAM_TEST_CHAT_ID` for
