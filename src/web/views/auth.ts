@@ -31,6 +31,8 @@ const newPasswordFields = (min: number, autofocus = false) =>
 
 export const roleBadge = (role: Role) => html`<span class="badge ${role === 'owner' ? 'badge-ok' : role === 'admin' ? 'badge-info' : 'badge-neutral'}">${t(`auth.roles.${role}`)}</span>`;
 
+const GEAR = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`;
+
 /** Who may manage whom: the owner, everyone but themself; an admin, only editors; an editor, nobody. */
 export const canManage = (me: AuthUser, target: { id: number; role: Role }) =>
   (me.role === 'owner' || me.role === 'admin') && target.id !== me.id && target.role !== 'owner' && (me.role === 'owner' || target.role === 'editor');
@@ -229,7 +231,7 @@ export function accountPage(o: AccountView): string {
   ].filter(Boolean);
   const body = html`
     <div class="mb-6 flex flex-wrap items-center gap-4">
-      <span class="grid size-14 shrink-0 place-items-center rounded-full bg-accent text-2xl font-semibold text-white" aria-hidden="true">${initial}</span>
+      <span class="avatar size-14 text-2xl" aria-hidden="true">${initial}</span>
       <div class="min-w-0">
         <h1 class="m-0 flex flex-wrap items-center gap-2 text-2xl font-semibold"><span class="sr-only">${t('auth.account.title')}: </span>${o.user.username} ${raw(roleBadge(o.user.role))}</h1>
         <p class="m-0 mt-1 text-sm text-muted">${raw(facts.join(' · '))}</p>
@@ -315,12 +317,13 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
       const manage = canManage(o.me, u);
       const owner = o.me.role === 'owner';
       const other: Exclude<Role, 'owner'> = u.role === 'admin' ? 'editor' : 'admin';
+      const item = 'user-menu-item w-full text-left';
       const buttons = [
-        owner && manage ? html`<form method="post" action="/settings/users/${u.id}/role" class="m-0"><input type="hidden" name="role" value="${other}"><button type="submit" class="btn btn-ghost btn-sm">${t(`auth.users.makeRole.${other}`)}</button></form>` : '',
-        manage ? html`<form method="post" action="/settings/users/${u.id}/reset-password" class="m-0"><button type="submit" class="btn btn-ghost btn-sm">${t('auth.users.resetPassword')}</button></form>` : '',
-        manage && u.totp ? html`<button type="button" class="btn btn-ghost btn-sm" data-open-dialog="u-2fa-${u.id}">${t('auth.users.reset2fa')}</button>` : '',
-        owner && !self ? html`<button type="button" class="btn btn-ghost btn-sm" data-open-dialog="u-own-${u.id}">${t('auth.users.transfer')}</button>` : '',
-        manage ? html`<button type="button" class="btn btn-ghost btn-sm text-err" data-open-dialog="u-del-${u.id}">${t('auth.users.delete')}</button>` : '',
+        owner && manage ? html`<form method="post" action="/settings/users/${u.id}/role" class="m-0"><input type="hidden" name="role" value="${other}"><button type="submit" class="${item}">${t(`auth.users.makeRole.${other}`)}</button></form>` : '',
+        manage ? html`<form method="post" action="/settings/users/${u.id}/reset-password" class="m-0"><button type="submit" class="${item}">${t('auth.users.resetPassword')}</button></form>` : '',
+        manage && u.totp ? html`<button type="button" class="${item}" data-open-dialog="u-2fa-${u.id}">${t('auth.users.reset2fa')}</button>` : '',
+        owner && !self ? html`<button type="button" class="${item}" data-open-dialog="u-own-${u.id}">${t('auth.users.transfer')}</button>` : '',
+        manage ? html`<div class="my-1 border-t border-line"></div><button type="button" class="${item} text-err" data-open-dialog="u-del-${u.id}">${t('auth.users.delete')}</button>` : '',
       ].join('');
       const dialogs = [
         manage && u.totp ? confirmDialog({ id: `u-2fa-${u.id}`, title: t('auth.users.reset2faConfirm', { name: u.username }), body: t('auth.users.reset2faBody'), confirmLabel: t('auth.users.reset2fa'), action: `/settings/users/${u.id}/reset-2fa` }) : '',
@@ -340,12 +343,16 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
       const actions = self
         ? html`<span class="text-xs text-muted">${t('auth.users.you')}</span>`
         : buttons
-          ? html`<div class="flex flex-wrap justify-end gap-1">${raw(buttons)}</div>${raw(dialogs)}`
+          ? // One gear per row opens its actions; the confirm dialogs live outside the menu (a closed <details> hides its content).
+            html`<details class="user-menu inline-block text-left" data-menu>
+              <summary class="icon-btn" title="${t('auth.users.actionsFor', { name: u.username })}"><span class="sr-only">${t('auth.users.actionsFor', { name: u.username })}</span>${raw(GEAR)}</summary>
+              <div class="user-menu-panel w-60">${raw(buttons)}</div>
+            </details>${raw(dialogs)}`
           : '';
       return html`<tr>
-        <td class="font-medium">${u.username}</td>
+        <td class="font-medium">${u.username}<span class="block text-xs font-normal text-muted sm:hidden">2FA: ${u.totp ? t('auth.security.on') : t('auth.security.off')}</span></td>
         <td>${raw(roleBadge(u.role))}</td>
-        <td>${raw(u.totp ? html`<span class="badge badge-ok">${t('auth.security.on')}</span>` : html`<span class="badge badge-warn">${t('auth.security.off')}</span>`)}</td>
+        <td class="max-sm:hidden">${raw(u.totp ? html`<span class="badge badge-ok">${t('auth.security.on')}</span>` : html`<span class="badge badge-warn">${t('auth.security.off')}</span>`)}</td>
         <td class="whitespace-nowrap text-muted max-sm:hidden">${raw(u.lastSeen ? timeTag(u.lastSeen) : '—')}</td>
         <td class="text-right">${raw(actions)}</td>
       </tr>`;
@@ -370,9 +377,9 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
     <h2 id="s-users-h" class="section-heading !mb-1">${t('auth.users.title')}</h2>
     <p class="!mt-0 text-sm text-muted">${t('auth.users.intro')}</p>
     ${raw(o.notice && USER_NOTICES[o.notice] ? flash(t(`auth.users.notices.${o.notice}`), USER_NOTICES[o.notice]) : '')}
-    <div class="overflow-x-auto">
+    <div>
       <table class="data-table">
-        <thead><tr><th scope="col">${t('auth.username')}</th><th scope="col">${t('auth.users.role')}</th><th scope="col">2FA</th><th scope="col" class="max-sm:hidden">${t('auth.users.lastSeen')}</th><th scope="col"><span class="sr-only">${t('auth.users.actions')}</span></th></tr></thead>
+        <thead><tr><th scope="col">${t('auth.username')}</th><th scope="col">${t('auth.users.role')}</th><th scope="col" class="max-sm:hidden">2FA</th><th scope="col" class="max-sm:hidden">${t('auth.users.lastSeen')}</th><th scope="col"><span class="sr-only">${t('auth.users.actions')}</span></th></tr></thead>
         <tbody>${raw(rows)}</tbody>
       </table>
     </div>

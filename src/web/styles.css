@@ -248,8 +248,13 @@
   .user-menu { @apply relative; }
   .user-menu > summary { @apply list-none; }
   .user-menu > summary::-webkit-details-marker { display: none; }
-  .user-avatar { @apply grid size-8 cursor-pointer select-none place-items-center rounded-full bg-accent text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent; }
+  /* Round initial. border-radius: 50%, not rounded-full: Tailwind 4 writes that one as a huge
+     (infinite) radius that some Safari versions don't draw as a circle. */
+  .avatar { @apply grid shrink-0 select-none place-items-center overflow-hidden bg-accent font-semibold leading-none text-white; aspect-ratio: 1; border-radius: 50%; }
+  .user-avatar { @apply size-8 cursor-pointer text-sm transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent; }
   .user-menu-panel { @apply absolute right-0 top-full z-30 mt-2 w-52 overflow-hidden rounded-lg border border-line bg-panel py-1 text-sm shadow-lg; }
+  .icon-btn { @apply grid size-9 cursor-pointer select-none place-items-center rounded-md border border-line text-muted transition hover:bg-panel-2 hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent; }
+  .user-menu[open] > .icon-btn { @apply bg-panel-2 text-fg; }
   .user-menu-item { @apply block cursor-pointer px-3 py-2 text-fg hover:bg-panel-2 hover:no-underline focus-visible:bg-panel-2 focus-visible:outline-none; }
 
   /* Data tables (posts, jobs, history) */
