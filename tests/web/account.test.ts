@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import * as auth from '../../src/auth/store.js';
 import { buildApp } from '../../src/web/server.js';
-import { deviceLabel } from '../../src/web/views/auth.js';
+import { deviceLabel, recoveryCodesPage } from '../../src/web/views/auth.js';
 
 const HOST = '127.0.0.1:4393';
 const FORM = 'application/x-www-form-urlencoded';
@@ -62,5 +62,13 @@ describe('my account', () => {
     expect(page.body).toMatch(/Failed login attempt as/);
     // Several logins in a row show as one line with a count.
     expect(page.body).toMatch(/Logged in <span class="text-xs text-muted">· \d+ times/);
+  });
+
+  it('recovery codes select as plain text and can be copied or downloaded all at once', () => {
+    const html = recoveryCodesPage(['aaaaa-11111', 'bbbbb-22222']);
+    // user-select: all per code made a drag across several codes jump around.
+    expect(html).not.toContain('select-all');
+    expect(html).toContain('data-copy-codes');
+    expect(html).toContain('data-download-codes');
   });
 });

@@ -21,6 +21,7 @@ in the announcement come from its section here.
 - A running job's page updates live again: its inline script was blocked by the Content-Security-Policy since 0.1.1.
 - The featured image's alt text is written in the post's language (it could come out in Spanish for posts in English).
 - The activity log describes a failed login with a username that doesn't exist, instead of showing an empty name.
+- Recovery codes select cleanly when dragging across several of them, and can be copied or downloaded all at once.
 
 ## [0.1.2] — 2026-10-25
 

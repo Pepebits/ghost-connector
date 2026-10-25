@@ -270,8 +270,16 @@ export function recoveryCodesPage(codes: string[]): string {
   const body = html`
     ${raw(pageHeader({ title: t('auth.recovery.title'), meta: t('auth.recovery.intro') }))}
     ${raw(flash(t('auth.recovery.once'), 'warn'))}
-    <ul class="card m-0 grid max-w-md list-none grid-cols-2 gap-2 p-4 font-mono text-sm">${raw(codes.map((c) => html`<li class="select-all">${c}</li>`).join(''))}</ul>
-    <p class="mt-4"><a class="btn" href="/account">${t('auth.recovery.done')}</a></p>`;
+    <div class="max-w-md" data-recovery-codes>
+      <ul class="card m-0 grid list-none grid-cols-2 gap-x-6 gap-y-2 p-4 font-mono text-sm tabular-nums">${raw(codes.map((c) => html`<li>${c}</li>`).join(''))}</ul>
+      <!-- Shown by ui.js: copy or download all the codes at once (selecting them by hand is fiddly). -->
+      <div class="mt-3 flex flex-wrap items-center gap-2" data-recovery-actions hidden>
+        <button type="button" class="btn btn-ghost" data-copy-codes>${t('auth.recovery.copy')}</button>
+        <button type="button" class="btn btn-ghost" data-download-codes data-filename="ghost-connector-recovery-codes.txt">${t('auth.recovery.download')}</button>
+        <span class="text-sm text-muted" role="status" aria-live="polite" data-copy-status></span>
+      </div>
+    </div>
+    <p class="mt-6"><a class="btn" href="/account">${t('auth.recovery.done')}</a></p>`;
   return layout({ title: t('auth.recovery.title'), bodyHtml: body });
 }
 

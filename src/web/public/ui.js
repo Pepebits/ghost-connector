@@ -95,3 +95,39 @@
 document.addEventListener('focusin', (e) => {
   if (e.target.matches && e.target.matches('[data-select-on-focus]')) e.target.select();
 });
+
+// Recovery codes: copy or download them all at once, one per line.
+(function () {
+  const box = document.querySelector('[data-recovery-codes]');
+  if (!box) return;
+  const T = (k) => (window.gcT ? window.gcT(k) : k);
+  const codes = () => Array.from(box.querySelectorAll('li')).map((li) => li.textContent.trim()).join('\n') + '\n';
+  const status = box.querySelector('[data-copy-status]');
+  box.querySelector('[data-recovery-actions]').hidden = false;
+
+  box.querySelector('[data-copy-codes]').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(codes());
+      status.textContent = T('auth.recovery.copied');
+    } catch (e) {
+      // No clipboard access (old browser, plain http): select the list so Cmd/Ctrl+C works.
+      const range = document.createRange();
+      range.selectNodeContents(box.querySelector('ul'));
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      status.textContent = T('auth.recovery.copyFailed');
+    }
+  });
+
+  box.querySelector('[data-download-codes]').addEventListener('click', (e) => {
+    const url = URL.createObjectURL(new Blob([codes()], { type: 'text/plain' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = e.currentTarget.getAttribute('data-filename');
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+})();
