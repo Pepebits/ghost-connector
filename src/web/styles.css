@@ -380,7 +380,7 @@
 
   /* Confirmation dialog (destructive actions) */
   .confirm-dialog {
-    @apply m-auto w-[min(480px,calc(100vw-2rem))] rounded-lg border border-line bg-panel p-5 text-fg shadow-2xl backdrop:bg-black/50;
+    @apply m-auto w-[min(480px,calc(100vw-2rem))] rounded-lg border border-line bg-panel p-5 text-left font-normal text-fg shadow-2xl backdrop:bg-black/50;
   }
 
   /* Command palette (palette.js) */

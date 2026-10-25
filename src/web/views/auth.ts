@@ -319,13 +319,23 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
       const other: Exclude<Role, 'owner'> = u.role === 'admin' ? 'editor' : 'admin';
       const item = 'user-menu-item w-full text-left';
       const buttons = [
-        owner && manage ? html`<form method="post" action="/settings/users/${u.id}/role" class="m-0"><input type="hidden" name="role" value="${other}"><button type="submit" class="${item}">${t(`auth.users.makeRole.${other}`)}</button></form>` : '',
+        owner && manage ? html`<button type="button" class="${item}" data-open-dialog="u-role-${u.id}">${t(`auth.users.makeRole.${other}`)}</button>` : '',
         manage ? html`<form method="post" action="/settings/users/${u.id}/reset-password" class="m-0"><button type="submit" class="${item}">${t('auth.users.resetPassword')}</button></form>` : '',
         manage && u.totp ? html`<button type="button" class="${item}" data-open-dialog="u-2fa-${u.id}">${t('auth.users.reset2fa')}</button>` : '',
         owner && !self ? html`<button type="button" class="${item}" data-open-dialog="u-own-${u.id}">${t('auth.users.transfer')}</button>` : '',
         manage ? html`<div class="my-1 border-t border-line"></div><button type="button" class="${item} text-err" data-open-dialog="u-del-${u.id}">${t('auth.users.delete')}</button>` : '',
       ].join('');
       const dialogs = [
+        owner && manage
+          ? confirmDialog({
+              id: `u-role-${u.id}`,
+              title: t(`auth.users.roleConfirm.${other}`, { name: u.username }),
+              body: t(`auth.users.roleBody.${other}`, { name: u.username }),
+              confirmLabel: t('auth.users.roleApply'),
+              action: `/settings/users/${u.id}/role`,
+              fields: html`<input type="hidden" name="role" value="${other}">`,
+            })
+          : '',
         manage && u.totp ? confirmDialog({ id: `u-2fa-${u.id}`, title: t('auth.users.reset2faConfirm', { name: u.username }), body: t('auth.users.reset2faBody'), confirmLabel: t('auth.users.reset2fa'), action: `/settings/users/${u.id}/reset-2fa` }) : '',
         manage ? confirmDialog({ id: `u-del-${u.id}`, title: t('auth.users.deleteConfirm', { name: u.username }), body: t('auth.users.deleteBody'), confirmLabel: t('auth.users.delete'), danger: true, action: `/settings/users/${u.id}/delete` }) : '',
         owner && !self
@@ -336,7 +346,7 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
               confirmLabel: t('auth.users.transfer'),
               danger: true,
               action: `/settings/users/${u.id}/transfer`,
-              fields: html`<label for="own-pw-${u.id}" class="sr-only">${t('auth.currentPassword')}</label><input id="own-pw-${u.id}" name="password" type="password" autocomplete="current-password" required placeholder="${t('auth.currentPassword')}" class="mb-3 block w-full">`,
+              fields: html`<label for="own-pw-${u.id}" class="sr-only">${t('auth.currentPassword')}</label><input id="own-pw-${u.id}" name="password" type="password" autocomplete="current-password" required placeholder="${t('auth.currentPassword')}" class="block w-full">`,
             })
           : '',
       ].join('');

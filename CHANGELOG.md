@@ -14,10 +14,12 @@ in the announcement come from its section here.
 ### Changed
 
 - Settings → Users: each user's actions are in a gear menu instead of a row of buttons; on phones the 2FA status moves under the name so the table fits.
+- Settings → Users: making someone admin or editor asks for confirmation first, like the other user actions.
 - Drafts: when a plan isn't applied yet, the words column shows both counts, Ghost's and the plan's (e.g. 0 → 1263), instead of only Ghost's.
 
 ### Fixed
 
+- The transfer-ownership dialog shows the password field between the explanation and the buttons, and its text is left-aligned.
 - Round avatars stay round in every browser (some Safari versions drew Tailwind's infinite radius as a square).
 
 ## [0.1.3] — 2026-10-25

@@ -130,6 +130,7 @@ export function confirmDialog(o: ConfirmDialogOpts): string {
   }>${o.confirmLabel}</button>`;
   const inner = html`<h2 id="${o.id}-title" class="mb-2 text-lg font-semibold">${o.title}</h2>
     ${o.body ? raw(html`<p class="text-sm text-muted">${o.body}</p>`) : ''}
+    ${raw(o.fields && !o.form ? html`<div class="mt-4">${raw(o.fields)}</div>` : '')}
     <div class="mt-4 flex justify-end gap-2">
       <button type="button" class="btn btn-ghost" data-close-dialog autofocus>${t('common.actions.cancel')}</button>
       ${raw(submit)}
@@ -137,6 +138,6 @@ export function confirmDialog(o: ConfirmDialogOpts): string {
   return html`<dialog id="${o.id}" class="confirm-dialog" aria-labelledby="${o.id}-title">${raw(
     o.form
       ? html`<div>${raw(inner)}</div>`
-      : html`<form method="post" action="${o.action ?? ''}" ${o.busy ? raw(html`data-busy="${o.busy}"`) : ''}>${raw(o.fields ?? '')}${raw(inner)}</form>`,
+      : html`<form method="post" action="${o.action ?? ''}" ${o.busy ? raw(html`data-busy="${o.busy}"`) : ''}>${raw(inner)}</form>`,
   )}</dialog>`;
 }
