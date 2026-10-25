@@ -1,0 +1,49 @@
+{
+  "title": "Costes por usuario",
+  "intro": "Gasto en IA y tokens de cada usuario: quién, en qué agente y con qué modelo.",
+  "period": "Periodo",
+  "days": {
+    "one": "Último día",
+    "other": "Últimos {count} días"
+  },
+  "empty": "Todavía no hay gasto registrado por usuario",
+  "emptyBody": "El panel anota cada llamada a la IA con quién la lanzó desde esta versión. En cuanto alguien planifique o use la IA, aparecerá aquí.",
+  "noneInPeriod": "Sin gasto en este periodo.",
+  "automatic": "Automático",
+  "kpi": {
+    "spend": "Gasto",
+    "tokens": "Tokens",
+    "calls": "Llamadas a la IA",
+    "month": "Ritmo mensual"
+  },
+  "inOut": "entrada / salida",
+  "perDay": "{value} al día",
+  "users": "Por usuario",
+  "posts": "Posts que más han costado",
+  "expand": "Pulsa un usuario para ver su gasto por agente y por modelo.",
+  "cols": {
+    "user": "Usuario",
+    "spend": "Gasto",
+    "tokens": "Tokens (ent. / sal.)",
+    "calls": "Llamadas",
+    "share": "Parte del total",
+    "daily": "Por día",
+    "post": "Post",
+    "tokensTotal": "Tokens",
+    "by": "Lanzado por"
+  },
+  "byAgent": "Por agente",
+  "byModel": "Por modelo",
+  "unpriced": {
+    "one": "1 llamada con un modelo sin precio (cuenta como $0).",
+    "other": "{count} llamadas con modelos sin precio (cuentan como $0)."
+  },
+  "dailyAlt": "Gasto diario de {name}",
+  "cap24h": "Últimas 24 h: {spent} de {limit}",
+  "capOverall": "Tope diario del panel: {limit}",
+  "capOverallNone": "Sin tope diario del panel",
+  "capUser": "tope por usuario: {limit}",
+  "capUserNone": "sin tope por usuario",
+  "since": "Registro por usuario desde {time}; el gasto anterior solo cuenta en el total de Configuración.",
+  "link": "Ver costes por usuario"
+}

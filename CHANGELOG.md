@@ -9,6 +9,8 @@ in the announcement come from its section here.
 
 ### Added
 
+- Costs per user (owner only, from Settings → Usage and cost): AI spend and tokens of each user over 7, 30 or 90 days, against the previous period, broken down by agent and by model, with daily spend, the monthly pace and the most expensive posts. Spend is recorded per user from this version on; automatic work shows as "Automatic".
+- Optional daily AI cap per user (`AI_USER_DAILY_BUDGET_USD`, owner-only), on top of the panel's overall cap.
 - Results: how published posts do in Google and Bing, the last 28 days against the 28 before, with a 16-week trend that marks when the panel changed each post. Filter by the posts the panel worked on or the whole blog; each post has its own page with its top Google queries. Refreshed by hand, read-only.
 
 ### Changed

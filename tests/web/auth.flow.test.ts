@@ -121,6 +121,8 @@ describe('login with users, roles and 2FA', () => {
     // An admin: settings yes, but not export/import, keys, endpoints nor other admins.
     expect((await app.inject({ method: 'GET', url: '/settings', headers: { cookie: luisCookie } })).statusCode).toBe(200);
     expect((await post('/settings/export', luisCookie)).statusCode).toBe(403);
+    expect((await app.inject({ method: 'GET', url: '/settings/costs', headers: { cookie: luisCookie } })).statusCode).toBe(403);
+    expect((await app.inject({ method: 'GET', url: '/settings/costs', headers: { cookie: admin } })).statusCode).toBe(200);
     expect((await post('/%73ettings/export', luisCookie)).statusCode).toBe(403);
     expect((await post('/settings/%65xport', luisCookie)).statusCode).toBe(403);
     expect((await post('/settings/env', luisCookie, { __group: 'ai', AI_API_KEY: 'sk-robada' })).statusCode).toBe(403);

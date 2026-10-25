@@ -109,6 +109,21 @@ const SCHEMA_STATEMENTS: string[] = [
     synced_at TEXT
   )`,
 
+  // Every AI call, with who triggered it (null: automatic, CLI or older): per-user costs and caps.
+  `CREATE TABLE IF NOT EXISTS ai_usage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    at TEXT NOT NULL,
+    actor TEXT,
+    agent TEXT NOT NULL,
+    model TEXT NOT NULL,
+    post_id TEXT,
+    usd REAL,
+    tokens_in INTEGER NOT NULL,
+    tokens_out INTEGER NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_ai_usage_at ON ai_usage(at)`,
+  `CREATE INDEX IF NOT EXISTS idx_ai_usage_actor ON ai_usage(actor, at)`,
+
   // AI spend that isn't part of a plan (topic ideas): counted in totals, the chart and the daily cap.
   `CREATE TABLE IF NOT EXISTS extra_costs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

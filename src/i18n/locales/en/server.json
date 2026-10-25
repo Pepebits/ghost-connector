@@ -31,5 +31,6 @@
   "runningSetup": "First time: open the panel to create the first user, the admin. Do it now: until then, whoever gets there first takes the account.",
   "opened": "The browser was opened, already logged in (one-time link).",
   "unknownUser": "No such user.",
-  "badId": "Invalid id."
+  "badId": "Invalid id.",
+  "userBudgetExceeded": "You reached your daily AI spending cap: {spent} of {limit} in the last 24 hours. Ask the owner to raise it, or wait."
 }

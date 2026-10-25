@@ -425,7 +425,8 @@ export function settingsPage(opts: SettingsOpts): string {
       row(t('settings.cost.tokens'), html`<span class="tabular-nums">${t('settings.cost.tokensValue', { in: formatTokens(opts.cost.totalTokensIn), out: formatTokens(opts.cost.totalTokensOut) })}</span>`),
       ...opts.quotas.map(quotaRow),
     ].join(''),
-    agentBreakdown(opts.costByAgent ?? []),
+    agentBreakdown(opts.costByAgent ?? []) +
+      (opts.isOwner ? html`<p class="m-0 mt-4"><a href="/settings/costs" class="btn btn-ghost btn-sm">${t('costs.link')} →</a></p>` : ''),
     opts.dailyCost ? costChart(opts.dailyCost, opts.budget?.limit ?? null) : '',
   );
 

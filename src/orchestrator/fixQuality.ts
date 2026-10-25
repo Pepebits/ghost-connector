@@ -1,3 +1,4 @@
+import { withUsagePost } from '../agents/usage.js';
 import { fixQuality } from '../agents/fix.agent.js';
 import { addUsage } from '../agents/costAdd.js';
 import { checkQuality, qualityInputFromPlan } from '../review/quality.js';
@@ -26,27 +27,29 @@ export interface FixPlanResult {
  * is not touched.
  */
 export async function fixPlanQuality(artifact: RunArtifact): Promise<FixPlanResult> {
-  if (artifact.status !== 'planned' || !artifact.writer) throw new Error('Only a current ("planned") plan can be fixed.');
-  const problems = fixableProblems(artifact);
-  if (problems.length === 0) return { artifact, changesMade: [] };
-  const { data, usage } = await fixQuality({
-    title: artifact.writer.title,
-    markdown: artifact.writer.markdown,
-    metaTitle: artifact.seo?.meta_title ?? null,
-    metaDescription: artifact.seo?.meta_description ?? null,
-    primaryKeyword: artifact.seo?.primary_keyword ?? null,
-    language: artifact.writer.language,
-    problems,
+  return withUsagePost(artifact.postId, async () => {
+    if (artifact.status !== 'planned' || !artifact.writer) throw new Error('Only a current ("planned") plan can be fixed.');
+    const problems = fixableProblems(artifact);
+    if (problems.length === 0) return { artifact, changesMade: [] };
+    const { data, usage } = await fixQuality({
+      title: artifact.writer.title,
+      markdown: artifact.writer.markdown,
+      metaTitle: artifact.seo?.meta_title ?? null,
+      metaDescription: artifact.seo?.meta_description ?? null,
+      primaryKeyword: artifact.seo?.primary_keyword ?? null,
+      language: artifact.writer.language,
+      problems,
+    });
+    const edited = await editPlannedArtifact(artifact, {
+      title: capitalizeTitle(data.title),
+      markdown: data.markdown,
+      ...(artifact.seo ? { meta_title: data.meta_title || artifact.seo.meta_title, meta_description: data.meta_description || artifact.seo.meta_description } : {}),
+    });
+    const updated: RunArtifact = {
+      ...edited,
+      cost: addUsage(edited.cost, usage, 'fix'),
+    };
+    await saveArtifact(updated);
+    return { artifact: updated, changesMade: data.changes_made };
   });
-  const edited = await editPlannedArtifact(artifact, {
-    title: capitalizeTitle(data.title),
-    markdown: data.markdown,
-    ...(artifact.seo ? { meta_title: data.meta_title || artifact.seo.meta_title, meta_description: data.meta_description || artifact.seo.meta_description } : {}),
-  });
-  const updated: RunArtifact = {
-    ...edited,
-    cost: addUsage(edited.cost, usage, 'fix'),
-  };
-  await saveArtifact(updated);
-  return { artifact: updated, changesMade: data.changes_made };
 }

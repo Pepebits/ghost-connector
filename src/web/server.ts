@@ -34,6 +34,7 @@ import { autoPlanNotice, dismissAutoPlanNotice, startScheduler } from '../jobs/s
 import { applySnippet, loadSnippet, restoreSnippet, snippetsByUrl, suggestForPage } from '../orchestrator/snippet.js';
 import { snippetPage } from './views/snippet.js';
 import { assertBudget, BudgetExceededError, budgetStatus } from '../agents/budget.js';
+import { UserBudgetExceededError, usageReport, userBudgetStatus } from '../agents/usage.js';
 import { cancelJob, enqueueApplyJob, enqueuePlanJob, enqueueSyncJob } from '../jobs/queue.js';
 import { logger } from '../logger.js';
 import { retryFeatureImage } from '../orchestrator/imageWriteback.js';
@@ -75,6 +76,7 @@ import { activityActors, listActivity, logActivity } from '../team/store.js';
 import { presenceBanner, type PostTeam } from './views/team.js';
 import { loadResults, refreshResults, resultFor, resultsSourcesConfigured } from '../research/results.js';
 import { postResultsPage, resultsPage } from './views/results.js';
+import { COST_PERIODS, costsPage } from './views/costs.js';
 import { activityPage, activitySection } from './views/activity.js';
 import { applyImport, createExport, exportFileName, getStagedImport, IMPORT_PARTS, ImportError, stageImport, type ImportPart } from '../settings/workspace.js';
 import { importPreviewPage } from './views/transfer.js';
@@ -106,7 +108,7 @@ const safeNext = (next: unknown) => {
  */
 const isAdminPath = (path: string) => /^\/(?:api\/)?settings(?:\/|$)/.test(path);
 /** Owner only: export/import (it carries everything but keys) and registering apps (writes keys). */
-const isOwnerPath = (path: string) => /^\/settings\/(?:export|import|openverse\/register)(?:\/|$)/.test(path);
+const isOwnerPath = (path: string) => /^\/settings\/(?:export|import|costs|openverse\/register)(?:\/|$)/.test(path);
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -733,7 +735,7 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     try {
       assertBudget();
     } catch (err) {
-      if (err instanceof BudgetExceededError) return reply.code(429).type('text/plain').send(err.message);
+      if (err instanceof BudgetExceededError || err instanceof UserBudgetExceededError) return reply.code(429).type('text/plain').send(err.message);
       throw err;
     }
   });
@@ -870,6 +872,14 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
         team: postTeam(id, req.user!),
       }),
     );
+  });
+
+  // ---------- Costs per user (owner; isOwnerPath guards /settings/costs) ----------
+  app.get('/settings/costs', async (req, reply) => {
+    const days = Number((req.query as { days?: string }).days);
+    const report = usageReport(COST_PERIODS.includes(days as (typeof COST_PERIODS)[number]) ? days : 30);
+    const spent24h = new Map(report.users.filter((u) => u.actor).map((u) => [u.actor!.toLowerCase(), userBudgetStatus(u.actor)?.spent ?? 0]));
+    return reply.type('text/html').send(costsPage({ report, userCap: getConfig().AI_USER_DAILY_BUDGET_USD, spent24h, dailyCap: getConfig().AI_DAILY_BUDGET_USD }));
   });
 
   // ---------- Results: published posts in search (manual refresh, like Ideas) ----------

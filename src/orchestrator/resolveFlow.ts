@@ -1,3 +1,4 @@
+import { withUsagePost } from '../agents/usage.js';
 import { resolvePending, type PendingQA } from '../agents/resolve.agent.js';
 import { addUsage } from '../agents/costAdd.js';
 import type { AgentUsage } from '../agents/runner.js';
@@ -31,24 +32,26 @@ export interface PreviewResolveResult {
  * Used by both `resolve --dry-run` and the UI form.
  */
 export async function previewResolve(postId: string, qas: PendingQA[]): Promise<PreviewResolveResult> {
-  const fresh = await readRawPost(postId);
-  const html = fresh.html ?? '';
-  const questions = extractPendingQuestions(html);
+  return withUsagePost(postId, async () => {
+    const fresh = await readRawPost(postId);
+    const html = fresh.html ?? '';
+    const questions = extractPendingQuestions(html);
 
-  const sources = await readSources(qas.map((qa) => qa.answer).join('\n'));
-  const { data, usage } = await resolvePending({ title: fresh.title, html, qas, sources: sourcesBlock(sources) || undefined });
-  const newHtml = markdownToHtml(data.markdown);
+    const sources = await readSources(qas.map((qa) => qa.answer).join('\n'));
+    const { data, usage } = await resolvePending({ title: fresh.title, html, qas, sources: sourcesBlock(sources) || undefined });
+    const newHtml = markdownToHtml(data.markdown);
 
-  return {
-    title: fresh.title,
-    questions,
-    markdown: data.markdown,
-    html: newHtml,
-    unresolved: data.unresolved,
-    changesMade: data.changes_made,
-    usage,
-    snapshotUpdatedAt: fresh.updated_at,
-  };
+    return {
+      title: fresh.title,
+      questions,
+      markdown: data.markdown,
+      html: newHtml,
+      unresolved: data.unresolved,
+      changesMade: data.changes_made,
+      usage,
+      snapshotUpdatedAt: fresh.updated_at,
+    };
+  });
 }
 
 export type CommitResolveStatus = 'applied' | 'conflict' | 'not-draft' | 'failed';
@@ -135,37 +138,39 @@ export interface AnswerCorrection {
 }
 
 export async function resolvePlan(artifact: RunArtifact, qas: PendingQA[], fixes: AnswerCorrection[] = []): Promise<ResolvePlanResult> {
-  if (artifact.status !== 'planned' || !artifact.writer) throw new Error('Pending items can only be resolved on a current ("planned") plan.');
-  const previous = new Map((artifact.answers ?? []).map((a) => [a.question, a.answer]));
-  const corrections = fixes
-    .filter((f) => f.answer.trim() && previous.has(f.question) && previous.get(f.question) !== f.answer.trim())
-    .map((f) => ({ question: f.question, previous: previous.get(f.question)!, answer: f.answer.trim() }));
-  const sources = await readSources([...qas.map((qa) => qa.answer), ...corrections.map((c) => c.answer)].join('\n'));
-  const { data, usage } = await resolvePending({
-    title: artifact.writer.title,
-    language: artifact.writer.language,
-    html: markdownToHtml(artifact.writer.markdown),
-    qas,
-    corrections,
-    sources: sourcesBlock(sources) || undefined,
+  return withUsagePost(artifact.postId, async () => {
+    if (artifact.status !== 'planned' || !artifact.writer) throw new Error('Pending items can only be resolved on a current ("planned") plan.');
+    const previous = new Map((artifact.answers ?? []).map((a) => [a.question, a.answer]));
+    const corrections = fixes
+      .filter((f) => f.answer.trim() && previous.has(f.question) && previous.get(f.question) !== f.answer.trim())
+      .map((f) => ({ question: f.question, previous: previous.get(f.question)!, answer: f.answer.trim() }));
+    const sources = await readSources([...qas.map((qa) => qa.answer), ...corrections.map((c) => c.answer)].join('\n'));
+    const { data, usage } = await resolvePending({
+      title: artifact.writer.title,
+      language: artifact.writer.language,
+      html: markdownToHtml(artifact.writer.markdown),
+      qas,
+      corrections,
+      sources: sourcesBlock(sources) || undefined,
+    });
+    // History: the latest answer to each question, so it can be corrected in the next round.
+    const at = new Date().toISOString();
+    const answered = [...qas.filter((qa) => qa.answer.trim()), ...corrections].map((x) => ({ question: x.question, answer: x.answer.trim(), at }));
+    const answers = [...(artifact.answers ?? []).filter((a) => !answered.some((n) => n.question === a.question)), ...answered];
+    const edited = await editPlannedArtifact(artifact, { title: artifact.writer.title, markdown: data.markdown });
+    // What the editor answers (and the pages it links) becomes a known source for the link check.
+    const answerLinks = [...qas.map((qa) => qa.answer), ...corrections.map((c) => c.answer)].flatMap((t) => extractLinks(t));
+    const newLinks = [...answerLinks, ...sources.flatMap((r) => (r.ok ? [r.url, ...r.links] : [r.url]))];
+    const updated: RunArtifact = {
+      ...edited,
+      answers,
+      ...(newLinks.length ? { allowedLinks: [...new Set([...(edited.allowedLinks ?? []), ...newLinks])] } : {}),
+      ...(sources.length
+        ? { sources: [...(edited.sources ?? []), ...sources.map((r) => ({ url: r.url, ok: r.ok, ...(r.ok ? {} : { note: r.text }), ...(r.suspicious ? { suspicious: true } : {}) }))] }
+        : {}),
+      cost: addUsage(edited.cost, usage, 'resolve'),
+    };
+    await saveArtifact(updated);
+    return { artifact: updated, unresolved: data.unresolved, changesMade: data.changes_made };
   });
-  // History: the latest answer to each question, so it can be corrected in the next round.
-  const at = new Date().toISOString();
-  const answered = [...qas.filter((qa) => qa.answer.trim()), ...corrections].map((x) => ({ question: x.question, answer: x.answer.trim(), at }));
-  const answers = [...(artifact.answers ?? []).filter((a) => !answered.some((n) => n.question === a.question)), ...answered];
-  const edited = await editPlannedArtifact(artifact, { title: artifact.writer.title, markdown: data.markdown });
-  // What the editor answers (and the pages it links) becomes a known source for the link check.
-  const answerLinks = [...qas.map((qa) => qa.answer), ...corrections.map((c) => c.answer)].flatMap((t) => extractLinks(t));
-  const newLinks = [...answerLinks, ...sources.flatMap((r) => (r.ok ? [r.url, ...r.links] : [r.url]))];
-  const updated: RunArtifact = {
-    ...edited,
-    answers,
-    ...(newLinks.length ? { allowedLinks: [...new Set([...(edited.allowedLinks ?? []), ...newLinks])] } : {}),
-    ...(sources.length
-      ? { sources: [...(edited.sources ?? []), ...sources.map((r) => ({ url: r.url, ok: r.ok, ...(r.ok ? {} : { note: r.text }), ...(r.suspicious ? { suspicious: true } : {}) }))] }
-      : {}),
-    cost: addUsage(edited.cost, usage, 'resolve'),
-  };
-  await saveArtifact(updated);
-  return { artifact: updated, unresolved: data.unresolved, changesMade: data.changes_made };
 }

@@ -1,3 +1,5 @@
+import { assertUserBudget, recordUsage } from './usage.js';
+import type { CostAgent } from '../types.js';
 import { z } from 'zod';
 import { getConfig, type Config } from '../config.js';
 import { aiLimiter } from '../util/limiter.js';
@@ -104,17 +106,37 @@ export function withSiteContext(system: string, siteContext: string): string {
  * retries once, returning the exact error to the model as the result of
  * the tool call, so it can fix it.
  */
+/** Ledger name of each agent, by its tool name (see agents/usage.ts). */
+const LEDGER_AGENT: Record<string, CostAgent> = {
+  submit_article: 'writer',
+  submit_seo: 'seo',
+  submit_image_plan: 'image',
+  submit_resolved_article: 'resolve',
+  submit_fixed_article: 'fix',
+  submit_topic_ideas: 'ideas',
+  submit_snippet_options: 'snippet',
+};
+
 export async function runAgent<T extends z.ZodTypeAny>(
   opts: RunAgentOpts<T>,
 ): Promise<RunAgentResult<z.infer<T>>> {
+  assertUserBudget();
+  const usage: AgentUsage = { inputTokens: 0, outputTokens: 0, cacheHitTokens: 0, cacheMissTokens: 0, model: modelFor(opts.role), usd: null };
+  try {
+    return await runAgentCalls(opts, usage);
+  } finally {
+    // Failed calls are paid for too.
+    recordUsage({ agent: LEDGER_AGENT[opts.name] ?? opts.role, model: usage.model, usd: usage.usd, inputTokens: usage.inputTokens, outputTokens: usage.outputTokens });
+  }
+}
+
+async function runAgentCalls<T extends z.ZodTypeAny>(opts: RunAgentOpts<T>, usage: AgentUsage): Promise<RunAgentResult<z.infer<T>>> {
   const cfg = getConfig();
   const provider = llmProvider();
   const model = modelFor(opts.role, cfg);
   const tool = { name: opts.name, description: `Devuelve la salida estructurada de ${opts.name}.`, parameters: buildStrictParameters(opts.schema) };
   const system = withSiteContext(opts.system, cfg.SITE_CONTEXT);
   const messages: LlmMessage[] = [{ role: 'user', text: opts.user }];
-
-  const usage: AgentUsage = { inputTokens: 0, outputTokens: 0, cacheHitTokens: 0, cacheMissTokens: 0, model, usd: null };
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const response = await aiLimiter(() =>

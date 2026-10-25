@@ -48,6 +48,7 @@ export const ENV_FIELDS: EnvField[] = [
   { key: 'AI_MODEL_RESOLVE', group: 'ai', type: 'model' },
   { key: 'AI_PRICES', group: 'ai' },
   { key: 'AI_DAILY_BUDGET_USD', group: 'ai', type: 'number' },
+  { key: 'AI_USER_DAILY_BUDGET_USD', group: 'ai', type: 'number' },
   { key: 'IMAGE_SOURCES_ORDER', group: 'images', type: 'order', options: ['unsplash', 'pixabay', 'pexels', 'openverse', 'wikimedia'] },
   { key: 'UNSPLASH_ACCESS_KEY', group: 'unsplash', secret: true, clearable: true },
   { key: 'UNSPLASH_APP_NAME', group: 'unsplash' },
@@ -90,7 +91,7 @@ export type EnvSubmission = Record<string, string | undefined>;
  * enough to make the panel hand a key to another server) and what bounds the
  * spend on the owner's AI account (daily cap and prices).
  */
-export const OWNER_ONLY_KEYS = new Set(['GHOST_API_URL', 'AI_PROVIDER', 'AI_BASE_URL', 'AI_DAILY_BUDGET_USD', 'AI_PRICES']);
+export const OWNER_ONLY_KEYS = new Set(['GHOST_API_URL', 'AI_PROVIDER', 'AI_BASE_URL', 'AI_DAILY_BUDGET_USD', 'AI_USER_DAILY_BUDGET_USD', 'AI_PRICES']);
 export const isOwnerOnlyField = (f: { key: string; secret?: boolean }) => !!f.secret || OWNER_ONLY_KEYS.has(f.key);
 
 export class EnvValidationError extends Error {

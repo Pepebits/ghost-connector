@@ -140,3 +140,16 @@ document.addEventListener('focusin', (e) => {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 })();
+
+// Table rows that unfold a detail row below (Settings → Costs per user).
+document.addEventListener('click', (e) => {
+  const btn = e.target instanceof Element ? e.target.closest('[data-toggle-row]') : null;
+  if (!btn) return;
+  const row = document.getElementById(btn.getAttribute('aria-controls') || '');
+  if (!row) return;
+  const open = row.hidden;
+  row.hidden = !open;
+  btn.setAttribute('aria-expanded', String(open));
+  const icon = btn.querySelector('[data-toggle-icon]');
+  if (icon) icon.textContent = open ? '▾' : '▸';
+});

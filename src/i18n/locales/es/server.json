@@ -31,5 +31,6 @@
   "runningSetup": "Primera vez: abre el panel para crear el primer usuario, el admin. Hazlo ya: hasta entonces, quien llegue primero se queda con la cuenta.",
   "opened": "Se ha abierto el navegador con la sesión iniciada (enlace de un solo uso).",
   "unknownUser": "Ese usuario no existe.",
-  "badId": "Identificador no válido."
+  "badId": "Identificador no válido.",
+  "userBudgetExceeded": "Has alcanzado tu tope diario de gasto en IA: {spent} de {limit} en las últimas 24 horas. Pide al propietario que lo suba o espera."
 }

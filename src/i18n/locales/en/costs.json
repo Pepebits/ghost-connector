@@ -1,0 +1,49 @@
+{
+  "title": "Costs per user",
+  "intro": "AI spend and tokens per user: who, on which agent and with which model.",
+  "period": "Period",
+  "days": {
+    "one": "Last day",
+    "other": "Last {count} days"
+  },
+  "empty": "No per-user spend recorded yet",
+  "emptyBody": "From this version on, the panel records each AI call with who triggered it. As soon as someone plans or uses the AI, it shows up here.",
+  "noneInPeriod": "No spend in this period.",
+  "automatic": "Automatic",
+  "kpi": {
+    "spend": "Spend",
+    "tokens": "Tokens",
+    "calls": "AI calls",
+    "month": "Monthly pace"
+  },
+  "inOut": "input / output",
+  "perDay": "{value} a day",
+  "users": "By user",
+  "posts": "Most expensive posts",
+  "expand": "Open a user to see their spend by agent and by model.",
+  "cols": {
+    "user": "User",
+    "spend": "Spend",
+    "tokens": "Tokens (in / out)",
+    "calls": "Calls",
+    "share": "Share",
+    "daily": "Per day",
+    "post": "Post",
+    "tokensTotal": "Tokens",
+    "by": "Started by"
+  },
+  "byAgent": "By agent",
+  "byModel": "By model",
+  "unpriced": {
+    "one": "1 call with an unpriced model (counted as $0).",
+    "other": "{count} calls with unpriced models (counted as $0)."
+  },
+  "dailyAlt": "{name}'s daily spend",
+  "cap24h": "Last 24 h: {spent} of {limit}",
+  "capOverall": "Panel daily cap: {limit}",
+  "capOverallNone": "No panel daily cap",
+  "capUser": "per-user cap: {limit}",
+  "capUserNone": "no per-user cap",
+  "since": "Per-user records since {time}; earlier spend only counts in the totals in Settings.",
+  "link": "See costs per user"
+}

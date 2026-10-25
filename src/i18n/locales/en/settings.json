@@ -208,6 +208,10 @@
     "AI_DAILY_BUDGET_USD": {
       "label": "Daily spending cap (USD)",
       "help": "Stops starting new AI work once the last 24 hours reach this amount. 0 = no cap. A post already running can finish and go slightly over. Models without a price count as $0."
+    },
+    "AI_USER_DAILY_BUDGET_USD": {
+      "label": "Daily cap per user (USD)",
+      "help": "The most each user can spend on AI in 24 hours. 0 = no cap. Automatic work (nightly plan, CLI) only counts toward the overall cap."
     }
   },
   "secret": {

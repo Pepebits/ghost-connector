@@ -1,3 +1,4 @@
+import { withUsagePost } from '../agents/usage.js';
 import { currentActor } from '../auth/context.js';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -95,7 +96,7 @@ export async function suggestForPage(input: { page: string; query: string; posit
   // /tag/foo/ or /author/foo/ would otherwise land on a post whose slug is "foo".
   if (bareUrl(post.url) !== bareUrl(input.page)) throw new Error(`${input.page} is not the URL of the post "${post.title}" (${post.url})`);
   const excerpt = (post.custom_excerpt || post.plaintext || post.excerpt || '').replace(/\s+/g, ' ').slice(0, 1500);
-  const { data, usage } = await suggestSnippet({
+  const { data, usage } = await withUsagePost(post.id, () => suggestSnippet({
     title: post.title,
     query: input.query,
     position: input.position,
@@ -104,7 +105,7 @@ export async function suggestForPage(input: { page: string; query: string; posit
     metaDescription: post.meta_description ?? '',
     excerpt,
     language: '',
-  });
+  }));
   recordExtraCost({ agent: 'snippet', usd: usage.usd ?? 0, tokensIn: usage.inputTokens, tokensOut: usage.outputTokens });
   const plan: SnippetPlan = {
     postId: post.id,

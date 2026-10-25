@@ -1,6 +1,7 @@
 import { getConfig } from '../config.js';
 import { getCostSummary } from '../db/repo.js';
 import { t } from '../i18n/index.js';
+import { assertUserBudget } from './usage.js';
 
 /**
  * Daily AI spending cap (AI_DAILY_BUDGET_USD, 0 = no cap), over the
@@ -28,8 +29,9 @@ export class BudgetExceededError extends Error {
   }
 }
 
-/** Throws if today's cap is already used up. */
+/** Throws if today's cap (the panel's, or the current user's) is already used up. */
 export function assertBudget(): void {
   const status = budgetStatus();
   if (status?.exceeded) throw new BudgetExceededError(status);
+  assertUserBudget();
 }

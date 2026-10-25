@@ -208,6 +208,10 @@
     "AI_DAILY_BUDGET_USD": {
       "label": "Tope de gasto diario (USD)",
       "help": "Deja de empezar trabajo nuevo con IA cuando las últimas 24 horas llegan a esta cantidad. 0 = sin tope. Un post que ya está en marcha puede terminar y pasarse un poco. Los modelos sin precio cuentan como $0."
+    },
+    "AI_USER_DAILY_BUDGET_USD": {
+      "label": "Tope diario por usuario (USD)",
+      "help": "Lo máximo que cada usuario puede gastar en IA en 24 horas. 0 = sin tope. El trabajo automático (plan nocturno, CLI) solo cuenta para el tope general."
     }
   },
   "secret": {

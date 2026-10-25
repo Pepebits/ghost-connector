@@ -89,7 +89,7 @@ The first time, the panel asks you to create the first user — the **owner** �
 | 💡 **Ideas** | Searches where you show up on page two with real impressions; first-page results with unusually few clicks, where the AI proposes three titles/meta descriptions to apply (and restore); and AI topic ideas. Each opens *New post* already filled in; dismissed or used ideas don't come back. |
 | 🌙 **Nightly plan** | With `AUTO_PLAN_TIME`, once a day it plans drafts that were never planned (at most `AUTO_PLAN_MAX`, 3 by default). It only plans: applying is up to you. |
 | ⚙️ **Jobs** | Background work (plan, apply, sync) with live progress and logs. If the process dies mid-batch, finished work is kept. |
-| 🔧 **Settings** | Every option with *Test connection*, which drafts to process, image source order, language, prompt editor (revert to factory any time), usage and cost per day and per agent, and an optional daily cap (`AI_DAILY_BUDGET_USD`). Keys are never shown, only replaced. |
+| 🔧 **Settings** | Every option with *Test connection*, which drafts to process, image source order, language, prompt editor (revert to factory any time), usage and cost per day and per agent, an optional daily cap (`AI_DAILY_BUDGET_USD`) and one per user (`AI_USER_DAILY_BUDGET_USD`), and, for the owner, costs per user: spend and tokens by user, agent and model, and the most expensive posts. Keys are never shown, only replaced. |
 
 ## 👥 Users and teams
 

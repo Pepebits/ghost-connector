@@ -83,6 +83,8 @@ const ConfigSchema = z.object({
   // show up as "unknown cost" instead of a made-up number.
   // Daily cap in USD on AI spending (last 24 h); 0 = no cap.
   AI_DAILY_BUDGET_USD: z.coerce.number().min(0).default(0),
+  // Per-user cap over the last 24 h (0 = none); automatic work (nightly plan, CLI) only counts toward AI_DAILY_BUDGET_USD.
+  AI_USER_DAILY_BUDGET_USD: z.coerce.number().min(0).default(0),
   AI_PRICES: z.string().default('').refine((v) => parsePrices(v) !== null, 'format: model=input/output, comma-separated (e.g. gpt-4o-mini=0.15/0.6)'),
 
   UNSPLASH_ACCESS_KEY: z.string().optional().default(''),
