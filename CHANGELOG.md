@@ -5,6 +5,15 @@ All notable changes to Ghost Connector. The format follows
 [Semantic Versioning](https://semver.org/). Each release's notes on GitHub and
 in the announcement come from its section here.
 
+## [Unreleased]
+
+### Fixed
+
+- Behind Cloudflare, Rocket Loader rewrote the panel's scripts and the Content-Security-Policy blocked them (theme switch, search, live updates). The panel now sends `Cache-Control: no-transform` and marks its scripts so Cloudflare leaves them alone.
+- A running job's page updates live again: its inline script was blocked by the Content-Security-Policy since 0.1.1.
+- The featured image's alt text is written in the post's language (it could come out in Spanish for posts in English).
+- The activity log describes a failed login with a username that doesn't exist, instead of showing an empty name.
+
 ## [0.1.2] — 2026-10-25
 
 ### Changed
@@ -49,6 +58,7 @@ First public release.
 - Export / import of the workspace; full backup from the server CLI.
 - Docker image for amd64 and arm64.
 
+[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...HEAD
 [0.1.2]: https://github.com/Pepebits/ghost-connector/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Pepebits/ghost-connector/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Pepebits/ghost-connector/releases/tag/v0.1.0
