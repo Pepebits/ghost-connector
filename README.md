@@ -85,7 +85,7 @@ The first time, the panel asks you to create the first user — the **owner** �
 
 | | |
 |---|---|
-| 📊 **Results** | Clicks, impressions, CTR and position of published posts (Search Console and/or Bing), last 28 days vs the 28 before, with a weekly trend marking when the panel changed each post. Read-only, refreshed by hand. |
+| 📊 **Results** | Clicks, impressions, CTR and position of published posts (Search Console and/or Bing), last 28 days vs the 28 before, with a weekly trend marking when the panel changed each post. Read-only, refreshed by hand, exportable as CSV. |
 | 💡 **Ideas** | Searches where you show up on page two with real impressions; first-page results with unusually few clicks, where the AI proposes three titles/meta descriptions to apply (and restore); and AI topic ideas. Each opens *New post* already filled in; dismissed or used ideas don't come back. |
 | 🌙 **Nightly plan** | With `AUTO_PLAN_TIME`, once a day it plans drafts that were never planned (at most `AUTO_PLAN_MAX`, 3 by default). It only plans: applying is up to you. |
 | ⚙️ **Jobs** | Background work (plan, apply, sync) with live progress and logs. If the process dies mid-batch, finished work is kept. |

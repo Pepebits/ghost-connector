@@ -68,5 +68,30 @@
   "errors": {
     "failed": "Couldn't fetch the data: {error}"
   },
-  "view": "View post"
+  "view": "View post",
+  "export": "Export CSV",
+  "csv": {
+    "file": "results",
+    "title": "Title",
+    "url": "URL",
+    "postId": "Post ID",
+    "published": "Published",
+    "changedByPanel": "Changed by the panel",
+    "clicks": "Clicks",
+    "impressions": "Impressions",
+    "ctr": "CTR",
+    "position": "Position",
+    "prevClicks": "Clicks (previous period)",
+    "prevImpressions": "Impressions (previous period)",
+    "prevCtr": "CTR (previous period)",
+    "prevPosition": "Position (previous period)",
+    "clicksChange": "Clicks change",
+    "periodStart": "Start",
+    "periodEnd": "End",
+    "prevStart": "Previous start",
+    "prevEnd": "Previous end",
+    "sources": "Sources",
+    "weekStart": "Week",
+    "query": "Query"
+  }
 }

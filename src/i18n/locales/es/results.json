@@ -68,5 +68,30 @@
   "errors": {
     "failed": "No se pudieron consultar los datos: {error}"
   },
-  "view": "Ver post"
+  "view": "Ver post",
+  "export": "Exportar CSV",
+  "csv": {
+    "file": "resultados",
+    "title": "Título",
+    "url": "URL",
+    "postId": "ID del post",
+    "published": "Publicado",
+    "changedByPanel": "Cambiado por el panel",
+    "clicks": "Clics",
+    "impressions": "Impresiones",
+    "ctr": "CTR",
+    "position": "Posición",
+    "prevClicks": "Clics (periodo anterior)",
+    "prevImpressions": "Impresiones (periodo anterior)",
+    "prevCtr": "CTR (periodo anterior)",
+    "prevPosition": "Posición (periodo anterior)",
+    "clicksChange": "Cambio en clics",
+    "periodStart": "Inicio",
+    "periodEnd": "Fin",
+    "prevStart": "Inicio anterior",
+    "prevEnd": "Fin anterior",
+    "sources": "Fuentes",
+    "weekStart": "Semana",
+    "query": "Búsqueda"
+  }
 }

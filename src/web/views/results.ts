@@ -69,7 +69,15 @@ function totals(posts: PostResult[]) {
   };
 }
 
-function sorted(posts: PostResult[], sort: ResultsSort): PostResult[] {
+/** What the list shows: the panel's posts by default (all when it has touched none), by clicks. Shared with the CSV export. */
+export function resultsView(c: ResultsCache, scope?: ResultsScope, sort?: ResultsSort) {
+  const panelPosts = c.posts.filter((p) => p.appliedAt.length);
+  const sc: ResultsScope = scope ?? (panelPosts.length ? 'panel' : 'all');
+  const so: ResultsSort = sort ?? 'clicks';
+  return { scope: sc, sort: so, posts: sc === 'panel' ? panelPosts : c.posts };
+}
+
+export function sorted(posts: PostResult[], sort: ResultsSort): PostResult[] {
   const by = {
     clicks: (a: PostResult, b: PostResult) => b.current.clicks - a.current.clicks || b.current.impressions - a.current.impressions,
     impressions: (a: PostResult, b: PostResult) => b.current.impressions - a.current.impressions,
@@ -107,8 +115,9 @@ export interface ResultsPageOpts {
 }
 
 export function resultsPage(o: ResultsPageOpts): string {
-  const refresh = html`<form method="post" action="/results/refresh" data-busy="${t('results.refreshing')}"><button type="submit" class="btn">${t('results.refresh')}</button></form>`;
   const c = o.cache;
+  const exportHref = c ? `/results/export.csv?scope=${resultsView(c, o.scope, o.sort).scope}&sort=${o.sort ?? 'clicks'}` : '';
+  const refresh = html`<div class="flex flex-wrap items-center gap-2">${raw(exportHref ? html`<a class="btn btn-ghost" href="${exportHref}" download>${t('results.export')}</a>` : '')}<form method="post" action="/results/refresh" data-busy="${t('results.refreshing')}"><button type="submit" class="btn">${t('results.refresh')}</button></form></div>`;
   const sourceLabel = c ? t(`results.sources.${c.sources.length > 1 ? 'both' : (c.sources[0] ?? 'google')}`) : '';
   const meta = c
     ? html`${sourceLabel} · ${periodText(c)} · ${raw(t('results.updated', { time: timeTag(c.at) }))}`
@@ -123,9 +132,7 @@ export function resultsPage(o: ResultsPageOpts): string {
   }
 
   const panelPosts = c.posts.filter((p) => p.appliedAt.length);
-  const scope: ResultsScope = o.scope ?? (panelPosts.length ? 'panel' : 'all');
-  const sort: ResultsSort = o.sort ?? 'clicks';
-  const posts = scope === 'panel' ? panelPosts : c.posts;
+  const { scope, sort, posts } = resultsView(c, o.scope, o.sort);
   const tot = totals(posts);
   const href = (s: ResultsScope, so: ResultsSort) => `/results?scope=${s}&sort=${so}`;
 
@@ -186,6 +193,7 @@ export function postResultsPage(r: PostResult, cache: ResultsCache): string {
     ${raw(pageHeader({
       back: { href: '/results', label: t('results.title') },
       title: r.title,
+      actions: html`<a class="btn btn-ghost" href="/results/${encodeURIComponent(r.postId)}/export.csv" download>${t('results.export')}</a>`,
       meta: html`${r.publishedAt ? raw(t('results.published', { time: timeTag(r.publishedAt) })) : ''} · <a href="${r.url}" target="_blank" rel="noopener noreferrer">${t('results.view')}<span class="sr-only"> (${t('common.footer.newTab')})</span></a> · ${periodText(cache)}`,
     }))}
     <div class="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

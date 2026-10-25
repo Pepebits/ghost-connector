@@ -123,6 +123,11 @@ describe('login with users, roles and 2FA', () => {
     expect((await post('/settings/export', luisCookie)).statusCode).toBe(403);
     expect((await app.inject({ method: 'GET', url: '/settings/costs', headers: { cookie: luisCookie } })).statusCode).toBe(403);
     expect((await app.inject({ method: 'GET', url: '/settings/costs', headers: { cookie: admin } })).statusCode).toBe(200);
+    // Results CSV: needs a session (.csv isn't a public static asset); no cache yet → 404.
+    for (const url of ['/results/export.csv', '/results/x/export.csv']) {
+      expect((await app.inject({ method: 'GET', url })).statusCode).not.toBe(200);
+      expect((await app.inject({ method: 'GET', url, headers: { cookie: luisCookie } })).statusCode).toBe(404);
+    }
     // Default Ghost authors: saved per user, primary first.
     auth.setDefaultAuthors(luis.id, ['g2', 'g1']);
     expect(auth.defaultAuthors(luis.id)).toEqual(['g2', 'g1']);

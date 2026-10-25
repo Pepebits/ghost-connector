@@ -77,6 +77,7 @@ import { activityActors, listActivity, logActivity } from '../team/store.js';
 import { presenceBanner, type PostTeam } from './views/team.js';
 import { loadResults, refreshResults, resultFor, resultsSourcesConfigured } from '../research/results.js';
 import { postResultsPage, resultsPage } from './views/results.js';
+import { csvFilename, postResultsCsv, resultsCsv } from './views/resultsCsv.js';
 import { COST_PERIODS, costsPage } from './views/costs.js';
 import { activityPage, activitySection } from './views/activity.js';
 import { applyImport, createExport, exportFileName, getStagedImport, IMPORT_PARTS, ImportError, stageImport, type ImportPart } from '../settings/workspace.js';
@@ -917,6 +918,14 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     return reply.type('text/html').send(costsPage({ report, userCap: getConfig().AI_USER_DAILY_BUDGET_USD, spent24h, dailyCap: getConfig().AI_DAILY_BUDGET_USD }));
   });
 
+  const sendCsv = (reply: FastifyReply, filename: string, body: string) =>
+    reply
+      .type('text/csv; charset=utf-8')
+      .header('Content-Disposition', `attachment; filename="${filename}"`)
+      .header('X-Content-Type-Options', 'nosniff')
+      .header('Cache-Control', 'no-store')
+      .send(body);
+
   // ---------- Results: published posts in search (manual refresh, like Ideas) ----------
   app.get('/results', async (req, reply) => {
     const q = req.query as { scope?: string; sort?: string; error?: string };
@@ -928,6 +937,22 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
         sort: q.sort === 'change' || q.sort === 'impressions' || q.sort === 'clicks' ? q.sort : undefined,
       }),
     );
+  });
+
+  // CSV of the list as shown (same scope and order), from the cache. Registered before /results/:postId.
+  app.get('/results/export.csv', async (req, reply) => {
+    const cache = loadResults();
+    if (!cache) return reply.code(404).type('text/plain').send(t('results.empty'));
+    const q = req.query as { scope?: string; sort?: string };
+    const scope = q.scope === 'panel' || q.scope === 'all' ? q.scope : undefined;
+    const sort = q.sort === 'change' || q.sort === 'impressions' || q.sort === 'clicks' ? q.sort : undefined;
+    return sendCsv(reply, csvFilename(cache.at), resultsCsv(cache, scope, sort));
+  });
+
+  app.get('/results/:postId/export.csv', async (req, reply) => {
+    const found = resultFor((req.params as { postId: string }).postId);
+    if (!found) return reply.code(404).type('text/plain').send(t('results.post.notFound'));
+    return sendCsv(reply, csvFilename(found.cache.at, found.result.title), postResultsCsv(found.result));
   });
 
   // One published post (published posts have no draft page: this is theirs).
