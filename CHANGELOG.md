@@ -7,6 +7,8 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+## [0.1.4] — 2026-10-25
+
 ### Added
 
 - Costs per user (owner only, from Settings → Usage and cost): AI spend and tokens of each user over 7, 30 or 90 days, against the previous period, broken down by agent and by model, with daily spend, the monthly pace and the most expensive posts. Spend is recorded per user from this version on; automatic work shows as "Automatic".
@@ -86,7 +88,8 @@ First public release.
 - Export / import of the workspace; full backup from the server CLI.
 - Docker image for amd64 and arm64.
 
-[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.4...HEAD
+[0.1.4]: https://github.com/Pepebits/ghost-connector/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/Pepebits/ghost-connector/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Pepebits/ghost-connector/compare/v0.1.0...v0.1.1
