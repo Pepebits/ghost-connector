@@ -8,12 +8,16 @@ function describe(r: ActivityRow): string {
   const action = r.action;
   const vars = { target: r.target ?? '', detail: r.detail === '2fa' || r.detail === 'recovery' ? '' : (r.detail ?? '') };
   if (r.action === 'userInvited' || r.action === 'userJoined' || r.action === 'userRole') vars.detail = r.detail ? t(`auth.roles.${r.detail}`) : '';
-  const key = `activity.actions.${action}`;
+  // A failed login with a username that doesn't exist: what was typed is not stored (it may be a password).
+  const key = r.action === 'loginFailed' && !r.target ? 'activity.actions.loginFailedUnknown' : `activity.actions.${action}`;
   const text = t(key, vars);
   return text === key ? action : text;
 }
 
-const who = (r: ActivityRow) => (r.actor ? html`<span class="font-medium">${r.actor}</span>` : html`<span class="text-muted">${t('activity.system')}</span>`);
+const who = (r: ActivityRow) =>
+  r.actor
+    ? html`<span class="font-medium">${r.actor}</span>`
+    : html`<span class="text-muted">${t(r.action === 'loginFailed' ? 'activity.anonymous' : 'activity.system')}</span>`;
 const tone = (r: ActivityRow) => (r.action === 'loginFailed' ? 'text-warn' : r.action === 'userDeleted' || r.action === 'twoFactorOff' || r.action === 'userTwoFactorReset' ? 'text-err' : '');
 
 /** Compact list for the Settings section. */

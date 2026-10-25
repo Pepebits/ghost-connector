@@ -97,3 +97,11 @@ function pollLiveDraft(postId) {
     stopped = true;
   };
 }
+
+// Started from the page's data (no inline script: see views/jobConsole.ts).
+(function () {
+  const el = document.querySelector('[data-job-stream]');
+  if (!el) return;
+  const d = JSON.parse(el.getAttribute('data-job-stream'));
+  startJobStream(d.id, d.lastId, d.done, d.total, d.opts);
+})();

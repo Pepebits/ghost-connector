@@ -84,6 +84,6 @@ export function newPostPage(opts: { values?: NewPostValues; error?: string; ghos
         <p class="mb-0 mt-4 text-muted">${t('newPost.steps.note')}</p>
       </aside>
     </div>
-    <script src="/detail.js" defer></script>`;
+    <script src="/detail.js" defer data-cfasync="false"></script>`;
   return layout({ title: t('newPost.title'), bodyHtml: body, section: 'dashboard' });
 }

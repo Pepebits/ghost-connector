@@ -39,6 +39,8 @@
     "unassigned": "Left “{target}” unassigned",
     "exported": "Downloaded a workspace export",
     "imported": "Imported: {detail}",
-    "ownership": "Transferred ownership to {target}"
-  }
+    "ownership": "Transferred ownership to {target}",
+    "loginFailedUnknown": "Failed login with a username that does not exist"
+  },
+  "anonymous": "someone not logged in"
 }

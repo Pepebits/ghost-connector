@@ -39,6 +39,8 @@
     "unassigned": "Dejó «{target}» sin asignar",
     "exported": "Descargó una exportación del espacio de trabajo",
     "imported": "Importó: {detail}",
-    "ownership": "Transfirió la propiedad a {target}"
-  }
+    "ownership": "Transfirió la propiedad a {target}",
+    "loginFailedUnknown": "Intento de acceso con un usuario que no existe"
+  },
+  "anonymous": "alguien sin sesión"
 }

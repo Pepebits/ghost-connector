@@ -144,7 +144,7 @@ export function jobsListPage(opts: JobsListOpts): string {
       </table>
     </div>
     ${raw(more)}
-    ${opts.active.length > 0 || hasFinished ? raw('<script src="/jobs-list.js" defer></script>') : ''}
+    ${opts.active.length > 0 || hasFinished ? raw('<script src="/jobs-list.js" defer data-cfasync="false"></script>') : ''}
   `;
   return layout({ title: t('jobs.list.title'), bodyHtml: body, section: 'jobs' });
 }

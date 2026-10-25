@@ -109,13 +109,13 @@ export function layout(opts: { title: string; bodyHtml: string; section?: NavSec
 <meta name="description" content="${t('common.metaDescription')}" />
 <meta name="robots" content="noindex, nofollow" />
 <title>${opts.title} · Ghost Connector</title>
-<script nonce="${cspNonce()}">${raw(THEME_SCRIPT)}</script>
-<script nonce="${cspNonce()}">${raw(clientI18n())}</script>
+<script nonce="${cspNonce()}" data-cfasync="false">${raw(THEME_SCRIPT)}</script>
+<script nonce="${cspNonce()}" data-cfasync="false">${raw(clientI18n())}</script>
 <link rel="stylesheet" href="/app.css" />
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-<script src="/ui.js" defer></script>
-<script src="/palette.js" defer></script>
-<script src="/ghost.js" defer></script>
+<script src="/ui.js" defer data-cfasync="false"></script>
+<script src="/palette.js" defer data-cfasync="false"></script>
+<script src="/ghost.js" defer data-cfasync="false"></script>
 </head>
 <body class="flex min-h-screen flex-col" data-role="${user?.role ?? ''}">
 <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-10 btn">${t('common.skipToContent')}</a>

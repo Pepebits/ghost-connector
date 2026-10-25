@@ -505,7 +505,7 @@ export function settingsPage(opts: SettingsOpts): string {
       </div>
     </div>
     ${raw(opts.isOwner ? openverseRegisterDialog(opts) : '')}
-    <script src="/settings.js" defer></script>
+    <script src="/settings.js" defer data-cfasync="false"></script>
   `;
 
   return layout({ title: t('settings.title'), bodyHtml: body, section: 'settings' });

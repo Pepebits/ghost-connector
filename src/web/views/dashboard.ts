@@ -278,7 +278,7 @@ export function dashboardPage(opts: DashboardOpts): string {
       }),
     )}
     ${raw(goneBlock)}
-    <script src="/dashboard.js" defer></script>
+    <script src="/dashboard.js" defer data-cfasync="false"></script>
   `;
 
   return layout({ title: t('dashboard.title'), bodyHtml: body, section: 'dashboard' });

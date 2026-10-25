@@ -662,6 +662,10 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   const hsts = publicUrl?.protocol === 'https:';
   app.addHook('onSend', async (req, reply, payload) => {
     reply.header('X-Robots-Tag', 'noindex, nofollow');
+    // Proxies and CDNs must not rewrite the pages: Cloudflare's Rocket Loader, for
+    // one, re-injects every script through its own loader, which the CSP blocks.
+    const cc = String(reply.getHeader('Cache-Control') ?? '');
+    if (!/no-transform/i.test(cc)) reply.header('Cache-Control', cc ? `${cc}, no-transform` : 'no-transform');
     reply.header('X-Content-Type-Options', 'nosniff');
     reply.header('X-Frame-Options', 'DENY');
     reply.header('Referrer-Policy', 'same-origin');

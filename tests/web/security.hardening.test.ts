@@ -41,8 +41,13 @@ describe('security hardening', () => {
     expect(csp).toMatch(/script-src 'self' 'nonce-[\w+/=]+'/);
     expect(csp).toContain("frame-ancestors 'none'");
     const nonce = /'nonce-([^']+)'/.exec(csp)![1]!;
-    expect(r.body).toContain(`<script nonce="${nonce}">`);
+    expect(r.body).toContain(`<script nonce="${nonce}" data-cfasync="false">`);
     expect(r.body).not.toMatch(/\son(click|focus|load)=/);
+    // CDNs must leave the page alone (Cloudflare Rocket Loader breaks the nonce-based CSP).
+    expect(String(r.headers['cache-control'])).toContain('no-transform');
+    expect(r.body.match(/<script\b/g)!.length).toBe(r.body.match(/<script\b[^>]*data-cfasync="false"/g)!.length);
+    // The only inline scripts are the nonce-carrying ones in the layout.
+    expect(r.body.match(/<script(?![^>]*\bsrc=)[^>]*>/g)!.every((tag) => tag.includes(`nonce="${nonce}"`))).toBe(true);
   });
 
   it('never redirects off-site after login, even with control characters', async () => {
@@ -70,6 +75,11 @@ describe('security hardening', () => {
     const row = listActivity({ limit: 1 })[0]!;
     expect(row.action).toBe('loginFailed');
     expect(JSON.stringify(row)).not.toContain('secret');
+    const { activitySection } = await import('../../src/web/views/activity.js');
+    const html = activitySection([row]);
+    expect(html).toContain('Failed login with a username that does not exist');
+    expect(html).toContain('someone not logged in');
+    expect(html).not.toContain('“”');
   });
 
   it('refuses cross-site posts that omit Origin, and ids that walk out of a folder', async () => {

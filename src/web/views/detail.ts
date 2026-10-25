@@ -499,7 +499,7 @@ export function detailPage(opts: DetailOpts): string {
     ${raw(nextStep(opts))}
     <nav class="mb-5 flex gap-1 overflow-x-auto border-b border-line" aria-label="${t('post.header.sectionsAria')}">${raw(tabNav)}</nav>
     ${raw(tabPanels)}
-    <script src="/detail.js" defer></script>
+    <script src="/detail.js" defer data-cfasync="false"></script>
   `;
 
   return layout({ title: state.post.title, bodyHtml: body, section: 'dashboard' });

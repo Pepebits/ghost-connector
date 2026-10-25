@@ -90,7 +90,8 @@ export function jobConsolePage(opts: JobConsoleOpts): string {
   // when done, it jumps straight to the post's preview.
   const liveOpts = singlePostId ? { postId: singlePostId, redirectTo: `/posts/${singlePostId}#plan-preview` } : {};
   const streamScript = !isTerminal
-    ? `<script src="/jobs.js"></script><script>startJobStream(${JSON.stringify(job.id)}, ${lastId}, ${job.done}, ${liveTotal}, ${JSON.stringify(liveOpts)});</script>`
+    ? // No inline script (the CSP only runs the panel's own files): jobs.js starts from these data.
+      html`<div hidden data-job-stream="${JSON.stringify({ id: job.id, lastId, done: job.done, total: liveTotal, opts: liveOpts })}"></div><script src="/jobs.js" data-cfasync="false"></script>`
     : '';
   const livePanel =
     singlePostId && !isTerminal
@@ -138,7 +139,7 @@ export function jobConsolePage(opts: JobConsoleOpts): string {
       </div>
       <div id="log" data-log class="max-h-[55vh] min-h-32 overflow-y-auto rounded-md border border-line bg-log px-4 py-3 font-mono text-[0.82rem]" tabindex="0" aria-label="${t('jobs.console.logLabel')}">${raw(events.map(eventLine).join('\n'))}</div>
     </section>
-    <script src="/job-log.js" defer></script>
+    <script src="/job-log.js" defer data-cfasync="false"></script>
     ${raw(streamScript)}
   `;
 
