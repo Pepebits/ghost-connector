@@ -93,5 +93,35 @@
     "sources": "Sources",
     "weekStart": "Week",
     "query": "Query"
+  },
+  "impact": {
+    "title": "Did the panel's changes work?",
+    "titlePost": "Effect of the latest change",
+    "intro": "Clicks of each post the panel changed: up to {weeks} weeks before its latest change against the same weeks after (leaving out the week of the change).",
+    "kpiPosts": "Posts measured",
+    "kpiClicks": "Clicks before → after",
+    "kpiLift": "Against expected",
+    "blogMoved": "rest of the blog: {change}",
+    "perPost": "Show the {count} posts",
+    "colClicks": "Clicks before → after",
+    "colBlog": "Rest of the blog",
+    "colLift": "Against expected",
+    "changedOn": "Changed {date} · {weeks} weeks",
+    "none": "No change can be measured yet: it takes at least 2 full weeks before and after.",
+    "pending": {
+      "one": "1 post changed too recently: measured once 2 weeks have passed.",
+      "other": "{count} posts changed too recently: measured once 2 weeks have passed."
+    },
+    "tooOld": {
+      "one": "1 post changed before the 16 weeks with data: nothing to compare.",
+      "other": "{count} posts changed before the 16 weeks with data: nothing to compare."
+    },
+    "caveat": "Indicative: “against expected” discounts how the rest of the blog moved over the same weeks (season, Google updates), but it isn't an experiment.",
+    "postLine": "Changed {date}. In the {weeks} weeks after it had {after} clicks against {before} in the {weeks} before ({change}). Rest of the blog: {blog}. Against expected: {lift}.",
+    "post_pending": "The latest change is too recent: it can be measured once 2 full weeks have passed.",
+    "post_tooOld": "The latest change is older than the weeks with data: nothing to compare.",
+    "fewClicks": "too little data",
+    "fewNote": "“Too little data”: fewer than {min} clicks before and after together; with so few, a percentage means nothing.",
+    "postFew": "Changed {date}: {before} clicks in the {weeks} weeks before and {after} in the {weeks} after. That's fewer than {min}: too few to draw conclusions."
   }
 }

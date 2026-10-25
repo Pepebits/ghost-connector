@@ -1,4 +1,5 @@
 import { currentLocale, t } from '../../i18n/index.js';
+import { enoughClicks, IMPACT_WEEKS, MIN_IMPACT_CLICKS, measureImpact, measurePost, type ImpactSummary, type PostImpact } from '../../research/impact.js';
 import { change, type Metrics, type PostResult, type ResultsCache } from '../../research/results.js';
 import { html, raw } from '../html.js';
 import { layout } from './layout.js';
@@ -106,6 +107,89 @@ function row(r: PostResult): string {
   </tr>`;
 }
 
+/** "+12%" / "−8%" / "=" as plain text (for sentences), or "—" with nothing to compare. */
+function signedPct(now: number, before: number): string {
+  const c = change(now, before);
+  if (c === null) return '—';
+  if (Math.abs(c) < 0.005) return '=';
+  return `${c > 0 ? '+' : '−'}${Math.round(Math.abs(c) * 100)}%`;
+}
+
+const tone = (now: number, before: number) => {
+  const c = change(now, before) ?? 0;
+  return Math.abs(c) < 0.005 ? 'text-muted' : c > 0 ? 'text-ok' : 'text-err';
+};
+
+function impactRow(i: PostImpact, title: string): string {
+  const enough = enoughClicks(i.before.clicks, i.after.clicks);
+  return html`<tr>
+    <td class="min-w-48"><a href="/results/${i.postId}" class="font-medium">${title}</a><div class="text-xs text-muted">${t('results.impact.changedOn', { date: shortDay(i.changedAt.slice(0, 10)), weeks: i.weeks })}</div></td>
+    <td class="whitespace-nowrap text-right tabular-nums max-sm:hidden">${num(i.before.clicks)} → ${num(i.after.clicks)}<div class="text-xs ${enough ? tone(i.after.clicks, i.before.clicks) : 'text-muted'}">${signedPct(i.after.clicks, i.before.clicks)}</div></td>
+    <td class="whitespace-nowrap text-right tabular-nums max-sm:hidden">${signedPct(i.blogAfter.clicks, i.blogBefore.clicks)}</td>
+    <td class="text-right font-medium tabular-nums sm:whitespace-nowrap ${enough ? tone(i.after.clicks, i.expectedClicks) : 'text-muted'}">${enough ? signedPct(i.after.clicks, i.expectedClicks) : raw(html`<span class="text-xs font-normal">${t('results.impact.fewClicks')}</span>`)}</td>
+  </tr>`;
+}
+
+/** "Did the panel's changes help?": changed posts, before vs after, against the rest of the blog. */
+export function impactSection(c: ResultsCache, m: ImpactSummary = measureImpact(c.posts)): string {
+  if (!m.measured.length && !m.pending && !m.tooOld) return '';
+  const titles = new Map(c.posts.map((p) => [p.postId, p.title]));
+  const notes = [
+    t('results.impact.fewNote', { min: MIN_IMPACT_CLICKS }),
+    m.pending ? t('results.impact.pending', { count: m.pending }) : '',
+    m.tooOld ? t('results.impact.tooOld', { count: m.tooOld }) : '',
+  ].filter(Boolean);
+  const summary = m.measured.length
+    ? html`<div class="mb-3 grid gap-3 sm:grid-cols-3">
+        ${raw(kpi(t('results.impact.kpiPosts'), num(m.measured.length), ''))}
+        ${raw(kpi(t('results.impact.kpiClicks'), `${num(m.before)} → ${num(m.after)}`, html`<span class="text-xs font-medium ${enoughClicks(m.before, m.after) ? tone(m.after, m.before) : 'text-muted'}">${signedPct(m.after, m.before)}</span>`))}
+        ${raw(kpi(t('results.impact.kpiLift'), enoughClicks(m.before, m.after) ? signedPct(m.after, m.expected) : t('results.impact.fewClicks'), html`<span class="text-xs text-muted">${t('results.impact.blogMoved', { change: signedPct(m.expected, m.before) })}</span>`))}
+      </div>
+      <details class="mb-2"><summary class="cursor-pointer text-sm">${t('results.impact.perPost', { count: m.measured.length })}</summary>
+        <div class="mt-2 overflow-x-auto"><table class="data-table">
+          <thead><tr>
+            <th scope="col">${t('results.cols.post')}</th>
+            <th scope="col" class="text-right max-sm:hidden">${t('results.impact.colClicks')}</th>
+            <th scope="col" class="text-right max-sm:hidden">${t('results.impact.colBlog')}</th>
+            <th scope="col" class="text-right">${t('results.impact.colLift')}</th>
+          </tr></thead>
+          <tbody>${raw([...m.measured].sort((a, b) => Math.abs(b.after.clicks - b.expectedClicks) - Math.abs(a.after.clicks - a.expectedClicks)).map((i) => impactRow(i, titles.get(i.postId) ?? i.postId)).join(''))}</tbody>
+        </table></div>
+      </details>`
+    : html`<p class="m-0 text-sm text-muted">${t('results.impact.none')}</p>`;
+  return html`<section class="card mb-6 p-4 sm:p-5" aria-labelledby="impact-h">
+    <h2 id="impact-h" class="section-heading !mb-1">${t('results.impact.title')}</h2>
+    <p class="m-0 mb-3 text-sm text-muted">${t('results.impact.intro', { weeks: IMPACT_WEEKS })}</p>
+    ${raw(summary)}
+    <ul class="m-0 list-none p-0 text-xs text-muted">${raw([...notes, t('results.impact.caveat')].map((n) => html`<li class="mt-1">${n}</li>`).join(''))}</ul>
+  </section>`;
+}
+
+/** The same, for one post (its page). */
+function postImpactCard(r: PostResult, cache: ResultsCache): string {
+  const m = measurePost(r, cache.posts.filter((p) => !p.appliedAt.length));
+  if (m.kind === 'none') return '';
+  const body =
+    m.kind === 'measured' && !enoughClicks(m.impact.before.clicks, m.impact.after.clicks)
+      ? html`<p class="m-0 text-sm">${t('results.impact.postFew', { date: shortDay(m.impact.changedAt.slice(0, 10)), weeks: m.impact.weeks, before: num(m.impact.before.clicks), after: num(m.impact.after.clicks), min: MIN_IMPACT_CLICKS })}</p>`
+      : m.kind === 'measured'
+      ? html`<p class="m-0 text-sm">${raw(t('results.impact.postLine', {
+          date: shortDay(m.impact.changedAt.slice(0, 10)),
+          weeks: m.impact.weeks,
+          before: num(m.impact.before.clicks),
+          after: num(m.impact.after.clicks),
+          change: html`<strong class="${tone(m.impact.after.clicks, m.impact.before.clicks)}">${signedPct(m.impact.after.clicks, m.impact.before.clicks)}</strong>`,
+          blog: signedPct(m.impact.blogAfter.clicks, m.impact.blogBefore.clicks),
+          lift: html`<strong class="${tone(m.impact.after.clicks, m.impact.expectedClicks)}">${signedPct(m.impact.after.clicks, m.impact.expectedClicks)}</strong>`,
+        }))}</p>`
+      : html`<p class="m-0 text-sm text-muted">${t(`results.impact.post_${m.kind}`)}</p>`;
+  return html`<section class="card mb-6 p-4 sm:p-5" aria-labelledby="impact-h">
+    <h2 id="impact-h" class="section-heading !mb-2">${t('results.impact.titlePost')}</h2>
+    ${raw(body)}
+    <p class="m-0 mt-2 text-xs text-muted">${t('results.impact.caveat')}</p>
+  </section>`;
+}
+
 export interface ResultsPageOpts {
   configured: boolean;
   cache: ResultsCache | null;
@@ -176,7 +260,7 @@ export function resultsPage(o: ResultsPageOpts): string {
     c.sources.includes('google') ? '' : t('results.queriesGoogleOnly'),
   ].filter(Boolean);
 
-  const body = html`${raw(header)}${raw(o.error ? flash(o.error, 'err') : '')}${raw(kpis)}${raw(filters)}${raw(table)}
+  const body = html`${raw(header)}${raw(o.error ? flash(o.error, 'err') : '')}${raw(kpis)}${raw(impactSection(c))}${raw(filters)}${raw(table)}
     <ul class="mt-6 list-none p-0 text-xs text-muted">${raw(notes.map((n) => html`<li class="mt-1">${n}</li>`).join(''))}</ul>`;
   return layout({ title: t('results.title'), section: 'results', bodyHtml: body });
 }
@@ -202,6 +286,7 @@ export function postResultsPage(r: PostResult, cache: ResultsCache): string {
       ${raw(kpi(t('results.kpi.ctr'), r.current.impressions ? pct(ctr(r.current)) : '—', r.current.impressions && r.previous.impressions ? delta(ctr(r.current), ctr(r.previous)) : ''))}
       ${raw(kpi(t('results.kpi.position'), r.current.impressions ? r.current.position.toFixed(1) : '—', r.current.impressions && r.previous.impressions ? positionDelta(r.current.position, r.previous.position) : ''))}
     </div>
+    ${raw(postImpactCard(r, cache))}
     <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <section class="card min-w-0 p-4 sm:p-5" aria-labelledby="trend-h">
         <h2 id="trend-h" class="section-heading !mb-3">${t('results.post.trend')}</h2>

@@ -93,5 +93,35 @@
     "sources": "Fuentes",
     "weekStart": "Semana",
     "query": "Búsqueda"
+  },
+  "impact": {
+    "title": "¿Han funcionado los cambios del panel?",
+    "titlePost": "Efecto del último cambio",
+    "intro": "Clics de cada post cambiado por el panel: hasta {weeks} semanas antes de su último cambio frente a las mismas semanas después (sin contar la del cambio).",
+    "kpiPosts": "Posts medidos",
+    "kpiClicks": "Clics antes → después",
+    "kpiLift": "Frente a lo esperado",
+    "blogMoved": "el resto del blog: {change}",
+    "perPost": "Ver los {count} posts",
+    "colClicks": "Clics antes → después",
+    "colBlog": "Resto del blog",
+    "colLift": "Frente a lo esperado",
+    "changedOn": "Cambiado el {date} · {weeks} semanas",
+    "none": "Todavía no se puede medir ningún cambio: hacen falta al menos 2 semanas completas antes y después.",
+    "pending": {
+      "one": "1 post con un cambio demasiado reciente: se medirá cuando pasen 2 semanas.",
+      "other": "{count} posts con cambios demasiado recientes: se medirán cuando pasen 2 semanas."
+    },
+    "tooOld": {
+      "one": "1 post cambiado antes de las 16 semanas que hay datos: no se puede comparar.",
+      "other": "{count} posts cambiados antes de las 16 semanas que hay datos: no se pueden comparar."
+    },
+    "caveat": "Orientativo: «frente a lo esperado» descuenta cómo se movió el resto del blog en esas mismas semanas (temporada, cambios de Google), pero no es un experimento.",
+    "postLine": "Cambiado el {date}. En las {weeks} semanas siguientes tuvo {after} clics frente a {before} en las {weeks} anteriores ({change}). El resto del blog: {blog}. Frente a lo esperado: {lift}.",
+    "post_pending": "El último cambio es demasiado reciente: se podrá medir cuando pasen 2 semanas completas.",
+    "post_tooOld": "El último cambio es anterior a las semanas con datos: no se puede comparar.",
+    "fewClicks": "pocos datos",
+    "fewNote": "«Pocos datos»: menos de {min} clics sumando antes y después; con tan poco, un porcentaje no dice nada.",
+    "postFew": "Cambiado el {date}: {before} clics en las {weeks} semanas anteriores y {after} en las {weeks} siguientes. Son menos de {min}: demasiado pocos para sacar conclusiones."
   }
 }
