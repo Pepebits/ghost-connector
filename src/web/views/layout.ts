@@ -30,7 +30,7 @@ const LOGO = `<svg class="brand-logo" viewBox="0 0 120 120" width="32" height="3
 const VERSION = (JSON.parse(readFileSync(new URL('../../../package.json', import.meta.url), 'utf8')) as { version: string }).version;
 
 const footer = () => `<footer class="site-footer">
-  <div class="mx-auto flex max-w-[1100px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-6 sm:px-6">
+  <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-6 sm:px-6">
     <p class="!my-0 text-sm text-muted">Ghost Connector <span class="tabular-nums">v${VERSION}</span></p>
     <a class="inline-flex items-center gap-2 text-sm text-muted hover:no-underline" href="https://pepebits.com" target="_blank" rel="noopener noreferrer">
       <span>${t('common.footer.productOf')}</span>${WORDMARK.trim()}<span class="sr-only">PEPEBITS (${t('common.footer.newTab')})</span>

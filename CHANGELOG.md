@@ -7,6 +7,10 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+### Changed
+
+- The footer spans the full width, like the header: version on the left, Pepebits on the right.
+
 ### Fixed
 
 - Behind Cloudflare, Rocket Loader rewrote the panel's scripts and the Content-Security-Policy blocked them (theme switch, search, live updates). The panel now sends `Cache-Control: no-transform` and marks its scripts so Cloudflare leaves them alone.
