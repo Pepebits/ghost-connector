@@ -131,5 +131,9 @@
     "budget": "The automatic plan was skipped {time}: the daily spending cap had been reached.",
     "dismiss": "Got it"
   },
-  "chipMine": "Mine"
+  "chipMine": "Mine",
+  "words": {
+    "planned": "{now} in Ghost; {planned} in the unapplied plan",
+    "srArrow": ", in the plan:"
+  }
 }

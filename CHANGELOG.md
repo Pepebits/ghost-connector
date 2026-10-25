@@ -5,6 +5,17 @@ All notable changes to Ghost Connector. The format follows
 [Semantic Versioning](https://semver.org/). Each release's notes on GitHub and
 in the announcement come from its section here.
 
+## [Unreleased]
+
+### Changed
+
+- Settings → Users: each user's actions are in a gear menu instead of a row of buttons; on phones the 2FA status moves under the name so the table fits.
+- Drafts: when a plan isn't applied yet, the words column shows both counts, Ghost's and the plan's (e.g. 0 → 1263), instead of only Ghost's.
+
+### Fixed
+
+- Round avatars stay round in every browser (some Safari versions drew Tailwind's infinite radius as a square).
+
 ## [0.1.3] — 2026-10-25
 
 ### Added
@@ -67,6 +78,7 @@ First public release.
 - Export / import of the workspace; full backup from the server CLI.
 - Docker image for amd64 and arm64.
 
+[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.3...HEAD
 [0.1.3]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/Pepebits/ghost-connector/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Pepebits/ghost-connector/compare/v0.1.0...v0.1.1

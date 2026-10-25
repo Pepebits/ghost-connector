@@ -131,5 +131,9 @@
     "budget": "La planificación automática no se hizo {time}: se había alcanzado el tope diario de gasto.",
     "dismiss": "Entendido"
   },
-  "chipMine": "Míos"
+  "chipMine": "Míos",
+  "words": {
+    "planned": "{now} en Ghost; {planned} en el plan sin aplicar",
+    "srArrow": ", en el plan:"
+  }
 }

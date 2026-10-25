@@ -27,7 +27,11 @@ function row(s: PostSummary, team?: DashboardTeam): string {
       <td><a href="/posts/${s.id}" class="font-medium">${s.title}</a>${s.plannedTitle ? raw(html`<div class="text-xs text-accent">${t('dashboard.plannedTitle', { title: s.plannedTitle })}</div>`) : ''}<div class="text-xs text-muted">${s.slug}</div></td>
       <td>${raw(badge(s.kind))}</td>
       <td class="max-sm:hidden">${raw(teamFlags(s.id, team))}${raw(flags(s))}</td>
-      <td class="text-right tabular-nums">${s.wordCount}</td>
+      <td class="whitespace-nowrap text-right tabular-nums">${raw(
+        s.plannedWords !== undefined
+          ? html`<span title="${t('dashboard.words.planned', { now: s.wordCount, planned: s.plannedWords })}">${s.wordCount} <span aria-hidden="true">→</span><span class="sr-only">${t('dashboard.words.srArrow')}</span> <strong class="font-semibold text-accent">${s.plannedWords}</strong></span>`
+          : String(s.wordCount),
+      )}</td>
     </tr>`;
 }
 

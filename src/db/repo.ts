@@ -333,6 +333,17 @@ export function plannedTitles(): Map<string, string> {
   return new Map(rows.map((r) => [r.post_id, r.post_title]));
 }
 
+/** Words in each post's unapplied plan (latest artifact still "planned"). */
+export function plannedWords(): Map<string, number> {
+  const rows = getDb()
+    .prepare(
+      `SELECT a.post_id, a.words_after FROM artifacts a
+       WHERE a.status = 'planned' AND a.words_after IS NOT NULL AND a.created_at = (SELECT MAX(created_at) FROM artifacts b WHERE b.post_id = a.post_id)`,
+    )
+    .all() as Array<{ post_id: string; words_after: number }>;
+  return new Map(rows.map((r) => [r.post_id, r.words_after]));
+}
+
 export function deletePostLive(postId: string): void {
   safeWrite('deletePostLive', (db) => {
     db.prepare(`DELETE FROM posts_live WHERE post_id = ?`).run(postId);

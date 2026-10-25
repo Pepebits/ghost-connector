@@ -1,4 +1,4 @@
-import { backfillInferredApplied, listPostsLive, plannedTitles, upsertPostLive } from '../db/repo.js';
+import { backfillInferredApplied, listPostsLive, plannedTitles, plannedWords, upsertPostLive } from '../db/repo.js';
 import { listDrafts, readDraft } from '../ghost/posts.js';
 import { AI_PROCESSED_TAG } from '../orchestrator/merge.js';
 import { findLatestArtifact, findLatestArtifactsByPost } from '../review/store.js';
@@ -188,6 +188,8 @@ export interface PostSummary {
   syncedAt: string;
   /** Title proposed by the unapplied plan, when it differs from the one in Ghost. */
   plannedTitle?: string;
+  /** Words in the unapplied plan (wordCount is what Ghost has now). */
+  plannedWords?: number;
 }
 
 /**
@@ -198,10 +200,12 @@ export interface PostSummary {
  */
 export function readPostSummaries(opts: { kind?: PostStateKind } = {}): PostSummary[] {
   const planned = plannedTitles();
+  const words = plannedWords();
   return listPostsLive()
     .filter((r) => !opts.kind || r.kind === opts.kind)
     .map((r) => ({
       ...(planned.has(r.post_id) && planned.get(r.post_id) !== r.title ? { plannedTitle: planned.get(r.post_id)! } : {}),
+      ...(words.has(r.post_id) && words.get(r.post_id) !== r.word_count ? { plannedWords: words.get(r.post_id)! } : {}),
       id: r.post_id,
       title: r.title,
       slug: r.slug,
