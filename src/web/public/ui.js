@@ -76,17 +76,26 @@
   document.addEventListener('toggle', makeScrollablesFocusable, true);
 })();
 
-// Header user menu (<details>): closes on Escape or a click outside.
+// Dropdown menus (<details data-menu>: the header user menu, each user's actions):
+// one open at a time; they close on Escape, a click outside, or once an item is chosen.
 (function () {
-  const menu = document.querySelector('[data-user-menu]');
-  if (!menu) return;
+  const menus = () => Array.from(document.querySelectorAll('details[data-menu]'));
+  document.addEventListener('toggle', (e) => {
+    if (e.target.matches && e.target.matches('details[data-menu]') && e.target.open) menus().forEach((m) => { if (m !== e.target) m.open = false; });
+  }, true);
   document.addEventListener('click', (e) => {
-    if (menu.open && !menu.contains(e.target)) menu.open = false;
+    menus().forEach((m) => {
+      if (!m.open) return;
+      if (!m.contains(e.target)) m.open = false;
+      else if (e.target.closest('.user-menu-panel button, .user-menu-panel a')) m.open = false;
+    });
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && menu.open) {
-      menu.open = false;
-      menu.querySelector('summary').focus();
+    if (e.key !== 'Escape') return;
+    const open = menus().find((m) => m.open);
+    if (open) {
+      open.open = false;
+      open.querySelector('summary').focus();
     }
   });
 })();

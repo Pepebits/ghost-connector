@@ -80,8 +80,8 @@ function languageForm(): string {
 /** Round avatar with the initial; opens a menu with the account and logout. */
 function userMenu(user: { username: string; role: string }): string {
   const initial = [...user.username][0]?.toUpperCase() ?? '?';
-  return html`<details class="user-menu" data-user-menu>
-    <summary class="user-avatar" title="${user.username}" aria-label="${t('auth.menu.label', { name: user.username })}">${initial}</summary>
+  return html`<details class="user-menu" data-user-menu data-menu>
+    <summary class="avatar user-avatar" title="${user.username}" aria-label="${t('auth.menu.label', { name: user.username })}">${initial}</summary>
     <div class="user-menu-panel">
       <div class="border-b border-line px-3 py-2"><div class="truncate font-medium">${user.username}</div><div class="text-xs text-muted">${t(`auth.roles.${user.role}`)}</div></div>
       <a href="/account" class="user-menu-item" data-palette="${t('auth.account.title')}">${t('auth.account.title')}</a>
