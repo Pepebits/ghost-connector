@@ -7,6 +7,8 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+## [0.1.5] — 2026-10-25
+
 ### Added
 
 - Ghost authors: each panel user has default Ghost authors (one or more, with a primary), set in My account or by an admin in Settings → Users. New posts are credited to them, and the *New post* form lets you change them. A draft's authors show on its page and can be changed there; applying a plan never touches them. The staff list is read from Ghost.
@@ -94,7 +96,8 @@ First public release.
 - Export / import of the workspace; full backup from the server CLI.
 - Docker image for amd64 and arm64.
 
-[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/Pepebits/ghost-connector/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/Pepebits/ghost-connector/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/Pepebits/ghost-connector/compare/v0.1.1...v0.1.2
