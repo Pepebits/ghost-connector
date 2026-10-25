@@ -20,6 +20,7 @@ async function main() {
   }
 
   const { data: plan } = await planImage({
+    language: 'es',
     title: draft.title,
     summary: 'Prueba del conector DeepSeek + Ghost: verificar el modulo de imagenes de punta a punta.',
     existingFeatureImage: draft.feature_image,

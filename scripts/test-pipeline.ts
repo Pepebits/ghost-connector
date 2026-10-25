@@ -29,6 +29,7 @@ async function main() {
       currentSlug: draft.slug,
     }),
     planImage({
+      language: writer.data.language,
       title: writer.data.title,
       summary: writer.data.summary,
       existingFeatureImage: draft.feature_image,

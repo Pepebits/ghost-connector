@@ -4,6 +4,8 @@ import { loadPrompt } from './prompts.js';
 import { runAgent, type AgentUsage } from './runner.js';
 
 export interface ImageBriefInput {
+  /** The post's language: the alt text is written in it (the prompt itself is in Spanish). */
+  language: 'es' | 'en';
   title: string;
   summary: string;
   existingFeatureImage: string | null;
@@ -12,6 +14,7 @@ export interface ImageBriefInput {
 
 function buildUserPrompt(input: ImageBriefInput): string {
   return [
+    `IDIOMA DEL POST: ${input.language === 'en' ? 'inglés (en): escribe alt_text en inglés' : 'español (es): escribe alt_text en español'}`,
     `TITULO: ${input.title}`,
     `RESUMEN DEL ARTICULO: ${input.summary}`,
     `TAGS: ${input.tags.join(', ') || '(ninguno)'}`,

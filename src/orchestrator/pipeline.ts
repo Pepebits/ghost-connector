@@ -115,6 +115,7 @@ export async function processDraft(runId: string, snapshot: DraftSnapshot, opts:
     snapshot.feature_image
       ? Promise.resolve(null)
       : planImage({
+          language: writer.language,
           title: writer.title,
           summary: writer.summary,
           existingFeatureImage: snapshot.feature_image,
