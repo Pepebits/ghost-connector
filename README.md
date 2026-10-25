@@ -51,7 +51,7 @@ There are two ways to use it on top of the same core (what one does, the other s
 | 👻 **Ghost Admin API Key** | Ghost Admin → *Settings → Integrations → Add custom integration*. The Content API Key won't do: it can't write. |
 | 🤖 **An AI provider key** | [DeepSeek](https://platform.deepseek.com) (default), [Anthropic](https://console.anthropic.com) or any OpenAI-compatible one. For models other than `deepseek-flash`, set their price in `AI_PRICES` to see costs. |
 | 🖼️ **Image keys** *(optional)* | [Unsplash](https://unsplash.com/developers), [Pixabay](https://pixabay.com/api/docs/), [Pexels](https://www.pexels.com/api/). Without them, [Openverse](https://openverse.org) and Wikimedia Commons are used (no key). |
-| 📈 **Search data** *(optional)* | A read-only Google Search Console service account and/or a Bing Webmaster Tools API key, for *Ideas*. |
+| 📈 **Search data** *(optional)* | A read-only Google Search Console service account and/or a Bing Webmaster Tools API key, for *Ideas* and *Results*. |
 
 ## 🚀 Quick start
 
@@ -85,6 +85,7 @@ The first time, the panel asks you to create the first user — the **owner** �
 
 | | |
 |---|---|
+| 📊 **Results** | Clicks, impressions, CTR and position of published posts (Search Console and/or Bing), last 28 days vs the 28 before, with a weekly trend marking when the panel changed each post. Read-only, refreshed by hand. |
 | 💡 **Ideas** | Searches where you show up on page two with real impressions; first-page results with unusually few clicks, where the AI proposes three titles/meta descriptions to apply (and restore); and AI topic ideas. Each opens *New post* already filled in; dismissed or used ideas don't come back. |
 | 🌙 **Nightly plan** | With `AUTO_PLAN_TIME`, once a day it plans drafts that were never planned (at most `AUTO_PLAN_MAX`, 3 by default). It only plans: applying is up to you. |
 | ⚙️ **Jobs** | Background work (plan, apply, sync) with live progress and logs. If the process dies mid-batch, finished work is kept. |

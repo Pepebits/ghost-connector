@@ -73,6 +73,8 @@ import { canManage } from './views/auth.js';
 import * as team from '../team/store.js';
 import { activityActors, listActivity, logActivity } from '../team/store.js';
 import { presenceBanner, type PostTeam } from './views/team.js';
+import { loadResults, refreshResults, resultFor, resultsSourcesConfigured } from '../research/results.js';
+import { postResultsPage, resultsPage } from './views/results.js';
 import { activityPage, activitySection } from './views/activity.js';
 import { applyImport, createExport, exportFileName, getStagedImport, IMPORT_PARTS, ImportError, stageImport, type ImportPart } from '../settings/workspace.js';
 import { importPreviewPage } from './views/transfer.js';
@@ -868,6 +870,35 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
         team: postTeam(id, req.user!),
       }),
     );
+  });
+
+  // ---------- Results: published posts in search (manual refresh, like Ideas) ----------
+  app.get('/results', async (req, reply) => {
+    const q = req.query as { scope?: string; sort?: string; error?: string };
+    return reply.type('text/html').send(
+      resultsPage({
+        configured: resultsSourcesConfigured(),
+        cache: loadResults(),
+        scope: q.scope === 'panel' || q.scope === 'all' ? q.scope : undefined,
+        sort: q.sort === 'change' || q.sort === 'impressions' || q.sort === 'clicks' ? q.sort : undefined,
+      }),
+    );
+  });
+
+  // One published post (published posts have no draft page: this is theirs).
+  app.get('/results/:postId', async (req, reply) => {
+    const found = resultFor((req.params as { postId: string }).postId);
+    if (!found) return reply.code(404).type('text/plain').send(t('results.post.notFound'));
+    return reply.type('text/html').send(postResultsPage(found.result, found.cache));
+  });
+
+  app.post('/results/refresh', async (_req, reply) => {
+    try {
+      await refreshResults();
+      return reply.redirect('/results');
+    } catch (err) {
+      return reply.type('text/html').send(resultsPage({ configured: resultsSourcesConfigured(), cache: loadResults(), error: t('results.errors.failed', { error: err instanceof Error ? err.message : String(err) }) }));
+    }
   });
 
   // ---------- Team: who has it open, assignment, notes ----------

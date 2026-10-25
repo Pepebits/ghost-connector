@@ -46,3 +46,44 @@ export async function bingQueryStats(days = 28, site = getConfig().BING_SITE_URL
   });
   return bingRows(stats, days);
 }
+
+interface BingPageStat {
+  /** The page URL (Bing reuses the "Query" field). */
+  Query: string;
+  Impressions: number;
+  Clicks: number;
+  AvgImpressionPosition: number;
+  Date: string;
+}
+
+export interface BingPageRow {
+  page: string;
+  /** YYYY-MM-DD: Bing aggregates by week. */
+  date: string;
+  clicks: number;
+  impressions: number;
+  position: number;
+}
+
+/** Converts GetPageStats rows (exported for the tests). */
+export function bingPageRows(stats: BingPageStat[]): BingPageRow[] {
+  return stats
+    .filter((s) => s.Query && Number.isFinite(wcfDate(s.Date)))
+    .map((s) => ({ page: s.Query, date: new Date(wcfDate(s.Date)).toISOString().slice(0, 10), clicks: s.Clicks, impressions: s.Impressions, position: s.AvgImpressionPosition > 0 ? s.AvgImpressionPosition : 0 }));
+}
+
+/** Weekly clicks and impressions per page, for about the last year and a half. */
+export async function bingPageStats(site = getConfig().BING_SITE_URL, key = getConfig().BING_API_KEY): Promise<BingPageRow[]> {
+  const url = `https://ssl.bing.com/webmaster/api.svc/json/GetPageStats?${new URLSearchParams({ siteUrl: site, apikey: key })}`;
+  const stats = await withRetry(async () => {
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!res.ok) {
+      const body = await res.text();
+      const err = new Error(`Bing Webmaster answered ${res.status}: ${body.slice(0, 200)}`) as Error & { status?: number };
+      err.status = res.status;
+      throw err;
+    }
+    return ((await res.json()) as { d?: BingPageStat[] }).d ?? [];
+  });
+  return bingPageRows(stats);
+}

@@ -201,7 +201,8 @@
   .chip { @apply rounded-full border border-line px-3.5 py-1 text-sm text-muted transition-colors hover:text-fg hover:border-line-strong hover:no-underline; }
   .chip-active { @apply border-accent text-accent; }
 
-  .chip-count { @apply ml-0.5 tabular-nums opacity-75; }
+  /* No opacity here: on an inactive (muted) chip it dropped the count below 4.5:1 contrast. */
+  .chip-count { @apply ml-0.5 tabular-nums; }
   .chip-clear { @apply text-sm text-muted underline hover:text-fg; }
 
   /* Common header (views/ui.ts pageHeader) */

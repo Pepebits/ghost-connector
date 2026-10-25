@@ -1,0 +1,72 @@
+{
+  "title": "Results",
+  "intro": "How published posts do in search: the last 28 days against the 28 before.",
+  "refresh": "Refresh",
+  "refreshing": "Fetching…",
+  "updated": "Updated {time}",
+  "period": "{from} to {to}, against {pfrom}–{pto}",
+  "sources": {
+    "google": "Google",
+    "bing": "Bing",
+    "both": "Google + Bing"
+  },
+  "notConfigured": "Connect Search Console or Bing Webmaster",
+  "notConfiguredBody": "The data comes from there: clicks, impressions and position for each post.",
+  "configure": "Set up",
+  "empty": "No data yet",
+  "emptyBody": "Press “Refresh” to fetch it. It only reads Ghost and the search engine: nothing is changed.",
+  "noPosts": "No posts with data in this period.",
+  "scope": {
+    "label": "Which posts",
+    "panel": "Worked on by the panel",
+    "all": "Whole blog"
+  },
+  "sort": {
+    "label": "Sort by",
+    "clicks": "Clicks",
+    "change": "Change",
+    "impressions": "Impressions"
+  },
+  "kpi": {
+    "clicks": "Clicks",
+    "impressions": "Impressions",
+    "ctr": "CTR",
+    "position": "Average position",
+    "posts": "Posts"
+  },
+  "cols": {
+    "post": "Post",
+    "clicks": "Clicks",
+    "impressions": "Impressions",
+    "ctr": "CTR",
+    "position": "Position",
+    "trend": "Last 16 weeks"
+  },
+  "vsPrevious": "vs {value}",
+  "new": "new",
+  "touched": "Changed by the panel",
+  "openInPanel": "Open in the panel",
+  "published": "Published {time}",
+  "trendAlt": "Clicks per week: {values}",
+  "appliedMark": "The panel changed it here",
+  "panelEmpty": "The panel hasn't changed any published post yet.",
+  "panelEmptyBody": "Once you publish in Ghost a post applied from here (or change its title or meta description from Ideas), it shows up in this view.",
+  "unpublished": {
+    "one": "1 post applied from the panel is still a draft: it shows up once you publish it.",
+    "other": "{count} posts applied from the panel are still drafts: they show up once you publish them."
+  },
+  "lag": "Search engines take 2-3 days to report, and Bing groups its data by week.",
+  "queriesGoogleOnly": "Each post's queries are only available with Search Console.",
+  "post": {
+    "queries": "Top queries",
+    "noQueries": "No notable queries in this period.",
+    "trend": "Clicks per week",
+    "changes": "Dashed line: when the panel changed it ({dates}).",
+    "queryLine": "{clicks} clicks · {impressions} impr. · pos. {position}",
+    "notFound": "No results for that post: press “Refresh” in Results."
+  },
+  "errors": {
+    "failed": "Couldn't fetch the data: {error}"
+  },
+  "view": "View post"
+}

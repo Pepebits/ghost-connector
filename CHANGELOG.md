@@ -7,6 +7,10 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+### Added
+
+- Results: how published posts do in Google and Bing, the last 28 days against the 28 before, with a 16-week trend that marks when the panel changed each post. Filter by the posts the panel worked on or the whole blog; each post has its own page with its top Google queries. Refreshed by hand, read-only.
+
 ### Changed
 
 - Settings → Users: each user's actions are in a gear menu instead of a row of buttons; on phones the 2FA status moves under the name so the table fits.

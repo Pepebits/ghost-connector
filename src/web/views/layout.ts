@@ -54,11 +54,12 @@ document.addEventListener('DOMContentLoaded',sync);
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-theme-choice]');if(b)gcSetTheme(b.getAttribute('data-theme-choice'));});
 })();`;
 
-export type NavSection = 'dashboard' | 'ideas' | 'jobs' | 'settings';
+export type NavSection = 'dashboard' | 'ideas' | 'results' | 'jobs' | 'settings';
 
 const NAV: Array<{ id: NavSection; href: string }> = [
   { id: 'dashboard', href: '/' },
   { id: 'ideas', href: '/ideas' },
+  { id: 'results', href: '/results' },
   { id: 'jobs', href: '/jobs' },
   { id: 'settings', href: '/settings' },
 ];
@@ -97,8 +98,8 @@ export function layout(opts: { title: string; bodyHtml: string; section?: NavSec
   const isAdmin = !user || isAdminRole(user.role);
   const navLinks = NAV.filter((n) => n.id !== 'settings' || isAdmin).map((n) =>
     n.id === opts.section
-      ? html`<a href="${n.href}" aria-current="page" class="rounded-md bg-panel-2 px-2.5 py-1 font-medium text-fg hover:no-underline">${t(`common.nav.${n.id}`)}</a>`
-      : html`<a href="${n.href}" class="rounded-md px-2.5 py-1 text-muted hover:bg-panel-2 hover:text-fg hover:no-underline">${t(`common.nav.${n.id}`)}</a>`,
+      ? html`<a href="${n.href}" aria-current="page" class="whitespace-nowrap rounded-md bg-panel-2 px-2.5 py-1 font-medium text-fg hover:no-underline">${t(`common.nav.${n.id}`)}</a>`
+      : html`<a href="${n.href}" class="whitespace-nowrap rounded-md px-2.5 py-1 text-muted hover:bg-panel-2 hover:text-fg hover:no-underline">${t(`common.nav.${n.id}`)}</a>`,
   ).join('');
 
   return html`<!doctype html>
@@ -121,7 +122,7 @@ export function layout(opts: { title: string; bodyHtml: string; section?: NavSec
 <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-10 btn">${t('common.skipToContent')}</a>
 <header class="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-panel px-4 py-2.5 sm:px-6">
   <a href="/" class="brand-link mr-2 inline-flex items-center gap-2 font-bold text-fg hover:no-underline">${raw(LOGO)}Ghost Connector</a>
-  ${opts.bare ? '' : raw(html`<nav aria-label="${t('common.nav.label')}" class="flex items-center gap-1">${raw(navLinks)}</nav>`)}
+  ${opts.bare ? '' : raw(html`<nav aria-label="${t('common.nav.label')}" class="-mx-1 flex max-w-full items-center gap-1 overflow-x-auto px-1 [scrollbar-width:none]">${raw(navLinks)}</nav>`)}
   <div class="ml-auto flex items-center gap-2">
     ${opts.bare ? '' : raw(html`<button type="button" data-open-palette class="btn btn-ghost btn-sm" title="${t('common.search.title')}">
       ${t('common.search.button')} <kbd>⌘K</kbd>

@@ -83,30 +83,63 @@ export async function searchAnalytics(days = 28, site = getConfig().GSC_SITE_URL
 }
 
 /** Same, between two dates (inclusive), optionally for one page only. */
-export async function searchAnalyticsRange(start: Date, end: Date, site = getConfig().GSC_SITE_URL, account = getConfig().GSC_SERVICE_ACCOUNT, page?: string): Promise<SearchRow[]> {
-  const sa = loadServiceAccount(account);
+export type GscDimension = 'query' | 'page' | 'date';
+
+export interface GscRow {
+  keys: string[];
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  position: number;
+}
+
+/** One Search Analytics query, any dimensions, paging through every row (25,000 per request). */
+export async function searchAnalyticsQuery(o: {
+  start: Date;
+  end: Date;
+  dimensions: GscDimension[];
+  page?: string;
+  site?: string;
+  account?: string;
+  maxRows?: number;
+}): Promise<GscRow[]> {
+  const site = o.site ?? getConfig().GSC_SITE_URL;
+  const sa = loadServiceAccount(o.account ?? getConfig().GSC_SERVICE_ACCOUNT);
   const day = (d: Date) => d.toISOString().slice(0, 10);
-  const rows = await withRetry(async () => {
-    const res = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${await accessToken(sa)}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        startDate: day(start),
-        endDate: day(end),
-        dimensions: ['query', 'page'],
-        rowLimit: 5000,
-        ...(page ? { dimensionFilterGroups: [{ filters: [{ dimension: 'page', operator: 'equals', expression: page }] }] } : {}),
-      }),
+  const pageSize = 25_000;
+  const max = o.maxRows ?? 100_000;
+  const all: GscRow[] = [];
+  for (let startRow = 0; startRow < max; startRow += pageSize) {
+    const rows = await withRetry(async () => {
+      const res = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${await accessToken(sa)}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          startDate: day(o.start),
+          endDate: day(o.end),
+          dimensions: o.dimensions,
+          rowLimit: Math.min(pageSize, max - startRow),
+          startRow,
+          ...(o.page ? { dimensionFilterGroups: [{ filters: [{ dimension: 'page', operator: 'equals', expression: o.page }] }] } : {}),
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.text();
+        const err = new Error(`Search Console answered ${res.status}: ${body.slice(0, 200)}`) as Error & { status?: number };
+        err.status = res.status;
+        throw err;
+      }
+      return ((await res.json()) as { rows?: GscRow[] }).rows ?? [];
     });
-    if (!res.ok) {
-      const body = await res.text();
-      const err = new Error(`Search Console answered ${res.status}: ${body.slice(0, 200)}`) as Error & { status?: number };
-      err.status = res.status;
-      throw err;
-    }
-    return ((await res.json()) as { rows?: Array<{ keys: [string, string]; clicks: number; impressions: number; position: number }> }).rows ?? [];
-  });
-  return rows.map((r) => ({ query: r.keys[0], page: r.keys[1], clicks: r.clicks, impressions: r.impressions, position: r.position, source: 'google' as const }));
+    all.push(...rows);
+    if (rows.length < pageSize) break;
+  }
+  return all;
+}
+
+export async function searchAnalyticsRange(start: Date, end: Date, site = getConfig().GSC_SITE_URL, account = getConfig().GSC_SERVICE_ACCOUNT, page?: string): Promise<SearchRow[]> {
+  const rows = await searchAnalyticsQuery({ start, end, dimensions: ['query', 'page'], page, site, account, maxRows: 5000 });
+  return rows.map((r) => ({ query: r.keys[0]!, page: r.keys[1]!, clicks: r.clicks, impressions: r.impressions, position: r.position, source: 'google' as const }));
 }
 
 export interface Opportunity {

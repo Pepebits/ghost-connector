@@ -1,0 +1,72 @@
+{
+  "title": "Resultados",
+  "intro": "Cómo les va en los buscadores a los posts publicados: los últimos 28 días frente a los 28 anteriores.",
+  "refresh": "Actualizar",
+  "refreshing": "Consultando…",
+  "updated": "Actualizado {time}",
+  "period": "Del {from} al {to}, frente al {pfrom}–{pto}",
+  "sources": {
+    "google": "Google",
+    "bing": "Bing",
+    "both": "Google + Bing"
+  },
+  "notConfigured": "Conecta Search Console o Bing Webmaster",
+  "notConfiguredBody": "Los datos salen de ahí: clics, impresiones y posición de cada post.",
+  "configure": "Configurar",
+  "empty": "Todavía no hay datos",
+  "emptyBody": "Pulsa «Actualizar» para consultarlos. Solo lee Ghost y el buscador: no cambia nada.",
+  "noPosts": "Ningún post con datos en este periodo.",
+  "scope": {
+    "label": "Qué posts",
+    "panel": "Trabajados por el panel",
+    "all": "Todo el blog"
+  },
+  "sort": {
+    "label": "Ordenar por",
+    "clicks": "Clics",
+    "change": "Cambio",
+    "impressions": "Impresiones"
+  },
+  "kpi": {
+    "clicks": "Clics",
+    "impressions": "Impresiones",
+    "ctr": "CTR",
+    "position": "Posición media",
+    "posts": "Posts"
+  },
+  "cols": {
+    "post": "Post",
+    "clicks": "Clics",
+    "impressions": "Impresiones",
+    "ctr": "CTR",
+    "position": "Posición",
+    "trend": "Últimas 16 semanas"
+  },
+  "vsPrevious": "frente a {value}",
+  "new": "nuevo",
+  "touched": "Tocado por el panel",
+  "openInPanel": "Ver en el panel",
+  "published": "Publicado {time}",
+  "trendAlt": "Clics por semana: {values}",
+  "appliedMark": "El panel lo cambió aquí",
+  "panelEmpty": "El panel aún no ha cambiado ningún post publicado.",
+  "panelEmptyBody": "Cuando publiques en Ghost un post aplicado desde aquí (o cambies su título o meta descripción desde Ideas), aparecerá en esta vista.",
+  "unpublished": {
+    "one": "1 post aplicado desde el panel sigue en borrador: aparecerá cuando lo publiques.",
+    "other": "{count} posts aplicados desde el panel siguen en borrador: aparecerán cuando los publiques."
+  },
+  "lag": "Los buscadores tardan 2 o 3 días en dar los datos, y Bing los agrupa por semanas.",
+  "queriesGoogleOnly": "Las búsquedas de cada post solo están disponibles con Search Console.",
+  "post": {
+    "queries": "Búsquedas principales",
+    "noQueries": "Sin búsquedas destacadas en este periodo.",
+    "trend": "Clics por semana",
+    "changes": "Línea discontinua: cuando el panel lo cambió ({dates}).",
+    "queryLine": "{clicks} clics · {impressions} impr. · pos. {position}",
+    "notFound": "No hay resultados de ese post: pulsa «Actualizar» en Resultados."
+  },
+  "errors": {
+    "failed": "No se pudieron consultar los datos: {error}"
+  },
+  "view": "Ver post"
+}
