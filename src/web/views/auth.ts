@@ -1,3 +1,5 @@
+import { authorNames, authorPicker } from './authors.js';
+import type { StaffMember } from '../../ghost/staff.js';
 import type { AuthUser, Invite, Role, SessionInfo, UserListItem } from '../../auth/store.js';
 import type { ActivityRow } from '../../team/store.js';
 import { describe } from './activity.js';
@@ -100,6 +102,7 @@ export function inviteLinkPage(o: { url: string; invite: { role: Role; username?
 // ---------- My account ----------
 
 const ACCOUNT_NOTICES: Record<string, 'ok' | 'warn' | 'err'> = {
+  authorsSaved: 'ok',
   passwordChanged: 'ok',
   revoked: 'ok',
   sessionRevoked: 'ok',
@@ -128,6 +131,20 @@ export interface AccountView {
   activity: ActivityRow[];
   min: number;
   notice?: string;
+  /** Ghost staff and this user's default authors (empty staff: the card is hidden). */
+  staff?: StaffMember[];
+  authors?: string[];
+}
+
+function authorsCard(o: AccountView): string {
+  if (!o.staff?.length) return '';
+  return html`<section class="card p-5" aria-labelledby="acc-authors-h">
+    <h2 id="acc-authors-h" class="section-heading !mb-1">${t('authors.legend')}</h2>
+    <form method="post" action="/account/authors" class="grid gap-3">
+      ${raw(authorPicker({ id: 'acc-authors', staff: o.staff, selected: o.authors ?? [], legend: t('authors.mine'), hint: t('authors.defaultHint') }))}
+      <div><button type="submit" class="btn btn-sm">${t('authors.save')}</button></div>
+    </form>
+  </section>`;
 }
 
 const MAX_SESSIONS_SHOWN = 8;
@@ -239,7 +256,7 @@ export function accountPage(o: AccountView): string {
     </div>
     ${raw(o.notice && ACCOUNT_NOTICES[o.notice] ? flash(t(`auth.notices.${o.notice}`), ACCOUNT_NOTICES[o.notice]) : '')}
     <div class="grid gap-6 lg:grid-cols-2">
-      <div class="grid min-w-0 content-start gap-6">${raw(twoFactorCard(o))}${raw(passwordCard(o))}</div>
+      <div class="grid min-w-0 content-start gap-6">${raw(twoFactorCard(o))}${raw(passwordCard(o))}${raw(authorsCard(o))}</div>
       <div class="grid min-w-0 content-start gap-6">${raw(sessionsCard(o))}${raw(activityCard(o))}</div>
     </div>`;
   return layout({ title: t('auth.account.title'), bodyHtml: body });
@@ -308,9 +325,11 @@ const USER_NOTICES: Record<string, 'ok' | 'warn' | 'err'> = {
   inviteRevoked: 'ok',
   lastAdmin: 'err',
   self: 'err',
+  authorsSaved: 'ok',
 };
 
-export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: Invite[]; notice?: string }): string {
+export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: Invite[]; notice?: string; staff?: StaffMember[]; authorsOf?: (id: number) => string[] }): string {
+  const staff = o.staff ?? [];
   const rows = o.users
     .map((u) => {
       const self = u.id === o.me.id;
@@ -320,12 +339,23 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
       const item = 'user-menu-item w-full text-left';
       const buttons = [
         owner && manage ? html`<button type="button" class="${item}" data-open-dialog="u-role-${u.id}">${t(`auth.users.makeRole.${other}`)}</button>` : '',
+        manage && staff.length ? html`<button type="button" class="${item}" data-open-dialog="u-authors-${u.id}">${t('authors.edit')}</button>` : '',
         manage ? html`<form method="post" action="/settings/users/${u.id}/reset-password" class="m-0"><button type="submit" class="${item}">${t('auth.users.resetPassword')}</button></form>` : '',
         manage && u.totp ? html`<button type="button" class="${item}" data-open-dialog="u-2fa-${u.id}">${t('auth.users.reset2fa')}</button>` : '',
         owner && !self ? html`<button type="button" class="${item}" data-open-dialog="u-own-${u.id}">${t('auth.users.transfer')}</button>` : '',
         manage ? html`<div class="my-1 border-t border-line"></div><button type="button" class="${item} text-err" data-open-dialog="u-del-${u.id}">${t('auth.users.delete')}</button>` : '',
       ].join('');
       const dialogs = [
+        manage && staff.length
+          ? confirmDialog({
+              id: `u-authors-${u.id}`,
+              title: t('authors.editTitle', { name: u.username }),
+              body: t('authors.defaultHint'),
+              confirmLabel: t('authors.save'),
+              action: `/settings/users/${u.id}/authors`,
+              fields: authorPicker({ id: `u-authors-pick-${u.id}`, staff, selected: o.authorsOf?.(u.id) ?? [] }),
+            })
+          : '',
         owner && manage
           ? confirmDialog({
               id: `u-role-${u.id}`,
@@ -360,7 +390,7 @@ export function usersSection(o: { me: AuthUser; users: UserListItem[]; invites: 
             </details>${raw(dialogs)}`
           : '';
       return html`<tr>
-        <td class="font-medium">${u.username}<span class="block text-xs font-normal text-muted sm:hidden">2FA: ${u.totp ? t('auth.security.on') : t('auth.security.off')}</span></td>
+        <td class="font-medium">${u.username}${raw(staff.length ? html`<span class="block text-xs font-normal text-muted">${t('authors.label', { names: (o.authorsOf?.(u.id) ?? []).length ? authorNames(o.authorsOf!(u.id), staff) : t('authors.none') })}</span>` : '')}<span class="block text-xs font-normal text-muted sm:hidden">2FA: ${u.totp ? t('auth.security.on') : t('auth.security.off')}</span></td>
         <td>${raw(roleBadge(u.role))}</td>
         <td class="max-sm:hidden">${raw(u.totp ? html`<span class="badge badge-ok">${t('auth.security.on')}</span>` : html`<span class="badge badge-warn">${t('auth.security.off')}</span>`)}</td>
         <td class="whitespace-nowrap text-muted max-sm:hidden">${raw(u.lastSeen ? timeTag(u.lastSeen) : '—')}</td>

@@ -1,0 +1,25 @@
+{
+  "legend": "Ghost authors",
+  "primary": "Primary",
+  "unknown": "(no longer in Ghost)",
+  "none": "Not set: Ghost uses the site owner",
+  "defaultHint": "Posts they create from the panel will be credited to these people. Pick one or more; the primary is the one Ghost shows as the author.",
+  "newPostHint": "Your account's by default. Pick one or more; the primary is the one shown on the post.",
+  "edit": "Ghost authors",
+  "editTitle": "Authors for {name}'s posts",
+  "save": "Save",
+  "saved": "Authors saved.",
+  "post": {
+    "label": "Authors",
+    "change": "Change authors",
+    "title": "Authors of this draft",
+    "hint": "Changed in Ghost right away. Applying a plan doesn't touch them.",
+    "changed": "Authors changed in Ghost.",
+    "conflict": "Someone saved the post in Ghost meanwhile: reload and try again.",
+    "notDraft": "The post isn't a draft anymore: change its authors in Ghost.",
+    "needOne": "Pick at least one author."
+  },
+  "unavailable": "Couldn't read the list of authors from Ghost.",
+  "label": "Ghost author: {names}",
+  "mine": "My new posts are credited to"
+}

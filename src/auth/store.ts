@@ -132,6 +132,21 @@ export function listUsers(): UserListItem[] {
   return rows.map((r) => ({ ...toUser(r), totp: !!r.totp_secret, createdAt: r.created_at, sessions: r.sessions, lastSeen: r.last_seen }));
 }
 
+/** Ghost staff ids this user's new posts are credited to (primary first); empty: Ghost's default (the site owner). */
+export function defaultAuthors(id: number): string[] {
+  const row = db().prepare('SELECT ghost_authors FROM users WHERE id = ?').get(id) as { ghost_authors: string | null } | undefined;
+  try {
+    const ids = JSON.parse(row?.ghost_authors ?? '[]') as unknown;
+    return Array.isArray(ids) ? ids.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+export function setDefaultAuthors(id: number, ids: string[]): void {
+  db().prepare('UPDATE users SET ghost_authors = ? WHERE id = ?').run(ids.length ? JSON.stringify(ids) : null, id);
+}
+
 function countAdmins(): number {
   return (db().prepare("SELECT COUNT(*) AS n FROM users WHERE role IN ('owner', 'admin')").get() as { n: number }).n;
 }

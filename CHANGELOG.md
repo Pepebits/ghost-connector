@@ -7,6 +7,10 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+### Added
+
+- Ghost authors: each panel user has default Ghost authors (one or more, with a primary), set in My account or by an admin in Settings → Users. New posts are credited to them, and the *New post* form lets you change them. A draft's authors show on its page and can be changed there; applying a plan never touches them. The staff list is read from Ghost.
+
 ## [0.1.4] — 2026-10-25
 
 ### Added

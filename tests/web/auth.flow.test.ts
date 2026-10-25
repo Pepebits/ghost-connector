@@ -123,6 +123,11 @@ describe('login with users, roles and 2FA', () => {
     expect((await post('/settings/export', luisCookie)).statusCode).toBe(403);
     expect((await app.inject({ method: 'GET', url: '/settings/costs', headers: { cookie: luisCookie } })).statusCode).toBe(403);
     expect((await app.inject({ method: 'GET', url: '/settings/costs', headers: { cookie: admin } })).statusCode).toBe(200);
+    // Default Ghost authors: saved per user, primary first.
+    auth.setDefaultAuthors(luis.id, ['g2', 'g1']);
+    expect(auth.defaultAuthors(luis.id)).toEqual(['g2', 'g1']);
+    auth.setDefaultAuthors(luis.id, []);
+    expect(auth.defaultAuthors(luis.id)).toEqual([]);
     expect((await post('/%73ettings/export', luisCookie)).statusCode).toBe(403);
     expect((await post('/settings/%65xport', luisCookie)).statusCode).toBe(403);
     expect((await post('/settings/env', luisCookie, { __group: 'ai', AI_API_KEY: 'sk-robada' })).statusCode).toBe(403);

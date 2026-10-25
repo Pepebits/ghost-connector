@@ -153,3 +153,16 @@ document.addEventListener('click', (e) => {
   const icon = btn.querySelector('[data-toggle-icon]');
   if (icon) icon.textContent = open ? '▾' : '▸';
 });
+
+// Author pickers: the "primary" radio only for checked authors; checking the first one makes it primary.
+document.addEventListener('change', (e) => {
+  const box = e.target instanceof HTMLInputElement && e.target.matches('[data-author-check]') ? e.target : null;
+  if (!box) return;
+  const picker = box.closest('[data-author-picker]');
+  const radio = box.closest('li')?.querySelector('[data-author-primary]');
+  if (!picker || !(radio instanceof HTMLInputElement)) return;
+  radio.disabled = !box.checked;
+  if (!box.checked && radio.checked) radio.checked = false;
+  const radios = [...picker.querySelectorAll('[data-author-primary]')].filter((r) => r instanceof HTMLInputElement && !r.disabled);
+  if (!radios.some((r) => r.checked) && radios[0]) radios[0].checked = true;
+});

@@ -41,7 +41,9 @@
     "imported": "Importó: {detail}",
     "ownership": "Transfirió la propiedad a {target}",
     "loginFailedUnknown": "Intento de acceso con un usuario que no existe",
-    "sessionRevoked": "Cerró una sesión en otro dispositivo"
+    "sessionRevoked": "Cerró una sesión en otro dispositivo",
+    "userAuthors": "Cambió los autores en Ghost de {target}",
+    "postAuthors": "Cambió los autores de «{target}»"
   },
   "anonymous": "alguien sin sesión"
 }

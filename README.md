@@ -95,6 +95,8 @@ The first time, the panel asks you to create the first user — the **owner** �
 
 Each person has their own username, password and 2FA. New users join through **single-use invite links** (valid 7 days) created in *Settings → Users*, which can also send a link to set a new password, remove 2FA or delete a user.
 
+Each user can also have **default Ghost authors** (one or more, from your Ghost staff): posts they create from the panel are credited to them instead of the site owner. Set them in *My account* or, for others, in *Settings → Users*; a draft's authors can be changed from its page.
+
 | Role | Can do |
 |---|---|
 | ✏️ **Editor** | Plan, review, edit, apply to Ghost, ideas and jobs. |

@@ -2,6 +2,8 @@ import { escapeHtml, html, raw } from '../html.js';
 import { t } from '../../i18n/index.js';
 import { layout } from './layout.js';
 import { flash, pageHeader } from './ui.js';
+import { authorPicker } from './authors.js';
+import type { StaffMember } from '../../ghost/staff.js';
 
 export interface NewPostValues {
   title?: string;
@@ -21,7 +23,7 @@ function field(opts: { id: string; label: string; optional?: boolean; hint: stri
 }
 
 /** "New post" page: creates an empty draft in Ghost from a topic and plans it. */
-export function newPostPage(opts: { values?: NewPostValues; error?: string; ghostUrl: string } ): string {
+export function newPostPage(opts: { values?: NewPostValues; error?: string; ghostUrl: string; authors?: { staff: StaffMember[]; selected: string[] } }): string {
   const v = opts.values ?? {};
   const error = opts.error
     ? flash(opts.error, 'err')
@@ -68,6 +70,7 @@ export function newPostPage(opts: { values?: NewPostValues; error?: string; ghos
             control: html`<textarea id="np-instructions" name="instructions" rows="3" aria-describedby="np-instructions-hint" class="mt-2 block w-full" data-autogrow>${v.instructions ?? ''}</textarea>`,
           }),
         )}
+        ${raw(opts.authors?.staff.length ? authorPicker({ id: 'np-authors', staff: opts.authors.staff, selected: opts.authors.selected, hint: t('authors.newPostHint') }) : '')}
         <div class="flex flex-wrap items-center gap-3">
           <button type="submit" class="btn">${t('newPost.submit')}</button>
           <a href="/" class="btn btn-ghost">${t('common.actions.cancel')}</a>

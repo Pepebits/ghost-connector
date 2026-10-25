@@ -23,7 +23,8 @@ import {
   deleteFinishedJobs,
 } from '../db/jobs.js';
 import { clearArtifactIndex, countIndexedArtifacts, getCostSummary, getCostByAgent, getDailyCost, getProviderQuotas, getReviewStats, listPostsGone, upsertArtifactIndex } from '../db/repo.js';
-import { createDraft, readRawPost } from '../ghost/posts.js';
+import { createDraft, readRawPost, setDraftAuthors } from '../ghost/posts.js';
+import { cachedStaff, listStaff, listStaffSafe, pickedAuthors } from '../ghost/staff.js';
 import { onJobEvent } from '../jobs/events.js';
 import { getLiveDraft } from '../jobs/liveDraft.js';
 import { fixPlanQuality } from '../orchestrator/fixQuality.js';
@@ -504,6 +505,8 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
         currentSession: auth.sessionId(req.cookies[SESSION_COOKIE] ?? ''),
         activity: team.listAccountActivity(u.username, 8),
         min: auth.MIN_PASSWORD,
+        staff: await listStaffSafe(),
+        authors: auth.defaultAuthors(u.id),
         notice: (req.query as { sec?: string }).sec,
       }),
     );
@@ -553,6 +556,12 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   app.post('/account/2fa/snooze', async (req, reply) => {
     auth.snooze2faNag(me(req).id);
     return reply.redirect('/');
+  });
+
+  app.post('/account/authors', async (req, reply) => {
+    const u = me(req);
+    auth.setDefaultAuthors(u.id, pickedAuthors(req.body as { authors?: string | string[]; primary?: string }, await listStaff()));
+    return reply.redirect('/account?sec=authorsSaved');
   });
 
   app.post('/account/password', async (req, reply) => {
@@ -607,6 +616,15 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const token = auth.createInvite({ role: target.role, userId: target.id, createdBy: me(req).username });
     logActivity('passwordLink', { target: target.username });
     return reply.type('text/html').header('Cache-Control', 'no-store').send(inviteLinkPage({ url: `${linkBase()}/invite/${token}`, invite: { role: target.role, username: target.username }, days: auth.INVITE_DAYS }));
+  });
+
+  app.post('/settings/users/:id/authors', async (req, reply) => {
+    const target = userTarget(req);
+    if (!target) return reply.redirect(usersBack('owner'));
+    const ids = pickedAuthors(req.body as { authors?: string | string[]; primary?: string }, await listStaff());
+    auth.setDefaultAuthors(target.id, ids);
+    logActivity('userAuthors', { target: target.username });
+    return reply.redirect(usersBack('authorsSaved'));
   });
 
   app.post('/settings/users/:id/role', async (req, reply) => {
@@ -795,14 +813,16 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     // Prefilled from an idea (/ideas): title and topic in the query.
     const q = req.query as { title?: string; topic?: string; idea?: string };
     const values = { title: q.title?.slice(0, 200), topic: q.topic?.slice(0, 2000), idea: q.idea?.slice(0, 40) };
-    return reply.type('text/html').send(newPostPage({ values, ghostUrl: getConfig().GHOST_API_URL }));
+    return reply.type('text/html').send(newPostPage({ values, ghostUrl: getConfig().GHOST_API_URL, authors: { staff: await listStaffSafe(), selected: auth.defaultAuthors(me(req).id) } }));
   });
 
   app.post('/posts/new', async (req, reply) => {
-    const body = req.body as { title?: string; topic?: string; sources?: string; instructions?: string; idea?: string };
+    const body = req.body as { title?: string; topic?: string; sources?: string; instructions?: string; idea?: string; authors?: string | string[]; primary?: string };
+    const staff = await listStaffSafe();
+    const authors = pickedAuthors(body, staff);
     const topic = (body.topic ?? '').trim();
     if (!topic) {
-      return reply.code(400).type('text/html').send(newPostPage({ values: body, error: t('server.missingTopic'), ghostUrl: getConfig().GHOST_API_URL }));
+      return reply.code(400).type('text/html').send(newPostPage({ values: body, error: t('server.missingTopic'), ghostUrl: getConfig().GHOST_API_URL, authors: { staff, selected: authors } }));
     }
     const title = (body.title ?? '').trim() || provisionalTitle(topic);
 
@@ -812,7 +832,7 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     const instructions = (body.instructions ?? '').trim();
     if (instructions) briefParts.push(`Instrucciones adicionales del editor: ${instructions}`);
 
-    const draft = await createDraft({ title, html: '', tags: [] });
+    const draft = await createDraft({ title, html: '', tags: [], authors });
     if (body.idea) markIdeaUsed(body.idea, draft.id);
     const jobId = enqueuePlanJob({ postIds: [draft.id], extraInstructions: briefParts.join('\n\n') });
     return reply.redirect(`/jobs/${jobId}`);
@@ -870,8 +890,23 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
         resolved: (req.query as { resolved?: string }).resolved !== undefined ? { unresolved: Number((req.query as { resolved?: string }).resolved) || 0 } : undefined,
         ghostAdminUrl: `${cfg.GHOST_API_URL}/ghost/#/editor/post/${id}`,
         team: postTeam(id, req.user!),
+        staff: await listStaffSafe(),
+        authorsResult: (req.query as { authors?: string }).authors,
       }),
     );
+  });
+
+  // Credits a draft to other Ghost authors (only drafts, only if unchanged in Ghost meanwhile).
+  app.post('/posts/:id/authors', async (req, reply) => {
+    const { id } = req.params as { id: string };
+    const body = req.body as { authors?: string | string[]; primary?: string; updatedAt?: string };
+    const ids = pickedAuthors(body, await listStaff());
+    const back = (r: string) => reply.redirect(`/posts/${encodeURIComponent(id)}?authors=${r}`);
+    if (!ids.length) return back('needOne');
+    const result = await setDraftAuthors(id, ids, body.updatedAt ?? '');
+    if (result !== 'ok') return back(result === 'conflict' ? 'conflict' : 'notDraft');
+    logActivity('postAuthors', { target: team.postTitle(id) });
+    return back('changed');
   });
 
   // ---------- Costs per user (owner; isOwnerPath guards /settings/costs) ----------
@@ -1443,7 +1478,7 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     return settingsPage({
       activityHtml: activitySection(listActivity({ limit: 8 })),
       isOwner: currentUser()?.role === 'owner',
-      usersHtml: currentUser() ? usersSection({ me: currentUser()!, users: auth.listUsers(), invites: auth.listInvites(), notice: extra.users }) : '',
+      usersHtml: currentUser() ? usersSection({ me: currentUser()!, users: auth.listUsers(), invites: auth.listInvites(), notice: extra.users, staff: cachedStaff(), authorsOf: auth.defaultAuthors }) : '',
       values,
       secretsSet,
       ghostKeyId: ghostKeyId(cfg.GHOST_ADMIN_API_KEY),
@@ -1511,6 +1546,7 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
 
   app.get('/settings', async (req, reply) => {
     const query = req.query as { reindexed?: string; saved?: string; group?: string; openverse?: string; users?: string; imported?: string };
+    await listStaffSafe(); // warms the staff list for Users (Ghost authors)
     return reply.type('text/html').send(
       renderSettings({
         users: query.users,

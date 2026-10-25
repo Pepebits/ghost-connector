@@ -21,6 +21,8 @@ export type ActivityAction =
   | 'passwordReset'
   | 'passwordLink'
   | 'userRole'
+  | 'userAuthors'
+  | 'postAuthors'
   | 'userDeleted'
   | 'ownership'
   | 'userTwoFactorReset'

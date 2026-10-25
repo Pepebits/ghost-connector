@@ -1,3 +1,5 @@
+import { authorNames, authorPicker } from './authors.js';
+import type { StaffMember } from '../../ghost/staff.js';
 import type { ApplyAttemptRow } from '../../db/repo.js';
 import { renderDiff } from '../../review/diff.js';
 import type { PostState } from '../../state/postState.js';
@@ -34,6 +36,28 @@ export interface DetailOpts {
   restored?: boolean;
   /** Assignment, notes and who else has it open. */
   team?: PostTeam;
+  /** Ghost staff, for the authors line (empty: not shown). */
+  staff?: StaffMember[];
+  /** Back from changing the authors: ok, or why not. */
+  authorsResult?: string;
+}
+
+const AUTHOR_RESULTS: Record<string, 'ok' | 'err'> = { changed: 'ok', conflict: 'err', notDraft: 'err', needOne: 'err' };
+
+/** "Authors: Ana, Luis · Change", with the dialog to change them in Ghost. */
+function authorsLine(opts: DetailOpts): string {
+  const staff = opts.staff ?? [];
+  if (!staff.length) return '';
+  const p = opts.state.post;
+  const dialog = confirmDialog({
+    id: 'post-authors',
+    title: t('authors.post.title'),
+    body: t('authors.post.hint'),
+    confirmLabel: t('authors.save'),
+    action: `/posts/${p.id}/authors`,
+    fields: html`<input type="hidden" name="updatedAt" value="${p.updatedAt}">${raw(authorPicker({ id: 'post-authors-pick', staff, selected: p.authors }))}`,
+  });
+  return html`<p class="m-0 mt-1 text-sm text-muted">${t('authors.post.label')}: <span class="text-fg">${p.authors.length ? authorNames(p.authors, staff) : '—'}</span> · <button type="button" class="cursor-pointer text-accent underline-offset-2 hover:underline" data-open-dialog="post-authors">${t('authors.post.change')}</button></p>${raw(dialog)}`;
 }
 
 // One key per detail tab (see palette.js)
@@ -489,13 +513,14 @@ export function detailPage(opts: DetailOpts): string {
         badge: badge(state.kind),
         meta: html`<a href="${state.post.url}" target="_blank" rel="noopener noreferrer">${t('post.header.siteView')}</a> ·
           <a href="${opts.ghostAdminUrl}" target="_blank" rel="noopener noreferrer">${t('post.header.editInGhost')}</a> ·
-          <span>${t('post.header.words', { count: state.post.wordCount })} · ${raw(t('post.header.updated', { time: timeTag(state.post.updatedAt) }))}${raw(costLine)}</span>${raw(plannedTitleLine(opts))}`,
+          <span>${t('post.header.words', { count: state.post.wordCount })} · ${raw(t('post.header.updated', { time: timeTag(state.post.updatedAt) }))}${raw(costLine)}</span>${raw(plannedTitleLine(opts))}${raw(authorsLine(opts))}`,
         actions: html`<a href="/posts/${state.post.id}/next" class="btn btn-ghost btn-sm" data-palette="${t('post.header.nextPalette')}" data-shortcut="n">${t('post.header.next')} &rarr;</a>`,
       }),
     )}
     ${raw(opts.team ? teamStrip(state.post.id, opts.team) : '')}
     <div data-presence="${state.post.id}" aria-live="polite">${raw(presenceBanner(opts.team?.others ?? []))}</div>
     ${raw(savedNote)}
+    ${raw(opts.authorsResult && AUTHOR_RESULTS[opts.authorsResult] ? flash(t(`authors.post.${opts.authorsResult}`), AUTHOR_RESULTS[opts.authorsResult]) : '')}
     ${raw(nextStep(opts))}
     <nav class="mb-5 flex gap-1 overflow-x-auto border-b border-line" aria-label="${t('post.header.sectionsAria')}">${raw(tabNav)}</nav>
     ${raw(tabPanels)}

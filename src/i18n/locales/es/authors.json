@@ -1,0 +1,25 @@
+{
+  "legend": "Autores en Ghost",
+  "primary": "Principal",
+  "unknown": "(ya no está en Ghost)",
+  "none": "Sin asignar: Ghost usa el propietario del sitio",
+  "defaultHint": "Los posts que cree desde el panel saldrán a nombre de estas personas. Puedes elegir varias; la principal es la que Ghost muestra como autor.",
+  "newPostHint": "Por defecto, los de tu cuenta. Puedes elegir varios; el principal es el que aparece en el post.",
+  "edit": "Autores en Ghost",
+  "editTitle": "Autores de los posts de {name}",
+  "save": "Guardar",
+  "saved": "Autores guardados.",
+  "post": {
+    "label": "Autores",
+    "change": "Cambiar autores",
+    "title": "Autores de este borrador",
+    "hint": "Se cambia en Ghost ahora mismo. El plan no los toca al aplicarse.",
+    "changed": "Autores cambiados en Ghost.",
+    "conflict": "Alguien guardó el post en Ghost mientras tanto: recarga y vuelve a intentarlo.",
+    "notDraft": "El post ya no es un borrador: cambia sus autores en Ghost.",
+    "needOne": "Elige al menos un autor."
+  },
+  "unavailable": "No se pudo leer la lista de autores de Ghost.",
+  "label": "Autor en Ghost: {names}",
+  "mine": "Mis posts nuevos salen a nombre de"
+}

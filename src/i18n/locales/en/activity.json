@@ -41,7 +41,9 @@
     "imported": "Imported: {detail}",
     "ownership": "Transferred ownership to {target}",
     "loginFailedUnknown": "Failed login with a username that does not exist",
-    "sessionRevoked": "Closed a session on another device"
+    "sessionRevoked": "Closed a session on another device",
+    "userAuthors": "Changed {target}'s Ghost authors",
+    "postAuthors": "Changed the authors of “{target}”"
   },
   "anonymous": "someone not logged in"
 }

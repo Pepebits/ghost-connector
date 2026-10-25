@@ -26,7 +26,8 @@ const SCHEMA_STATEMENTS: string[] = [
     totp_last INTEGER,
     recovery_json TEXT,
     nag_until INTEGER,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    ghost_authors TEXT
   )`,
   // Single-use links: join with a role, or (user_id set) set a new password.
   `CREATE TABLE IF NOT EXISTS invites (
@@ -288,6 +289,8 @@ export function getDb(): DatabaseSync {
   ensureColumn(db, 'auth_sessions', 'user_id', 'INTEGER');
   ensureColumn(db, 'jobs', 'created_by', 'TEXT');
   ensureColumn(db, 'apply_attempts', 'actor', 'TEXT');
+  // Ghost staff ids (JSON, primary first) a user's new posts are credited to.
+  ensureColumn(db, 'users', 'ghost_authors', 'TEXT');
   migrateSingleUser(db);
   return db;
 }

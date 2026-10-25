@@ -39,6 +39,8 @@ export interface PostState {
     wordCount: number;
     tags: string[];
     aiProcessed: boolean;
+    /** Ghost staff ids, primary first. */
+    authors: string[];
   };
   live: { pendingQuestions: string[] };
   latestRun: PostStateLatestRun | null;
@@ -146,6 +148,7 @@ export function computePostState(live: DraftSnapshot, latestRun: RunArtifact | n
       wordCount: wordCount(live.html),
       tags,
       aiProcessed,
+      authors: (live.authors ?? []).map((a) => a.id),
     },
     live: { pendingQuestions: pendingLive },
     latestRun:

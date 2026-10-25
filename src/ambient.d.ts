@@ -56,5 +56,8 @@ declare module '@tryghost/admin-api' {
     tags: {
       browse(params?: BrowseParams): Promise<any[]>;
     };
+    users: {
+      browse(params?: BrowseParams): Promise<any[]>;
+    };
   }
 }
