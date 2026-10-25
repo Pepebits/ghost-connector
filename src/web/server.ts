@@ -490,7 +490,18 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
   app.get('/account', async (req, reply) => {
     const u = me(req);
     return reply.type('text/html').send(
-      accountPage({ user: u, totp: auth.totpEnabled(u.id), recoveryLeft: auth.recoveryCodesLeft(u.id), sessions: auth.countSessions(u.id), min: auth.MIN_PASSWORD, notice: (req.query as { sec?: string }).sec }),
+      accountPage({
+        user: u,
+        createdAt: auth.userCreatedAt(u.id),
+        previousLogin: team.previousLogin(u.username),
+        totp: auth.totpEnabled(u.id),
+        recoveryLeft: auth.recoveryCodesLeft(u.id),
+        sessions: auth.listUserSessions(u.id),
+        currentSession: auth.sessionId(req.cookies[SESSION_COOKIE] ?? ''),
+        activity: team.listAccountActivity(u.username, 8),
+        min: auth.MIN_PASSWORD,
+        notice: (req.query as { sec?: string }).sec,
+      }),
     );
   });
 
@@ -553,6 +564,14 @@ export async function buildApp(opts: ServeOptions & { sessionToken?: string }) {
     startSession(req, reply, u); // …except this one, which gets a new cookie
     logActivity('passwordChanged');
     return reply.redirect('/account?sec=passwordChanged');
+  });
+
+  // One session (another device): only the user's own, and never the current one (that's "Log out").
+  app.post('/account/sessions/:id/revoke', async (req, reply) => {
+    const { id } = req.params as { id: string };
+    if (id === auth.sessionId(req.cookies[SESSION_COOKIE] ?? '')) return reply.redirect('/account');
+    if (auth.revokeUserSession(me(req).id, id)) logActivity('sessionsRevoked', { detail: 'one' });
+    return reply.redirect('/account?sec=sessionRevoked');
   });
 
   app.post('/account/sessions/revoke', async (req, reply) => {

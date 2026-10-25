@@ -7,6 +7,10 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+### Added
+
+- My account shows each open session with its device and last activity, and closes them one by one; your account's recent activity (logins, failed attempts with your username, security changes); and when the account was created and your previous login.
+
 ### Changed
 
 - The footer spans the full width, like the header: version on the left, Pepebits on the right.

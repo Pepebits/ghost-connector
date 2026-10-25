@@ -1,8 +1,10 @@
-import type { AuthUser, Invite, Role, UserListItem } from '../../auth/store.js';
+import type { AuthUser, Invite, Role, SessionInfo, UserListItem } from '../../auth/store.js';
+import type { ActivityRow } from '../../team/store.js';
+import { describe } from './activity.js';
 import { t } from '../../i18n/index.js';
 import { html, raw } from '../html.js';
 import { layout } from './layout.js';
-import { confirmDialog, flash, pageHeader, timeTag } from './ui.js';
+import { absoluteDate, confirmDialog, flash, pageHeader, timeTag } from './ui.js';
 
 function card(title: string, intro: string, inner: string, error?: string): string {
   return html`<div class="pt-6 sm:pt-12">
@@ -98,6 +100,7 @@ export function inviteLinkPage(o: { url: string; invite: { role: Role; username?
 const ACCOUNT_NOTICES: Record<string, 'ok' | 'warn' | 'err'> = {
   passwordChanged: 'ok',
   revoked: 'ok',
+  sessionRevoked: 'ok',
   disabled: 'warn',
   recoveryUsed: 'warn',
   badPassword: 'err',
@@ -105,45 +108,137 @@ const ACCOUNT_NOTICES: Record<string, 'ok' | 'warn' | 'err'> = {
   badCode: 'err',
 };
 
-export function accountPage(o: { user: AuthUser; totp: boolean; recoveryLeft: number; sessions: number; min: number; notice?: string }): string {
-  const twoFa = o.totp
-    ? html`<p class="text-sm"><span class="badge badge-ok">${t('auth.security.on')}</span> ${t('auth.security.recoveryLeft', { count: o.recoveryLeft })}</p>
-      <form method="post" class="grid max-w-md gap-3">
-        <p class="m-0 text-sm text-muted">${t('auth.security.codeToManage')}</p>
-        <div><label for="sec-code" class="block text-sm font-medium">${t('auth.code')}</label>
-        <input id="sec-code" name="code" type="text" autocomplete="one-time-code" required maxlength="11" spellcheck="false" class="mt-1 block w-full max-w-xs"></div>
+/** "Chrome · macOS" from a User-Agent; good enough to recognise your own devices. */
+export function deviceLabel(ua: string): string {
+  const browser = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : /curl|wget|node|python/i.test(ua) ? t('auth.account.script') : null;
+  const os = /iPhone|iPad|iPod/.test(ua) ? 'iOS' : /Android/.test(ua) ? 'Android' : /Mac OS X|Macintosh/.test(ua) ? 'macOS' : /Windows/.test(ua) ? 'Windows' : /Linux/.test(ua) ? 'Linux' : null;
+  return [browser, os].filter(Boolean).join(' · ') || t('auth.account.unknownDevice');
+}
+
+export interface AccountView {
+  user: AuthUser;
+  createdAt: string | null;
+  previousLogin: string | null;
+  totp: boolean;
+  recoveryLeft: number;
+  sessions: SessionInfo[];
+  currentSession: string;
+  activity: ActivityRow[];
+  min: number;
+  notice?: string;
+}
+
+const MAX_SESSIONS_SHOWN = 8;
+
+function twoFactorCard(o: AccountView): string {
+  const status = o.totp
+    ? html`<div class="flex items-start gap-3">
+        <span class="badge badge-ok mt-0.5">${t('auth.security.on')}</span>
+        <p class="m-0 text-sm">${t('auth.account.totpOn')} <span class="${o.recoveryLeft <= 3 ? 'font-medium text-warn' : 'text-muted'}">${t('auth.security.recoveryLeft', { count: o.recoveryLeft })}</span></p>
+      </div>
+      <form method="post" class="mt-5 grid gap-3 border-t border-line pt-4">
+        <div>
+          <label for="sec-code" class="block text-sm font-medium">${t('auth.code')}</label>
+          <p id="sec-code-hint" class="mt-0.5 text-sm text-muted">${t('auth.security.codeToManage')}</p>
+          <input id="sec-code" name="code" type="text" autocomplete="one-time-code" required maxlength="11" spellcheck="false" aria-describedby="sec-code-hint" class="mt-2 block w-full max-w-xs">
+        </div>
         <div class="flex flex-wrap gap-2">
-          <button type="submit" formaction="/account/2fa/recovery" class="btn btn-ghost btn-sm">${t('auth.security.newRecovery')}</button>
-          <button type="submit" formaction="/account/2fa/disable" class="btn btn-ghost btn-sm text-err">${t('auth.security.disable')}</button>
+          <button type="submit" formaction="/account/2fa/recovery" class="btn btn-ghost">${t('auth.security.newRecovery')}</button>
+          <button type="submit" formaction="/account/2fa/disable" class="btn btn-ghost text-err">${t('auth.security.disable')}</button>
         </div>
       </form>`
-    : html`<p class="text-sm"><span class="badge badge-warn">${t('auth.security.off')}</span> ${t('auth.security.offBody')}</p>
-      <a class="btn btn-sm" href="/account/2fa">${t('auth.security.enable')}</a>`;
+    : html`<div class="flex items-start gap-3">
+        <span class="badge badge-warn mt-0.5">${t('auth.security.off')}</span>
+        <p class="m-0 text-sm">${t('auth.security.offBody')}</p>
+      </div>
+      <p class="!mb-0 mt-4"><a class="btn" href="/account/2fa">${t('auth.security.enable')}</a></p>`;
+  return html`<section class="card settings-section" id="s-2fa" aria-labelledby="s-2fa-h">
+    <h2 id="s-2fa-h" class="section-heading !mb-3">${t('auth.security.twoFactor')}</h2>
+    ${raw(status)}
+  </section>`;
+}
+
+function passwordCard(o: AccountView): string {
+  return html`<section class="card settings-section" id="s-password" aria-labelledby="s-password-h">
+    <h2 id="s-password-h" class="section-heading !mb-1">${t('auth.security.changePassword')}</h2>
+    <p class="!mt-0 text-sm text-muted">${t('auth.account.passwordIntro')}</p>
+    <form method="post" action="/account/password" class="grid gap-3">
+      <input type="text" name="username" value="${o.user.username}" autocomplete="username" hidden>
+      ${raw(field({ id: 'sec-cur', name: 'current', label: t('auth.currentPassword'), autocomplete: 'current-password' }))}
+      ${raw(field({ id: 'sec-new', name: 'password', label: t('auth.newPassword'), autocomplete: 'new-password', hint: t('auth.passwordHint', { min: o.min }), extra: `minlength="${o.min}"` }))}
+      ${raw(field({ id: 'sec-rep', name: 'repeat', label: t('auth.repeatPassword'), autocomplete: 'new-password', extra: `minlength="${o.min}"` }))}
+      <div><button type="submit" class="btn">${t('auth.security.changePassword')}</button></div>
+    </form>
+  </section>`;
+}
+
+function sessionsCard(o: AccountView): string {
+  const shown = o.sessions.slice(0, MAX_SESSIONS_SHOWN);
+  const others = o.sessions.filter((s) => s.id !== o.currentSession).length;
+  const items = shown
+    .map((s) => {
+      const current = s.id === o.currentSession;
+      return html`<li class="flex items-center justify-between gap-3 border-b border-line py-3 last:border-b-0">
+        <div class="min-w-0">
+          <p class="m-0 flex flex-wrap items-center gap-2 text-sm font-medium">${deviceLabel(s.userAgent)}${current ? raw(html`<span class="badge badge-info">${t('auth.account.thisDevice')}</span>`) : ''}</p>
+          <p class="m-0 text-xs text-muted">${raw(t('auth.account.sessionTimes', { seen: timeTag(s.lastSeen), since: timeTag(s.createdAt) }))}</p>
+        </div>
+        ${current ? '' : raw(html`<form method="post" action="/account/sessions/${s.id}/revoke" class="m-0 shrink-0"><button type="submit" class="btn btn-ghost btn-sm" aria-label="${t('auth.account.closeSessionOf', { device: deviceLabel(s.userAgent) })}">${t('auth.account.closeSession')}</button></form>`)}
+      </li>`;
+    })
+    .join('');
+  const more = o.sessions.length > shown.length ? html`<p class="!mb-0 mt-2 text-xs text-muted">${t('auth.account.moreSessions', { count: o.sessions.length - shown.length })}</p>` : '';
+  return html`<section class="card settings-section" id="s-sessions" aria-labelledby="s-sessions-h">
+    <div class="mb-1 flex flex-wrap items-center justify-between gap-2">
+      <h2 id="s-sessions-h" class="section-heading !mb-0">${t('auth.security.sessions')} <span class="badge badge-neutral tabular-nums">${o.sessions.length}</span></h2>
+      ${others ? raw(html`<form method="post" action="/account/sessions/revoke" class="m-0"><button type="submit" class="btn btn-ghost btn-sm">${t('auth.security.revokeOthers')}</button></form>`) : ''}
+    </div>
+    <p class="!mt-0 text-sm text-muted">${t('auth.account.sessionsIntro')}</p>
+    <ul class="m-0 list-none p-0">${raw(items)}</ul>
+    ${raw(more)}
+  </section>`;
+}
+
+function activityCard(o: AccountView): string {
+  // Consecutive identical entries (eight logins in a row) become one line with a count.
+  const groups: Array<{ row: ActivityRow; count: number }> = [];
+  for (const r of o.activity) {
+    const last = groups.at(-1);
+    if (last && last.row.action === r.action && last.row.target === r.target && last.row.detail === r.detail) last.count++;
+    else groups.push({ row: r, count: 1 });
+  }
+  const items = groups
+    .map(({ row: r, count }) => html`<li class="flex flex-wrap items-baseline justify-between gap-x-3 border-b border-line py-2 text-sm last:border-b-0">
+        <span class="${r.action === 'loginFailed' ? 'text-warn' : ''}">${describe(r)}${count > 1 ? raw(html` <span class="text-xs text-muted">· ${t('auth.account.times', { count })}</span>`) : ''}</span>
+        <span class="text-xs text-muted">${raw(timeTag(r.at))}</span>
+      </li>`)
+    .join('');
+  return html`<section class="card settings-section" id="s-activity" aria-labelledby="s-activity-h">
+    <h2 id="s-activity-h" class="section-heading !mb-1">${t('auth.account.activity')}</h2>
+    <p class="!mt-0 text-sm text-muted">${t('auth.account.activityIntro')}</p>
+    ${raw(o.activity.length ? html`<ul class="m-0 list-none p-0">${raw(items)}</ul>` : html`<p class="!mb-0 text-sm text-muted">${t('activity.empty')}</p>`)}
+  </section>`;
+}
+
+export function accountPage(o: AccountView): string {
+  const initial = [...o.user.username][0]?.toUpperCase() ?? '?';
+  // Already-safe HTML pieces: the date is escaped here, timeTag builds its own markup.
+  const facts = [
+    o.createdAt ? html`${t('auth.account.memberSince', { date: absoluteDate(o.createdAt) })}` : '',
+    o.previousLogin ? t('auth.account.previousLogin', { time: timeTag(o.previousLogin) }) : '',
+  ].filter(Boolean);
   const body = html`
-    ${raw(pageHeader({ title: t('auth.account.title'), meta: html`${o.user.username} · ${raw(roleBadge(o.user.role))}` }))}
+    <div class="mb-6 flex flex-wrap items-center gap-4">
+      <span class="grid size-14 shrink-0 place-items-center rounded-full bg-accent text-2xl font-semibold text-white" aria-hidden="true">${initial}</span>
+      <div class="min-w-0">
+        <h1 class="m-0 flex flex-wrap items-center gap-2 text-2xl font-semibold"><span class="sr-only">${t('auth.account.title')}: </span>${o.user.username} ${raw(roleBadge(o.user.role))}</h1>
+        <p class="m-0 mt-1 text-sm text-muted">${raw(facts.join(' · '))}</p>
+      </div>
+    </div>
     ${raw(o.notice && ACCOUNT_NOTICES[o.notice] ? flash(t(`auth.notices.${o.notice}`), ACCOUNT_NOTICES[o.notice]) : '')}
-    <div class="grid max-w-3xl gap-6">
-      <section class="card settings-section" id="s-2fa" aria-labelledby="s-2fa-h">
-        <h2 id="s-2fa-h" class="section-heading !mb-3">${t('auth.security.twoFactor')}</h2>
-        ${raw(twoFa)}
-      </section>
-      <section class="card settings-section" id="s-password" aria-labelledby="s-password-h">
-        <h2 id="s-password-h" class="section-heading !mb-3">${t('auth.security.changePassword')}</h2>
-        <form method="post" action="/account/password" class="grid max-w-md gap-3">
-          <input type="text" name="username" value="${o.user.username}" autocomplete="username" hidden>
-          ${raw(field({ id: 'sec-cur', name: 'current', label: t('auth.currentPassword'), autocomplete: 'current-password' }))}
-          ${raw(field({ id: 'sec-new', name: 'password', label: t('auth.newPassword'), autocomplete: 'new-password', hint: t('auth.passwordHint', { min: o.min }), extra: `minlength="${o.min}"` }))}
-          ${raw(field({ id: 'sec-rep', name: 'repeat', label: t('auth.repeatPassword'), autocomplete: 'new-password', extra: `minlength="${o.min}"` }))}
-          <div><button type="submit" class="btn btn-ghost btn-sm">${t('auth.security.changePassword')}</button></div>
-        </form>
-      </section>
-      <section class="card settings-section" id="s-sessions" aria-labelledby="s-sessions-h">
-        <h2 id="s-sessions-h" class="section-heading !mb-3">${t('auth.security.sessions')}</h2>
-        <form method="post" action="/account/sessions/revoke" class="flex flex-wrap items-center gap-3">
-          <span class="text-sm">${t('auth.security.sessionsCount', { count: o.sessions })}</span>
-          <button type="submit" class="btn btn-ghost btn-sm">${t('auth.security.revokeOthers')}</button>
-        </form>
-      </section>
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="grid min-w-0 content-start gap-6">${raw(twoFactorCard(o))}${raw(passwordCard(o))}</div>
+      <div class="grid min-w-0 content-start gap-6">${raw(sessionsCard(o))}${raw(activityCard(o))}</div>
     </div>`;
   return layout({ title: t('auth.account.title'), bodyHtml: body });
 }

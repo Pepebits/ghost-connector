@@ -85,6 +85,21 @@ export function listActivity(o: { limit?: number; actor?: string; before?: numbe
     .all(...args) as unknown as ActivityRow[];
 }
 
+/** What concerns one account: what they did, and failed logins with their username. */
+export function listAccountActivity(username: string, limit = 10): ActivityRow[] {
+  return getDb()
+    .prepare(
+      `SELECT * FROM activity WHERE actor = ?1 COLLATE NOCASE OR (action = 'loginFailed' AND target = ?1 COLLATE NOCASE) ORDER BY id DESC LIMIT ?2`,
+    )
+    .all(username, limit) as unknown as ActivityRow[];
+}
+
+/** The latest successful login of an account before the current one (null if none). */
+export function previousLogin(username: string): string | null {
+  const r = getDb().prepare(`SELECT at FROM activity WHERE action = 'login' AND actor = ? COLLATE NOCASE ORDER BY id DESC LIMIT 1 OFFSET 1`).get(username) as { at: string } | undefined;
+  return r?.at ?? null;
+}
+
 /** Everyone who appears in the log (for the filter). */
 export function activityActors(): string[] {
   return (getDb().prepare('SELECT DISTINCT actor FROM activity WHERE actor IS NOT NULL ORDER BY actor COLLATE NOCASE').all() as Array<{ actor: string }>).map((r) => r.actor);

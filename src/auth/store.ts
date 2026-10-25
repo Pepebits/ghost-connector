@@ -395,6 +395,35 @@ function pruneSessions(): void {
   db().prepare('DELETE FROM auth_sessions WHERE expires_at < ?').run(new Date().toISOString());
 }
 
+/** A session's public id: the hash stored for it (never the cookie itself). */
+export const sessionId = (token: string) => sha256(token);
+
+export interface SessionInfo {
+  id: string;
+  createdAt: string;
+  lastSeen: string;
+  userAgent: string;
+}
+
+/** A user's open sessions, most recently used first. */
+export function listUserSessions(userId: number): SessionInfo[] {
+  pruneSessions();
+  const rows = db()
+    .prepare('SELECT id_hash, created_at, last_seen, user_agent FROM auth_sessions WHERE user_id = ? ORDER BY last_seen DESC')
+    .all(userId) as Array<{ id_hash: string; created_at: string; last_seen: string; user_agent: string | null }>;
+  return rows.map((r) => ({ id: r.id_hash, createdAt: r.created_at, lastSeen: r.last_seen, userAgent: r.user_agent ?? '' }));
+}
+
+/** Closes one session, only if it belongs to that user. */
+export function revokeUserSession(userId: number, id: string): boolean {
+  return Number(db().prepare('DELETE FROM auth_sessions WHERE user_id = ? AND id_hash = ?').run(userId, id).changes) === 1;
+}
+
+/** When the account was created. */
+export function userCreatedAt(id: number): string | null {
+  return row(id)?.created_at ?? null;
+}
+
 export function countSessions(userId: number): number {
   pruneSessions();
   return (db().prepare('SELECT COUNT(*) AS n FROM auth_sessions WHERE user_id = ?').get(userId) as { n: number }).n;

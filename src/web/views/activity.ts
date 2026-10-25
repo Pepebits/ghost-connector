@@ -4,12 +4,17 @@ import { html, raw } from '../html.js';
 import { layout } from './layout.js';
 import { emptyState, pageHeader, timeTag } from './ui.js';
 
-function describe(r: ActivityRow): string {
+export function describe(r: ActivityRow): string {
   const action = r.action;
   const vars = { target: r.target ?? '', detail: r.detail === '2fa' || r.detail === 'recovery' ? '' : (r.detail ?? '') };
   if (r.action === 'userInvited' || r.action === 'userJoined' || r.action === 'userRole') vars.detail = r.detail ? t(`auth.roles.${r.detail}`) : '';
   // A failed login with a username that doesn't exist: what was typed is not stored (it may be a password).
-  const key = r.action === 'loginFailed' && !r.target ? 'activity.actions.loginFailedUnknown' : `activity.actions.${action}`;
+  const key =
+    r.action === 'loginFailed' && !r.target
+      ? 'activity.actions.loginFailedUnknown'
+      : r.action === 'sessionsRevoked' && r.detail === 'one'
+        ? 'activity.actions.sessionRevoked'
+        : `activity.actions.${action}`;
   const text = t(key, vars);
   return text === key ? action : text;
 }

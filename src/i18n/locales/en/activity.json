@@ -40,7 +40,8 @@
     "exported": "Downloaded a workspace export",
     "imported": "Imported: {detail}",
     "ownership": "Transferred ownership to {target}",
-    "loginFailedUnknown": "Failed login with a username that does not exist"
+    "loginFailedUnknown": "Failed login with a username that does not exist",
+    "sessionRevoked": "Closed a session on another device"
   },
   "anonymous": "someone not logged in"
 }
