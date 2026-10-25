@@ -5,7 +5,7 @@ All notable changes to Ghost Connector. The format follows
 [Semantic Versioning](https://semver.org/). Each release's notes on GitHub and
 in the announcement come from its section here.
 
-## [Unreleased]
+## [0.1.3] — 2026-10-25
 
 ### Added
 
@@ -67,7 +67,7 @@ First public release.
 - Export / import of the workspace; full backup from the server CLI.
 - Docker image for amd64 and arm64.
 
-[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...HEAD
+[0.1.3]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/Pepebits/ghost-connector/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/Pepebits/ghost-connector/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/Pepebits/ghost-connector/releases/tag/v0.1.0

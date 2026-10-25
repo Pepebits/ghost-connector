@@ -1,6 +1,6 @@
 {
   "name": "ghost-connector",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "type": "module",
   "description": "Custom connector that completes, optimizes (SEO) and illustrates Ghost drafts with AI subagents (multi-model; DeepSeek by default).",
