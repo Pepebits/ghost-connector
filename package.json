@@ -54,7 +54,7 @@
     "sanitize-html": "^2.13.1",
     "sharp": "^0.35.4",
     "turndown": "^7.2.0",
-    "undici": "^6.20.1",
+    "undici": "^8.12.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {
