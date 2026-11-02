@@ -6,7 +6,7 @@
 # security updates applied at build time.
 
 # Pinned by digest for reproducible builds; Dependabot proposes the updates.
-FROM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS build
+FROM node:24-alpine@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -15,7 +15,7 @@ COPY scripts ./scripts
 COPY src ./src
 RUN npm run build && npm prune --omit=dev
 
-FROM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+FROM node:24-alpine@sha256:8a32c8cf649a49915a66e81e7a609223c708d0adabf288ee3f4077d765542f85
 RUN apk upgrade --no-cache \
   && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
     /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /opt/yarn* /usr/local/bin/yarn /usr/local/bin/yarnpkg
