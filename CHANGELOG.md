@@ -7,6 +7,17 @@ in the announcement come from its section here.
 
 ## [Unreleased]
 
+## [0.1.6] — 2026-11-09
+
+### Security
+
+- The Docker image no longer ships a vulnerable `follow-redirects` (GHSA-mrwp-f3q8-3g9p, high: custom credentials could follow a redirect to another host). It was flagged by the weekly scan of the published image.
+- Rebuilt on the latest Node 24 Alpine image, with its OS updates.
+
+### Changed
+
+- Dependencies updated: undici 8, p-limit 7 and commander 15, plus minor and patch updates of Fastify, OpenAI, marked, dotenv and turndown. No change in behaviour.
+
 ## [0.1.5] — 2026-10-25
 
 ### Added
@@ -96,7 +107,8 @@ First public release.
 - Export / import of the workspace; full backup from the server CLI.
 - Docker image for amd64 and arm64.
 
-[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/Pepebits/ghost-connector/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/Pepebits/ghost-connector/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/Pepebits/ghost-connector/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/Pepebits/ghost-connector/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/Pepebits/ghost-connector/compare/v0.1.2...v0.1.3
